@@ -1,11 +1,9 @@
-*.properties
-**/*.properties
-hibernate.cfg.xml
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**
-!**/src/test/**
+!**/src/main/**/target/
+!**/src/test/**/target/
+.mvn
 
 ### STS ###
 .apt_generated
@@ -21,7 +19,6 @@ target/
 *.iws
 *.iml
 *.ipr
-*.gdsl
 
 ### NetBeans ###
 /nbproject/private/
@@ -30,14 +27,10 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
-/batch/src/main/resources/application.properties
-/core/src/test/resources/hibernate.cfg.xml
-
-### Logs ###
-/logs/
-
-### Jenkins ###
-src/*.gdsl
+**/src/main/**/*.properties
+**/src/test/**/*.properties
