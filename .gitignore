@@ -1,4 +1,5 @@
 *.properties
+**/*.properties
 hibernate.cfg.xml
 HELP.md
 target/
