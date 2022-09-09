@@ -1,6 +1,6 @@
 ###
 # Image pour la compilation
-FROM maven:3-eclipse-temurin-11 as build-image
+FROM maven:3-eclipse-temurin-17 as build-image
 WORKDIR /build/
 # Installation et configuration de la locale FR
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install locales
@@ -30,7 +30,7 @@ RUN mvn --batch-mode -e \
 #FROM tomcat:9-jdk11 as api-image
 #COPY --from=build-image /build/web/target/*.war /usr/local/tomcat/webapps/ROOT.war
 #CMD [ "catalina.sh", "run" ]
-FROM eclipse-temurin:11-jre as api-recherche-image
+FROM eclipse-temurin:17-jre as api-recherche-image
 WORKDIR /app/
 COPY --from=build-image /build/web/target/*.jar /app/theses-api-recherche.jar
 ENTRYPOINT ["java","-jar","/app/theses-api-recherche.jar"]
