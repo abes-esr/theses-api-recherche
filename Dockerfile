@@ -32,5 +32,5 @@ RUN mvn --batch-mode -e \
 #CMD [ "catalina.sh", "run" ]
 FROM eclipse-temurin:17-jre as api-recherche-image
 WORKDIR /app/
-COPY --from=build-image /build/web/target/*.jar /app/theses-api-recherche.jar
+COPY --from=build-image /build/target/*.jar /app/theses-api-recherche.jar
 ENTRYPOINT ["java","-jar","/app/theses-api-recherche.jar"]
