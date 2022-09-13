@@ -71,7 +71,7 @@ public class SearchQueryBuilder {
         return this.client;
     }
 
-    public String getThesesTitle (String chaine) throws Exception {
+    public String rechercheSurLeTitre (String chaine) throws Exception {
 
         SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
                         .index("theses-sample")
