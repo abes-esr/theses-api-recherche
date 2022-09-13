@@ -106,9 +106,6 @@ public class SearchQueryBuilder {
 
     public String rechercheSurLeTitreEtResume (String chaine, String termeRameau) throws Exception {
 
-        // "technologie AND hachereaux"
-        // Industrie lithique
-
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.fields("titre^5","abstractFR");
