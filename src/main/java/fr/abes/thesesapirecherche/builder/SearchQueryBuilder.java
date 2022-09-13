@@ -109,6 +109,7 @@ public class SearchQueryBuilder {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.fields("titre^5","abstractFR");
+        builderQuery.quoteFieldSuffix(".exact");
         Query query = builderQuery.build()._toQuery();
 
         TermQuery.Builder builderTerm = new TermQuery.Builder();
