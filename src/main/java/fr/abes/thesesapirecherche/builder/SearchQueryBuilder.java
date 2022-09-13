@@ -1,6 +1,9 @@
 package fr.abes.thesesapirecherche.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.json.jackson.JacksonJsonpGenerator;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
@@ -94,6 +97,39 @@ public class SearchQueryBuilder {
 
         2) directement en json :
          */
+        final StringWriter writer = new StringWriter();
+        try (final JacksonJsonpGenerator generator = new JacksonJsonpGenerator(new JsonFactory().createGenerator(writer))) {
+            response.serialize(generator, new JacksonJsonpMapper());
+        }
+        return writer.toString();
+    }
+
+    public String rechercheSurLeTitreEtResume (String chaine, String termeRameau) throws Exception {
+
+        // "technologie AND hachereaux"
+        // Industrie lithique
+
+        QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
+        builderQuery.query(chaine);
+        builderQuery.fields("titre^5","abstractFR");
+        Query query = builderQuery.build()._toQuery();
+
+        TermQuery.Builder builderTerm = new TermQuery.Builder();
+        builderTerm.field("rameau");
+        builderTerm.value(termeRameau);
+        TermQuery termQuery = builderTerm.build();
+
+        SearchResponse<These> response = this.getElasticsearchClient().search(
+                s -> s
+                        .index("theses-sample")
+                        .query(q->q
+                                .bool(t-> t
+                                        .must(query)
+                                        .filter(a->a
+                                                .term(termQuery))
+                                )),
+                These.class
+        );
         final StringWriter writer = new StringWriter();
         try (final JacksonJsonpGenerator generator = new JacksonJsonpGenerator(new JsonFactory().createGenerator(writer))) {
             response.serialize(generator, new JacksonJsonpMapper());

@@ -24,4 +24,16 @@ public class SearchThesesController {
             throw e;
         }
     }
+
+    @GetMapping(value = "/recherche/titreEtResume/")
+    public String rechercheSurLeTitreEtResume(@RequestParam final String q, @RequestParam final String rameau) throws Exception {
+        log.info("debut de rechercheSurLeTitreEtResume...");
+        try {
+            return searchQueryBuilder.rechercheSurLeTitreEtResume(q, rameau);
+
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw e;
+        }
+    }
 }
