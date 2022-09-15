@@ -11,7 +11,7 @@ public class SpringSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests().antMatchers("/api/v1/recherche/**").permitAll()
+        http.cors().and().csrf().disable().exceptionHandling().and().authorizeRequests().antMatchers("/api/v1/recherche/**").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();
