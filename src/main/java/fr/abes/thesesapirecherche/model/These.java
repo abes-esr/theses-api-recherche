@@ -1,5 +1,8 @@
 package fr.abes.thesesapirecherche.model;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -28,8 +31,9 @@ public class These {
         this.nnt = nnt;
     }
 
-    public Date getDateSoutenance() {
-        return dateSoutenance;
+    public String getDateSoutenance() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(dateSoutenance);
     }
 
     public void setDateSoutenance(Date dateSoutenance) {
