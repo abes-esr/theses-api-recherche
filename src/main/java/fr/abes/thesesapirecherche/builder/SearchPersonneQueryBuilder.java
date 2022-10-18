@@ -76,6 +76,14 @@ public class SearchPersonneQueryBuilder {
         return this.client;
     }
 
+    /**
+     * Rechercher dans ElasticSearch une personne avec son nom et prénom.
+     * La requête de recherche est stockée sur le serveur ES.
+     *
+     * @param chaine Chaîne de caractère à rechercher
+     * @return Une liste de personnes au format Dto web
+     * @throws Exception si une erreur est survenue
+     */
     public List<PersonnesResponseDto> rechercher(String chaine) throws Exception {
 
         SearchTemplateResponse<Personne> response = this.getElasticsearchClient().searchTemplate(s -> s
