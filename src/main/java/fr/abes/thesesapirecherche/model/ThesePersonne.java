@@ -1,13 +1,11 @@
 package fr.abes.thesesapirecherche.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 /**
  * Représente une thèse pour une personne
  */
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ThesePersonne {

@@ -20,8 +20,10 @@ public class PersonneTheseMapper {
 
     public List<PersonnesTheseResponseDto> personnesToDto(List<ThesePersonne> theses) {
         List<PersonnesTheseResponseDto> results = new ArrayList<>();
-        for (ThesePersonne item : theses) {
-            results.add(personneToDto(item));
+        if (theses != null) {
+            for (ThesePersonne item : theses) {
+                results.add(personneToDto(item));
+            }
         }
         return results;
     }
