@@ -35,7 +35,7 @@ public class SearchQueryBuilder {
     private String esHostname;
     @Value("${es.port}")
     private String esPort;
-    @Value("${es.scheme}")
+    @Value("${es.protocol}")
     private String esScheme;
 
     @Value("${es.username}")
