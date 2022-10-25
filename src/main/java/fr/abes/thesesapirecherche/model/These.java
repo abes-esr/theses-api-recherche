@@ -13,7 +13,7 @@ public class These {
     Date dateSoutenance;
     String abstractFR;
     String abstractEN;
-    List<String> rameau;
+    List<String> sujetsRameau;
 
     public String getTitre() {
         return titre;
@@ -56,11 +56,11 @@ public class These {
         this.abstractEN = abstractEN;
     }
 
-    public List<String> getRameau() {
-        return rameau;
+    public List<String> getSujetsRameau() {
+        return sujetsRameau;
     }
 
-    public void setRameau(List<String> rameau) {
-        this.rameau = rameau;
+    public void setRameau(List<String> sujetsRameau) {
+        this.sujetsRameau = sujetsRameau;
     }
 }
