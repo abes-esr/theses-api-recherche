@@ -14,10 +14,10 @@ public class SearchThesesController {
     SearchQueryBuilder searchQueryBuilder;
 
     @GetMapping(value = "/recherche/")
-    public String rechercheSurLeTitre(@RequestParam final String q) throws Exception {
+    public String rechercheSurLeTitre(@RequestParam final String q, @RequestParam final int page, @RequestParam final int nombre) throws Exception {
         log.info("debut de rechercheSurLeTitre...");
         try {
-            return searchQueryBuilder.rechercheSurLeTitre(q);
+            return searchQueryBuilder.rechercheSurLeTitre(q, page, nombre);
 
         } catch (Exception e) {
             log.error(e.toString());
