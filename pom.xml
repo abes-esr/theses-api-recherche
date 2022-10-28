@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>fr.abes</groupId>
 	<artifactId>theses-api-recherche</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>theses-api-recherche</name>
 	<description>Cette API permet d'interroger le moteur d'indexation de theses.fr</description>
 	<properties>
@@ -59,6 +59,18 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.22</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- === Documentation API === -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.9.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.9.2</version>
 		</dependency>
 	</dependencies>
 

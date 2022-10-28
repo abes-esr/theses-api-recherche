@@ -60,7 +60,7 @@ public class These {
         return sujetsRameau;
     }
 
-    public void setSujetsRameau(List<String> rameau) {
+    public void setSujetsRameau(List<String> sujetsRameau) {
         this.sujetsRameau = sujetsRameau;
     }
 }
