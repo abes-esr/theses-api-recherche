@@ -1,11 +1,15 @@
 package fr.abes.thesesapirecherche.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
 public class These {
 
     String titre;
@@ -14,22 +18,7 @@ public class These {
     String abstractFR;
     String abstractEN;
     List<String> sujetsRameau;
-
-    public String getTitre() {
-        return titre;
-    }
-
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
-
-    public String getNnt() {
-        return nnt;
-    }
-
-    public void setNnt(String nnt) {
-        this.nnt = nnt;
-    }
+    List<PersonneThese> membresJury;
 
     public String getDateSoutenance() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");

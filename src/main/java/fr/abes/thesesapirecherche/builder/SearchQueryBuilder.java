@@ -5,11 +5,14 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.jackson.JacksonJsonpGenerator;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.fasterxml.jackson.core.JsonFactory;
+import fr.abes.thesesapirecherche.converters.TheseMapper;
+import fr.abes.thesesapirecherche.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.model.These;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
 import java.io.StringWriter;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -45,6 +49,8 @@ public class SearchQueryBuilder {
     private String esPassword;
 
     private ElasticsearchClient client;
+
+    private final TheseMapper theseMapper = new TheseMapper();
     private ElasticsearchClient getElasticsearchClient() throws Exception {
         if (this.client == null) {
             try {
@@ -135,5 +141,20 @@ public class SearchQueryBuilder {
             response.serialize(generator, new JacksonJsonpMapper());
         }
         return writer.toString();
+    }
+
+    public TheseResponseDto rechercheSurId(String id) throws Exception {
+        SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
+                        .index("theses-sample")
+                        .query(q->q
+                                .match(t->t
+                                        .query(id)
+                                        .field("_id"))),
+                These.class
+        );
+
+        Optional<These> a = response.hits().hits().stream().map(Hit::source).findFirst();
+
+        return a.map(theseMapper::theseToDto).orElse(null);
     }
 }
