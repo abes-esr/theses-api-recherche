@@ -1,12 +1,18 @@
 package fr.abes.thesesapirecherche.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.json.jackson.JacksonJsonpGenerator;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.fasterxml.jackson.core.JsonFactory;
+import fr.abes.thesesapirecherche.converters.TheseMapper;
+import fr.abes.thesesapirecherche.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.model.These;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -23,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
 import java.io.StringWriter;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -32,7 +39,7 @@ public class SearchQueryBuilder {
     private String esHostname;
     @Value("${es.port}")
     private String esPort;
-    @Value("${es.scheme}")
+    @Value("${es.protocol}")
     private String esScheme;
 
     @Value("${es.username}")
@@ -42,6 +49,8 @@ public class SearchQueryBuilder {
     private String esPassword;
 
     private ElasticsearchClient client;
+
+    private final TheseMapper theseMapper = new TheseMapper();
     private ElasticsearchClient getElasticsearchClient() throws Exception {
         if (this.client == null) {
             try {
@@ -71,14 +80,16 @@ public class SearchQueryBuilder {
         return this.client;
     }
 
-    public String getThesesTitle (String chaine) throws Exception {
+    public String rechercheSurLeTitre (String chaine, int page, int nombre) throws Exception {
 
         SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
                         .index("theses-sample")
                         .query(q->q
                                 .match(t->t
                                         .query(chaine)
-                                        .field("titre"))),
+                                        .field("titre")))
+                        .from(page)
+                        .size(nombre),
                 These.class
         );
 
@@ -99,5 +110,51 @@ public class SearchQueryBuilder {
             response.serialize(generator, new JacksonJsonpMapper());
         }
         return writer.toString();
+    }
+
+    public String rechercheSurLeTitreEtResume (String chaine, String termeRameau) throws Exception {
+
+        QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
+        builderQuery.query(chaine);
+        builderQuery.fields("titre^5","abstractFR");
+        builderQuery.quoteFieldSuffix(".exact");
+        Query query = builderQuery.build()._toQuery();
+
+        TermQuery.Builder builderTerm = new TermQuery.Builder();
+        builderTerm.field("rameau");
+        builderTerm.value(termeRameau);
+        TermQuery termQuery = builderTerm.build();
+
+        SearchResponse<These> response = this.getElasticsearchClient().search(
+                s -> s
+                        .index("theses-sample")
+                        .query(q->q
+                                .bool(t-> t
+                                        .must(query)
+                                        .filter(a->a
+                                                .term(termQuery))
+                                )),
+                These.class
+        );
+        final StringWriter writer = new StringWriter();
+        try (final JacksonJsonpGenerator generator = new JacksonJsonpGenerator(new JsonFactory().createGenerator(writer))) {
+            response.serialize(generator, new JacksonJsonpMapper());
+        }
+        return writer.toString();
+    }
+
+    public TheseResponseDto rechercheSurId(String id) throws Exception {
+        SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
+                        .index("theses-sample")
+                        .query(q->q
+                                .match(t->t
+                                        .query(id)
+                                        .field("_id"))),
+                These.class
+        );
+
+        Optional<These> a = response.hits().hits().stream().map(Hit::source).findFirst();
+
+        return a.map(theseMapper::theseToDto).orElse(null);
     }
 }

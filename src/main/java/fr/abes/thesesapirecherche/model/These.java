@@ -1,8 +1,15 @@
 package fr.abes.thesesapirecherche.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+@Getter
+@Setter
 public class These {
 
     String titre;
@@ -10,26 +17,12 @@ public class These {
     Date dateSoutenance;
     String abstractFR;
     String abstractEN;
-    List<String> rameau;
+    List<String> sujetsRameau;
+    List<PersonneThese> membresJury;
 
-    public String getTitre() {
-        return titre;
-    }
-
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
-
-    public String getNnt() {
-        return nnt;
-    }
-
-    public void setNnt(String nnt) {
-        this.nnt = nnt;
-    }
-
-    public Date getDateSoutenance() {
-        return dateSoutenance;
+    public String getDateSoutenance() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateFormat.format(dateSoutenance);
     }
 
     public void setDateSoutenance(Date dateSoutenance) {
@@ -52,11 +45,11 @@ public class These {
         this.abstractEN = abstractEN;
     }
 
-    public List<String> getRameau() {
-        return rameau;
+    public List<String> getSujetsRameau() {
+        return sujetsRameau;
     }
 
-    public void setRameau(List<String> rameau) {
-        this.rameau = rameau;
+    public void setSujetsRameau(List<String> sujetsRameau) {
+        this.sujetsRameau = sujetsRameau;
     }
 }
