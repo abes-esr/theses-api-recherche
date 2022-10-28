@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>fr.abes</groupId>
 	<artifactId>theses-api-recherche</artifactId>
-	<version>0.0.2</version>
+	<version>0.0.3</version>
 	<name>theses-api-recherche</name>
 	<description>Cette API permet d'interroger le moteur d'indexation de theses.fr</description>
 	<properties>
