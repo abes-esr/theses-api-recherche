@@ -24,4 +24,32 @@ public class These {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateFormat.format(dateSoutenance);
     }
+
+    public void setDateSoutenance(Date dateSoutenance) {
+        this.dateSoutenance = dateSoutenance;
+    }
+
+    public String getAbstractFR() {
+        return abstractFR;
+    }
+
+    public void setAbstractFR(String abstractFR) {
+        this.abstractFR = abstractFR;
+    }
+
+    public String getAbstractEN() {
+        return abstractEN;
+    }
+
+    public void setAbstractEN(String abstractEN) {
+        this.abstractEN = abstractEN;
+    }
+
+    public List<String> getSujetsRameau() {
+        return sujetsRameau;
+    }
+
+    public void setSujetsRameau(List<String> sujetsRameau) {
+        this.sujetsRameau = sujetsRameau;
+    }
 }

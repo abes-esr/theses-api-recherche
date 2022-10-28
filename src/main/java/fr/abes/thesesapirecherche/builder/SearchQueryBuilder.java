@@ -80,14 +80,16 @@ public class SearchQueryBuilder {
         return this.client;
     }
 
-    public String rechercheSurLeTitre (String chaine) throws Exception {
+    public String rechercheSurLeTitre (String chaine, int page, int nombre) throws Exception {
 
         SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
                         .index("theses-sample")
                         .query(q->q
                                 .match(t->t
                                         .query(chaine)
-                                        .field("titre"))),
+                                        .field("titre")))
+                        .from(page)
+                        .size(nombre),
                 These.class
         );
 
