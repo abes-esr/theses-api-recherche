@@ -143,13 +143,13 @@ public class SearchQueryBuilder {
         return writer.toString();
     }
 
-    public TheseResponseDto rechercheSurId(String id) throws Exception {
+    public TheseResponseDto rechercheSurId(String nnt) throws Exception {
         SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
                         .index("theses-sample")
                         .query(q->q
                                 .match(t->t
-                                        .query(id)
-                                        .field("_id"))),
+                                        .query(nnt)
+                                        .field("nnt"))),
                 These.class
         );
 

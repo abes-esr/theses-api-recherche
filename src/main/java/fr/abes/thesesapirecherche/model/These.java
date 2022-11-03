@@ -7,49 +7,29 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 public class These {
 
-    String titre;
+    String titrePrincipal;
     String nnt;
     Date dateSoutenance;
-    String abstractFR;
-    String abstractEN;
+    String discipline;
+    Map<String, String> titres;
+    Map<String, String> resumes;
+    Organisme etabSoutenance;
+    List<Organisme> etabCotutelle;
+    List<Organisme> partenairesRecherche;
     List<String> sujetsRameau;
     List<PersonneThese> membresJury;
+    List<PersonneThese> rapporteurs;
+    List<PersonneThese> auteurs;
+    List<PersonneThese> directeurs;
 
     public String getDateSoutenance() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateFormat.format(dateSoutenance);
-    }
-
-    public void setDateSoutenance(Date dateSoutenance) {
-        this.dateSoutenance = dateSoutenance;
-    }
-
-    public String getAbstractFR() {
-        return abstractFR;
-    }
-
-    public void setAbstractFR(String abstractFR) {
-        this.abstractFR = abstractFR;
-    }
-
-    public String getAbstractEN() {
-        return abstractEN;
-    }
-
-    public void setAbstractEN(String abstractEN) {
-        this.abstractEN = abstractEN;
-    }
-
-    public List<String> getSujetsRameau() {
-        return sujetsRameau;
-    }
-
-    public void setSujetsRameau(List<String> sujetsRameau) {
-        this.sujetsRameau = sujetsRameau;
+        return dateSoutenance != null ? dateFormat.format(dateSoutenance) : null;
     }
 }

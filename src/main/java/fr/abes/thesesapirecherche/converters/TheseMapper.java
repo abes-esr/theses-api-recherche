@@ -8,16 +8,24 @@ import java.util.List;
 
 public class TheseMapper {
     ThesePersonneMapper personneMapper = new ThesePersonneMapper();
+    OrganismeMapper organismeMapper = new OrganismeMapper();
 
     public TheseResponseDto theseToDto(These these) {
         return TheseResponseDto.builder()
+                .titrePrincipal(these.getTitrePrincipal())
                 .nnt(these.getNnt())
-                .titre(these.getTitre())
                 .dateSoutenance(these.getDateSoutenance())
-                .abstractFR(these.getAbstractFR())
-                .abstractEN(these.getAbstractEN())
+                .discipline(these.getDiscipline())
+                .titres(these.getTitres())
+                .resumes(these.getResumes())
+                .etabSoutenance(organismeMapper.organismeToDto(these.getEtabSoutenance()))
+                .etabCotutelle(organismeMapper.organismesToDto(these.getEtabCotutelle()))
+                .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
                 .sujetsRameau(these.getSujetsRameau())
                 .membresJury(personneMapper.personnesToDto(these.getMembresJury()))
+                .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
+                .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
+                .directeurs(personneMapper.personnesToDto(these.getDirecteurs()))
                 .build();
     }
 
