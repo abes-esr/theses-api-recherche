@@ -1,6 +1,9 @@
 package fr.abes.thesesapirecherche.controller;
 
 import fr.abes.thesesapirecherche.builder.SearchQueryBuilder;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +19,14 @@ public class SearchThesesController {
     SearchQueryBuilder searchQueryBuilder;
 
     @GetMapping(value = "/titre/")
+    @ApiOperation(
+            value = "Rechercher une thèse via le titre",
+            notes = "Retourne une liste de thèses correspondant à la recherche")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
     public String rechercheSurLeTitre(@RequestParam final String q,
                                       @RequestParam Optional<Integer> page,
                                       @RequestParam Optional<Integer> nombre) throws Exception {
