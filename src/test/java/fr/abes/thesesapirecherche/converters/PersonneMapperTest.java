@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation;
 import fr.abes.thesesapirecherche.ThesesApiRechercheApplicationTests;
+import fr.abes.thesesapirecherche.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.dto.PersonnesResponseDto;
 import fr.abes.thesesapirecherche.model.Personne;
 import fr.abes.thesesapirecherche.model.ThesePersonne;
@@ -44,10 +45,10 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
 
 
     @Test
-    @DisplayName("Conversion du format ES vers DTO")
+    @DisplayName("Conversion d'une liste de personnes au format ES vers DTO")
     void testConversionESversDto() {
 
-        List<PersonnesResponseDto> results = personneMapper.personnesToDto(searchResponse.hits().hits());
+        List<PersonnesResponseDto> results = personneMapper.personnesListToDto(searchResponse.hits().hits());
 
         Assertions.assertEquals(2, results.size());
         // 1ère personne
@@ -67,6 +68,23 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals(1, results.get(1).getTheses().size());
         Assertions.assertEquals("directeur de thèse", results.get(1).getTheses().get(0).getRole());
         Assertions.assertEquals("s347820", results.get(1).getTheses().get(0).getNnt());
+
+    }
+
+    @Test
+    @DisplayName("Conversion d'une personne du format ES vers DTO")
+    void testConversionPersonneESversDto() {
+
+        PersonneResponseDto results = personneMapper.personneToDto(searchResponse.hits().hits().get(0));
+
+        // 1ère personne
+        Assertions.assertEquals("127566635", results.getId());
+        Assertions.assertEquals("Rousseau", results.getNom());
+        Assertions.assertEquals("Erwann", results.getPrenom());
+        Assertions.assertEquals(true, results.getHasIdref());
+        Assertions.assertEquals(1, results.getTheses().size());
+        Assertions.assertEquals("auteur", results.getTheses().get(0).getRole());
+        Assertions.assertEquals("2007PA066375", results.getTheses().get(0).getNnt());
 
     }
 
