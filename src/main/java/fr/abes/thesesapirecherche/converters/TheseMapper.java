@@ -26,6 +26,9 @@ public class TheseMapper {
                 .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
                 .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesToDto(these.getDirecteurs()))
+                .cas(these.getCas())
+                .ecolesDoctorales(organismeMapper.organismesToDto(these.getEcolesDoctorales()))
+                .presidentJury(personneMapper.personneToDto(these.getPresidentJury()))
                 .build();
     }
 
