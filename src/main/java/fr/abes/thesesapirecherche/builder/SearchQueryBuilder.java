@@ -86,7 +86,7 @@ public class SearchQueryBuilder {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
-        builderQuery.fields("titrePrincipal");
+        builderQuery.fields("titres");
         builderQuery.quoteFieldSuffix(".exact");
         Query query = builderQuery.build()._toQuery();
 
