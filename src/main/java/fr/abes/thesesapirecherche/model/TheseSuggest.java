@@ -2,16 +2,15 @@ package fr.abes.thesesapirecherche.model;
 
 public class TheseSuggest {
 
-    String titrePrincipal;
-
-    public String getTitrePrincipal() {
-        return titrePrincipal;
+    public String getText() {
+        return text;
     }
 
-    public void setTitrePrincipal(String titrePrincipal) {
-        this.titrePrincipal = titrePrincipal;
+    public void setText(String text) {
+        this.text = text;
     }
 
+    String text;
 
 
 }

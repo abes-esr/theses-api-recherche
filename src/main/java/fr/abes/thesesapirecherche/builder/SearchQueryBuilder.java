@@ -4,7 +4,6 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.*;
 import co.elastic.clients.json.jackson.JacksonJsonpGenerator;
@@ -135,7 +134,7 @@ public class SearchQueryBuilder {
         Map<String, FieldSuggester> map = new HashMap<>();
         map.put("theses-suggestion", FieldSuggester.of(fs -> fs
                 .completion(cs -> cs.skipDuplicates(true)
-                        .size(5)
+                        .size(10)
                         .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("1").transpositions(true).minLength(2).prefixLength(3)))
                         .field("sujetsRameau.suggestion")
                 )
@@ -147,8 +146,8 @@ public class SearchQueryBuilder {
         );
 
         SearchResponse<TheseSuggest> response = this.getElasticsearchClient().search(s ->
-                        s.index("theses-sample")
-                                .source(SourceConfig.of(sc -> sc.filter(f -> f.includes(List.of("titrePrincipal")))))
+                        s.index(esIndexName)
+                                .source(SourceConfig.of(sc -> sc.filter(f -> f.includes(List.of("text")))))
                                 .suggest(suggester)
                 , TheseSuggest.class);
 
