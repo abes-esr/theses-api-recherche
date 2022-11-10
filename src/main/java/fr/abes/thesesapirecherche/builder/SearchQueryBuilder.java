@@ -51,6 +51,8 @@ public class SearchQueryBuilder {
 
     private ElasticsearchClient client;
 
+    private String esIndexName = "theses-sample-2";
+
     private final TheseMapper theseMapper = new TheseMapper();
     private ElasticsearchClient getElasticsearchClient() throws Exception {
         if (this.client == null) {
@@ -92,7 +94,7 @@ public class SearchQueryBuilder {
 
         SearchResponse<These> response = this.getElasticsearchClient().search(
                 s -> s
-                        .index("theses-sample")
+                        .index(esIndexName)
                         .query(q->q
                                 .bool(t-> t
                                         .must(query)
@@ -111,7 +113,7 @@ public class SearchQueryBuilder {
 
     public TheseResponseDto rechercheSurId(String nnt) throws Exception {
         SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
-                        .index("theses-sample")
+                        .index(esIndexName)
                         .query(q->q
                                 .match(t->t
                                         .query(nnt)
