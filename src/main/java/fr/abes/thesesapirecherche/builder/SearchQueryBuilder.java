@@ -55,6 +55,8 @@ public class SearchQueryBuilder {
 
     private ElasticsearchClient client;
 
+    private String esIndexName = "theses-sample-2";
+
     private final TheseMapper theseMapper = new TheseMapper();
     private ElasticsearchClient getElasticsearchClient() throws Exception {
         if (this.client == null) {
@@ -90,13 +92,13 @@ public class SearchQueryBuilder {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
-        builderQuery.fields("titrePrincipal");
+        builderQuery.fields("titres.*");
         builderQuery.quoteFieldSuffix(".exact");
         Query query = builderQuery.build()._toQuery();
 
         SearchResponse<These> response = this.getElasticsearchClient().search(
                 s -> s
-                        .index("theses-sample")
+                        .index(esIndexName)
                         .query(q->q
                                 .bool(t-> t
                                         .must(query)
@@ -115,7 +117,7 @@ public class SearchQueryBuilder {
 
     public TheseResponseDto rechercheSurId(String nnt) throws Exception {
         SearchResponse<These> response = this.getElasticsearchClient().search(s -> s
-                        .index("theses-sample")
+                        .index(esIndexName)
                         .query(q->q
                                 .match(t->t
                                         .query(nnt)

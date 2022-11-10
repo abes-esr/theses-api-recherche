@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.controller;
 
 import fr.abes.thesesapirecherche.builder.SearchPersonneQueryBuilder;
+import fr.abes.thesesapirecherche.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.dto.PersonnesResponseDto;
 import fr.abes.thesesapirecherche.exception.ApiException;
 import io.swagger.annotations.ApiOperation;
@@ -8,10 +9,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -43,6 +41,26 @@ public class PersonneController {
         log.debug("Rechercher une personne...");
         try {
             return searchQueryBuilder.rechercher(q);
+
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw new ApiException(e.getLocalizedMessage());
+        }
+    }
+
+    @GetMapping(value = "/rechercher/{id}")
+    @ApiOperation(
+            value = "Rechercher une personne par son identifiant",
+            notes = "Retourne la personne correspondante à la recherche")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
+        log.debug("Rechercher une personne par son identifiant...");
+        try {
+            return searchQueryBuilder.rechercherParIdentifiant(id);
 
         } catch (Exception e) {
             log.error(e.toString());

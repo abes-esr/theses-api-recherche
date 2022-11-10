@@ -7,7 +7,9 @@ import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import fr.abes.thesesapirecherche.converters.PersonneMapper;
+import fr.abes.thesesapirecherche.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.dto.PersonnesResponseDto;
+import fr.abes.thesesapirecherche.exception.ApiException;
 import fr.abes.thesesapirecherche.model.Personne;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -93,7 +95,32 @@ public class SearchPersonneQueryBuilder {
                 Personne.class
         );
 
-        return personneMapper.personnesToDto(response.hits().hits());
-
+        return personneMapper.personnesListToDto(response.hits().hits());
     }
+
+    /**
+     * Rechercher dans ElasticSearch une personne avec son identifiant.
+     * La requête de recherche est stockée sur le serveur ES.
+     *
+     * @param id Chaîne de caractère de l'identifiant de la personne
+     * @return Une personne au format Dto web
+     * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
+     */
+    public PersonneResponseDto rechercherParIdentifiant(String id) throws Exception {
+
+        SearchTemplateResponse<Personne> response = this.getElasticsearchClient().searchTemplate(s -> s
+                        .index("personnes")
+                        .id("search_personnes_id")
+                        .params("query_string", JsonData.of(id)),
+                Personne.class
+        );
+
+        if (response.hits().hits().size() != 1) {
+            throw new Exception("Person not found");
+        }
+
+        return personneMapper.personneToDto(response.hits().hits().get(0));
+    }
+
+
 }

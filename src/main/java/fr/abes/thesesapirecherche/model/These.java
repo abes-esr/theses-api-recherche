@@ -27,6 +27,9 @@ public class These {
     List<PersonneThese> rapporteurs;
     List<PersonneThese> auteurs;
     List<PersonneThese> directeurs;
+    String cas;
+    List<Organisme> ecolesDoctorales;
+    PersonneThese presidentJury;
 
     public String getDateSoutenance() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
