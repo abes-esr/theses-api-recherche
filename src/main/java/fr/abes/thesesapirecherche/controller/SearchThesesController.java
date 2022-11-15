@@ -44,6 +44,14 @@ public class SearchThesesController {
     }
 
     @GetMapping(value = "/completion/")
+    @ApiOperation(
+            value = "Proposer l'automcompletion basée sur les mots clés libres, les mots clés rameau et la discipline",
+            notes = "Retourne 10 propositions")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
     public String completion(@RequestParam final String q) throws Exception {
         log.info("debut de completion...");
         return searchQueryBuilder.completion(q);
