@@ -15,7 +15,15 @@ public class These {
 
     String titrePrincipal;
     String nnt;
+    String accessible;
+    String status;
+    String source;
+    String codeEtab;
     Date dateSoutenance;
+    Date dateFinEmbargo;
+    List<String> langues;
+    List<String> oaiSets;
+    Map<String, String> sujets;
     String discipline;
     Map<String, String> titres;
     Map<String, String> resumes;
@@ -29,6 +37,7 @@ public class These {
     List<PersonneThese> directeurs;
     String cas;
     List<Organisme> ecolesDoctorales;
+    List<Organisme> etabsCotutelle;
     PersonneThese presidentJury;
 
     public String getDateSoutenance() {

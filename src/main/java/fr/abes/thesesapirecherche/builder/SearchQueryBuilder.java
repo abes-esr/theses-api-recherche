@@ -136,7 +136,7 @@ public class SearchQueryBuilder {
                 .completion(cs -> cs.skipDuplicates(true)
                         .size(10)
                         .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("1").transpositions(true).minLength(2).prefixLength(3)))
-                        .field("sujetsRameau.suggestion")
+                        .field("suggestion")
                 )
         ));
 
