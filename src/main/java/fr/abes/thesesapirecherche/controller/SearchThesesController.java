@@ -42,4 +42,10 @@ public class SearchThesesController {
             throw e;
         }
     }
+
+    @GetMapping(value = "/completion/")
+    public String completion(@RequestParam final String q) throws Exception {
+        log.info("debut de completion...");
+        return searchQueryBuilder.completion(q);
+    }
 }
