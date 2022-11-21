@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.exception;
 
 import fr.abes.thesesapirecherche.dto.ApiExceptionDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 /**
  * Gestionnaire d'exception pour Spring Boot MVC
  */
+@Slf4j
 @ControllerAdvice
 public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
 
@@ -96,8 +98,10 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
      * @param ex
      * @return
      */
-    @ExceptionHandler(ApiException.class)
-    protected ResponseEntity<Object> handleMappingException(ApiException ex) {
+    @ExceptionHandler(Exception.class)
+    protected ResponseEntity<Object> handleMappingException(Exception ex) {
+        log.error(ex.toString());
         return buildResponseEntity(new ApiExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 }
+
