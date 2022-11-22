@@ -57,4 +57,16 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(8)));
     }
+
+    @Test
+    @DisplayName("Rechercher personne avec son identifiant")
+    @EnableOnIntegrationTest
+    public void personneAvecId() throws Exception {
+        mockMvc.perform(get("/api/v1/personne/rechercher/098248782/"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("098248782"))
+                .andExpect(jsonPath("$.nom").value("Rousseau"))
+                .andExpect(jsonPath("$.prenom").value("Erwan"))
+                .andExpect(jsonPath("$.has_idref").value(true));
+    }
 }

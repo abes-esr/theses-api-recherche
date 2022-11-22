@@ -1,14 +1,15 @@
 package fr.abes.thesesapirecherche.personnes.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.SearchTemplateResponse;
-import co.elastic.clients.json.JsonData;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -79,7 +80,6 @@ public class SearchPersonneQueryBuilder {
 
     /**
      * Rechercher dans ElasticSearch une personne avec son nom et prénom.
-     * La requête de recherche est stockée sur le serveur ES.
      *
      * @param chaine Chaîne de caractère à rechercher
      * @return Une liste de personnes au format Dto web
@@ -87,19 +87,37 @@ public class SearchPersonneQueryBuilder {
      */
     public List<PersonneLiteResponseDto> rechercher(String chaine) throws Exception {
 
-        SearchTemplateResponse<Personne> response = this.getElasticsearchClient().searchTemplate(s -> s
-                        .index("personnes")
-                        .id("search_personnes_nom_prenom")
-                        .params("query_string", JsonData.of(chaine)),
-                Personne.class
-        );
+        // Liste des champs utilisés pour la recherche
+        FuzzyQuery nomQuery = QueryBuilders.fuzzy().field("nom").value(chaine).build();
+        FuzzyQuery prenomQuery = QueryBuilders.fuzzy().field("prenom").value(chaine).build();
+
+        // La valeur doit être trouvé dans l'un ou l'autres des champs
+        BoolQuery boolQuery = new BoolQuery.Builder().should(nomQuery._toQuery(),prenomQuery._toQuery()).build();
+
+        // Boost IdRef
+        TermQuery termQuery = QueryBuilders.term().field("has_idref").value(true).build();
+        FunctionScore functionScore = new FunctionScore.Builder().filter(termQuery._toQuery()).weight(360.0).build();
+        FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
+                .query(boolQuery._toQuery())
+                .functions(List.of(functionScore))
+                .boostMode(FunctionBoostMode.Multiply)
+                .scoreMode(FunctionScoreMode.Sum)
+                .build();
+
+        Query query = new Query.Builder().functionScore(functionScoreQuery).build();
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+                .index("personnes")
+                .query(query)
+                .build();
+
+        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest,Personne.class);
 
         return personneMapper.personnesListToDto(response.hits().hits());
     }
 
     /**
      * Rechercher dans ElasticSearch une personne avec son identifiant.
-     * La requête de recherche est stockée sur le serveur ES.
      *
      * @param id Chaîne de caractère de l'identifiant de la personne
      * @return Une personne au format Dto web
@@ -107,12 +125,15 @@ public class SearchPersonneQueryBuilder {
      */
     public PersonneResponseDto rechercherParIdentifiant(String id) throws Exception {
 
-        SearchTemplateResponse<Personne> response = this.getElasticsearchClient().searchTemplate(s -> s
-                        .index("personnes")
-                        .id("search_personnes_id")
-                        .params("query_string", JsonData.of(id)),
-                Personne.class
-        );
+        TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
+        Query query = new Query.Builder().term(termQuery).build();
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+                .index("personnes")
+                .query(query)
+                .build();
+
+        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest,Personne.class);
 
         if (response.hits().hits().size() != 1) {
             throw new Exception("Person not found");
