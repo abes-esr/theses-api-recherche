@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import fr.abes.thesesapirecherche.converters.TheseMapper;
 import fr.abes.thesesapirecherche.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.model.These;
-import fr.abes.thesesapirecherche.model.TheseSuggest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -30,10 +29,7 @@ import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -129,32 +125,29 @@ public class SearchQueryBuilder {
         return a.map(theseMapper::theseToDto).orElse(null);
     }
 
-    public String completion (String q) throws Exception {
+    public List<String> completion (String q) throws Exception {
 
-        Map<String, FieldSuggester> map = new HashMap<>();
-        map.put("theses-suggestion", FieldSuggester.of(fs -> fs
+        FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
                 .completion(cs -> cs.skipDuplicates(true)
-                        .size(10)
-                        .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("1").transpositions(true).minLength(2).prefixLength(3)))
-                        .field("suggestion")
-                )
-        ));
+                                .size(10)
+                                .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
+                                .field("suggestion")));
 
         Suggester suggester = Suggester.of(s -> s
-                .suggesters(map)
+                .suggesters("suggestion", fieldSuggester)
                 .text(q)
         );
 
-        SearchResponse<TheseSuggest> response = this.getElasticsearchClient().search(s ->
-                        s.index(esIndexName)
-                                .source(SourceConfig.of(sc -> sc.filter(f -> f.includes(List.of("text")))))
-                                .suggest(suggester)
-                , TheseSuggest.class);
+        SearchResponse<Void> response = this.getElasticsearchClient().search(s -> s
+                .index(esIndexName)
+                .suggest(suggester)
+                , Void.class);
 
-        final StringWriter writer = new StringWriter();
-        try (final JacksonJsonpGenerator generator = new JacksonJsonpGenerator(new JsonFactory().createGenerator(writer))) {
-            response.serialize(generator, new JacksonJsonpMapper());
-        }
-        return writer.toString();
+        List<String> listeSuggestions  = new ArrayList<String>();
+
+        response.suggest().entrySet().forEach(a->a.getValue().forEach(s->s.completion().options().forEach(b->listeSuggestions.add(b.text()))));
+
+
+        return listeSuggestions;
     }
 }

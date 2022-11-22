@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -52,7 +53,7 @@ public class SearchThesesController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public String completion(@RequestParam final String q) throws Exception {
+    public List<String> completion(@RequestParam final String q) throws Exception {
         log.info("debut de completion...");
         return searchQueryBuilder.completion(q);
     }
