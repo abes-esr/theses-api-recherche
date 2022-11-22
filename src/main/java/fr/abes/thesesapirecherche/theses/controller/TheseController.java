@@ -20,7 +20,7 @@ public class TheseController {
         this.searchQueryBuilder = searchQueryBuilder;
     }
 
-    @GetMapping(value = "/these/{id}")
+    @GetMapping(value = "/recherche/these/{id}")
     @ApiOperation(
             value = "Renvoyer une thèse à partir de son nnt",
             notes = "Retourne la thèse correspondante au nnt")

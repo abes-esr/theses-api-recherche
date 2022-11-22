@@ -26,5 +26,8 @@ public class TheseResponseDto {
     List<ThesePersoneResponseDto> rapporteurs;
     List<ThesePersoneResponseDto> auteurs;
     List<ThesePersoneResponseDto> directeurs;
+    String cas;
+    List<OrganismeResponseDto> ecolesDoctorales;
+    ThesePersoneResponseDto presidentJury;
 
 }
