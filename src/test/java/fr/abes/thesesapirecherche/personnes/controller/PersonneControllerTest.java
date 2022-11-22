@@ -1,9 +1,11 @@
 package fr.abes.thesesapirecherche.personnes.controller;
 
+import fr.abes.thesesapirecherche.EnableOnIntegrationTest;
 import fr.abes.thesesapirecherche.ThesesApiRechercheApplicationTests;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,5 +47,14 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    @DisplayName("Rechercher personne avec le mot Rousseau")
+    @EnableOnIntegrationTest
+    public void personneRousseau() throws Exception {
+        mockMvc.perform(get("/api/v1/personne/rechercher/?q=Rousseau"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(8)));
     }
 }
