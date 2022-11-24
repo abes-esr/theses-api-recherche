@@ -39,6 +39,7 @@ public class These {
     List<Organisme> ecolesDoctorales;
     List<Organisme> etabsCotutelle;
     PersonneThese presidentJury;
+    String theseTravaux;
 
     public String getDateSoutenance() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
