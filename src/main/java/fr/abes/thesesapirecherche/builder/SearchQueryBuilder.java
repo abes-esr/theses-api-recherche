@@ -87,7 +87,7 @@ public class SearchQueryBuilder {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
-        builderQuery.fields("titres.*");
+        builderQuery.fields("*");
         builderQuery.quoteFieldSuffix(".exact");
         Query query = builderQuery.build()._toQuery();
 
@@ -146,7 +146,6 @@ public class SearchQueryBuilder {
         List<String> listeSuggestions  = new ArrayList<String>();
 
         response.suggest().entrySet().forEach(a->a.getValue().forEach(s->s.completion().options().forEach(b->listeSuggestions.add(b.text()))));
-
 
         return listeSuggestions;
     }
