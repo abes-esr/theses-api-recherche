@@ -2,12 +2,14 @@ package fr.abes.thesesapirecherche.theses.controller;
 
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -18,7 +20,7 @@ public class SearchThesesController {
     @Autowired
     SearchQueryBuilder searchQueryBuilder;
 
-    @GetMapping(value = "/titre/")
+    @GetMapping(value = "/simple/")
     @ApiOperation(
             value = "Rechercher une thèse via le titre",
             notes = "Retourne une liste de thèses correspondant à la recherche")
@@ -27,15 +29,16 @@ public class SearchThesesController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public String rechercheSurLeTitre(@RequestParam final String q,
-                                      @RequestParam Optional<Integer> page,
-                                      @RequestParam Optional<Integer> nombre) throws Exception {
+    public String simple(
+            @RequestParam @ApiParam(name="q", value = "chaine à rechercher", example = "technologie") final String q,
+            @RequestParam @ApiParam(name="debut", value = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
+            @RequestParam @ApiParam(name = "nombre", value = "nombre de thèse du lot", example = "10") Optional<Integer> nombre) throws Exception {
         log.info("debut de rechercheSurLeTitre...");
         try {
-            if (page.isPresent() && nombre.isPresent())
-                return searchQueryBuilder.rechercheSurLeTitre(q, page.get(), nombre.get());
+            if (debut.isPresent() && nombre.isPresent())
+                return searchQueryBuilder.simple(q, debut.get(), nombre.get());
             else
-                return searchQueryBuilder.rechercheSurLeTitre(q, 0, 10);
+                return searchQueryBuilder.simple(q, 0, 10);
 
         } catch (Exception e) {
             log.error(e.toString());
@@ -52,7 +55,7 @@ public class SearchThesesController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public String completion(@RequestParam final String q) throws Exception {
+    public List<String> completion(@RequestParam final String q) throws Exception {
         log.info("debut de completion...");
         return searchQueryBuilder.completion(q);
     }

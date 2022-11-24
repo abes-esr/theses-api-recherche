@@ -5,17 +5,18 @@ import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.*;
+import co.elastic.clients.elasticsearch.core.search.FieldSuggester;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.SuggestFuzziness;
+import co.elastic.clients.elasticsearch.core.search.Suggester;
 import co.elastic.clients.json.jackson.JacksonJsonpGenerator;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.fasterxml.jackson.core.JsonFactory;
-
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
-import fr.abes.thesesapirecherche.theses.model.TheseSuggest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -31,9 +32,8 @@ import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
 import java.io.StringWriter;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -87,12 +87,13 @@ public class SearchQueryBuilder {
         return this.client;
     }
 
-    public String rechercheSurLeTitre (String chaine, Integer page, Integer nombre) throws Exception {
+    public String simple(String chaine, Integer debut, Integer nombre) throws Exception {
 
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
-        builderQuery.fields("titres.*");
+        builderQuery.fields("resumes^30","titres.*^30","nnt^15","discipline^15","sujetsRameau^15","sujets^15","auteurs^12","directeurs^2","ecolesDoctorales^5","etabSoutenance^5","oaiSets^5","etabsCotutelle^1","membresJury^1","partenairesRecherche^1","presidentJury^1","rapporteurs^1");
+
         builderQuery.quoteFieldSuffix(".exact");
         Query query = builderQuery.build()._toQuery();
 
@@ -103,7 +104,7 @@ public class SearchQueryBuilder {
                                 .bool(t-> t
                                         .must(query)
                                 ))
-                        .from(page)
+                        .from(debut)
                         .size(nombre),
                 These.class
         );
@@ -130,32 +131,28 @@ public class SearchQueryBuilder {
         return a.map(theseMapper::theseToDto).orElse(null);
     }
 
-    public String completion (String q) throws Exception {
+    public List<String> completion (String q) throws Exception {
 
-        Map<String, FieldSuggester> map = new HashMap<>();
-        map.put("theses-suggestion", FieldSuggester.of(fs -> fs
+        FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
                 .completion(cs -> cs.skipDuplicates(true)
-                        .size(10)
-                        .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("1").transpositions(true).minLength(2).prefixLength(3)))
-                        .field("suggestion")
-                )
-        ));
+                                .size(10)
+                                .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
+                                .field("suggestion")));
 
         Suggester suggester = Suggester.of(s -> s
-                .suggesters(map)
+                .suggesters("suggestion", fieldSuggester)
                 .text(q)
         );
 
-        SearchResponse<TheseSuggest> response = this.getElasticsearchClient().search(s ->
-                        s.index(esIndexName)
-                                .source(SourceConfig.of(sc -> sc.filter(f -> f.includes(List.of("text")))))
-                                .suggest(suggester)
-                , TheseSuggest.class);
+        SearchResponse<Void> response = this.getElasticsearchClient().search(s -> s
+                .index(esIndexName)
+                .suggest(suggester)
+                , Void.class);
 
-        final StringWriter writer = new StringWriter();
-        try (final JacksonJsonpGenerator generator = new JacksonJsonpGenerator(new JsonFactory().createGenerator(writer))) {
-            response.serialize(generator, new JacksonJsonpMapper());
-        }
-        return writer.toString();
+        List<String> listeSuggestions  = new ArrayList<String>();
+
+        response.suggest().entrySet().forEach(a->a.getValue().forEach(s->s.completion().options().forEach(b->listeSuggestions.add(b.text()))));
+
+        return listeSuggestions;
     }
 }
