@@ -55,7 +55,8 @@ public class SearchThesesController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<String> completion(@RequestParam final String q) throws Exception {
+    public List<String> completion(
+            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         log.info("debut de completion...");
         return searchQueryBuilder.completion(q);
     }
