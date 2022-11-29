@@ -1,11 +1,11 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation;
+import co.elastic.clients.elasticsearch.core.search.*;
 import fr.abes.thesesapirecherche.ThesesApiRechercheApplicationTests;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
@@ -42,6 +42,28 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
                     .failed(0)
                     .successful(1)
             )
+    );
+
+    /**
+     * Génération d'un retour de suggestion ElasticSearch contenant 2 personnes
+     */
+    private static final SearchResponse<Void> suggestionResponse = SearchResponse.of(b -> b
+            .aggregations(new HashMap<>())
+            .took(0)
+            .timedOut(false)
+            .hits(h -> h
+                    .total(t -> t.value(0).relation(TotalHitsRelation.Eq))
+                    .hits(List.of())
+            )
+            .shards(s -> s
+                    .total(1)
+                    .failed(0)
+                    .successful(1)
+            )
+            .suggest("personne-suggestion", List.of(SuggestionBuilders.completion().text("Rouss").offset(0).length(1)
+                    .options(List.of(CompletionSuggestOption.of(z -> z.index("personnes").id("098248782").text("Rousseau Erwan")),
+                            CompletionSuggestOption.of(z -> z.index("personnes").id("127566635").text("Rousseau Erwann")))).build()._toSuggestion()
+            ))
     );
 
 
@@ -89,5 +111,20 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
 
     }
 
+    @Test
+    @DisplayName("Conversion d'une suggestion de personnes du format ES vers DTO")
+    void testConversionSuggestionESversDto() {
+        List<SuggestionPersonneResponseDto> results = personneMapper.suggestionListPersonneToDto(suggestionResponse.suggest());
+
+        Assertions.assertEquals(2, results.size());
+        // 1ère suggestion
+        Assertions.assertEquals("098248782", results.get(0).getId());
+        Assertions.assertEquals("Rousseau Erwan", results.get(0).getText());
+
+        // 2ème suggestion
+        Assertions.assertEquals("127566635", results.get(1).getId());
+        Assertions.assertEquals("Rousseau Erwann", results.get(1).getText());
+
+    }
 
 }
