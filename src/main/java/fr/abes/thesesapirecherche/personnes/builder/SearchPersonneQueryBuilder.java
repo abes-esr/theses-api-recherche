@@ -4,10 +4,12 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.*;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
@@ -59,7 +61,7 @@ public class SearchPersonneQueryBuilder {
                         .loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
                         .build();
 
-                RestClient client = RestClient.builder(new HttpHost(esHostname,  Integer.parseInt(esPort), esHttpProtocol)).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                RestClient client = RestClient.builder(new HttpHost(esHostname, Integer.parseInt(esPort), esHttpProtocol)).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                         .setDefaultCredentialsProvider(credentialsProvider)
                         .setSSLContext(sslContext)
                         .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
@@ -69,8 +71,7 @@ public class SearchPersonneQueryBuilder {
                         client, new JacksonJsonpMapper());
 
                 this.client = new ElasticsearchClient(transport);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error(e.toString());
                 throw e;
             }
@@ -92,7 +93,7 @@ public class SearchPersonneQueryBuilder {
         FuzzyQuery prenomQuery = QueryBuilders.fuzzy().field("prenom").value(chaine).build();
 
         // La valeur doit être trouvé dans l'un ou l'autres des champs
-        BoolQuery boolQuery = new BoolQuery.Builder().should(nomQuery._toQuery(),prenomQuery._toQuery()).build();
+        BoolQuery boolQuery = new BoolQuery.Builder().should(nomQuery._toQuery(), prenomQuery._toQuery()).build();
 
         // Boost IdRef
         TermQuery termQuery = QueryBuilders.term().field("has_idref").value(true).build();
@@ -108,12 +109,51 @@ public class SearchPersonneQueryBuilder {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index("personnes")
+                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom","has_idref","theses")))))
                 .query(query)
                 .build();
 
-        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest,Personne.class);
+        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest, Personne.class);
 
         return personneMapper.personnesListToDto(response.hits().hits());
+    }
+
+    /**
+     * Retourne 10 suggestion de personnes à partir de son nom ou prénom
+     *  Les personnes avec un identifiant Idref sont priorisées
+     *
+     * @param q Chaîne de caractère à compléter
+     * @return Une liste de suggestions de personnes au format Dto web
+     * @throws Exception
+     */
+    public List<SuggestionPersonneResponseDto> completion(String q) throws Exception {
+
+        // Définition du contexte pour booster les personnes avec Idref
+        Context catSansIdref = new Context.Builder().category("false").build();
+        Context catAvecIdref = new Context.Builder().category("true").build();
+        CompletionContext contextSansIdref = new CompletionContext.Builder().context(catSansIdref).build();
+        CompletionContext contextAvecIdref = new CompletionContext.Builder().context(catAvecIdref).boost(2.0).build();
+
+        FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
+                .completion(cs ->
+                        cs.skipDuplicates(true)
+                                .size(10)
+                                .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
+                                .field("suggestion")
+                                .contexts("has_idref", List.of(contextSansIdref, contextAvecIdref))));
+
+        Suggester suggester = Suggester.of(s -> s
+                .suggesters("personne-suggestion", fieldSuggester)
+                .text(q)
+        );
+
+        SearchResponse<Void> response = this.getElasticsearchClient().search(s -> s
+                        .index("personnes")
+                        .suggest(suggester)
+                , Void.class);
+
+        return personneMapper.suggestionListPersonneToDto(response.suggest());
+
     }
 
     /**
@@ -130,10 +170,11 @@ public class SearchPersonneQueryBuilder {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index("personnes")
+                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom","has_idref","theses")))))
                 .query(query)
                 .build();
 
-        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest,Personne.class);
+        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest, Personne.class);
 
         if (response.hits().hits().size() != 1) {
             throw new Exception("Person not found");

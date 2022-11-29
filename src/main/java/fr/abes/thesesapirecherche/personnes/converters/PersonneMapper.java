@@ -1,12 +1,16 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
 import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.Suggestion;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Convertisseur de format pour les objets Personne
@@ -59,6 +63,29 @@ public class PersonneMapper {
                 .hasIdref(personne.source().getHasIdref())
                 .theses(theseMapper.personnesToDto(personne.source().getTheses()))
                 .build();
+    }
+
+    /**
+     * Conversion d'une proposition de personne du format ES au format DTO.
+     * @param suggestion CompletionSuggestOption<Void>
+     * @return Une suggestion de personnes au format DTO
+     */
+    public SuggestionPersonneResponseDto suggestionPersonneToDto(
+            CompletionSuggestOption<Void> suggestion) {
+        return SuggestionPersonneResponseDto.builder().text(suggestion.text()).id(suggestion.id())
+                .build();
+    }
+
+    /**
+     * Conversion d'une liste de proposition de personnes du format ES au format DTO.
+     * @param personnes Map<String,List<Suggestion<Void>>>
+     * @return Une liste de suggestion de personnes au format DTO
+     */
+    public List<SuggestionPersonneResponseDto> suggestionListPersonneToDto(
+            Map<String,List<Suggestion<Void>>> personnes) {
+        List<SuggestionPersonneResponseDto> results = new ArrayList<>();
+        personnes.entrySet().forEach(a->a.getValue().forEach(s->s.completion().options().forEach(b->results.add(suggestionPersonneToDto(b)))));
+        return results;
     }
 
 }

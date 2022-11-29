@@ -1,10 +1,12 @@
 package fr.abes.thesesapirecherche.personnes.controller;
 
 import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.exception.ApiException;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,27 @@ public class PersonneController {
     public List<PersonneLiteResponseDto> recherche(@RequestParam final String q) throws Exception {
         log.debug("Rechercher une personne...");
         return searchQueryBuilder.rechercher(q);
+    }
+
+    /**
+     * Proposer l'autocompletion basée sur les noms et prénoms
+     * @param q Chaîne de caractère à compléter
+     * @return Retourne 10 propositions avec une priorité sur les personnes avec un identifiant Idref
+     * @throws Exception
+     */
+    @GetMapping(value = "/completion")
+    @ApiOperation(
+            value = "Proposer l'autocompletion basée sur les noms et prénoms",
+            notes = "Retourne 10 propositions avec une priorité sur les personnes avec un identifiant Idref")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    public List<SuggestionPersonneResponseDto> completion(
+            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
+        log.info("debut de completion...");
+        return searchQueryBuilder.completion(q);
     }
 
     @GetMapping(value = "/rechercher/{id}")
