@@ -48,32 +48,6 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$[?(@.has_idref)]").exists());
     }
 
-    @Test
-    @DisplayName("Rechercher personne avec le booléen SAUF : NOT")
-    @EnableOnIntegrationTest
-    public void rechercherBooleansSaufNot() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20NOT%20Rousseaux"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[?(@.id)]").exists())
-                .andExpect(jsonPath("$[?(@.nom)]").exists())
-                .andExpect(jsonPath("$[?(@.prenom)]").exists())
-                .andExpect(jsonPath("$[?(@.has_idref)]").exists());
-    }
-
-    @Test
-    @DisplayName("Rechercher personne avec le booléen SAUF : -")
-    @EnableOnIntegrationTest
-    public void rechercherBooleansSaufMinus() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20-Rousseaux"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[?(@.id)]").exists())
-                .andExpect(jsonPath("$[?(@.nom)]").exists())
-                .andExpect(jsonPath("$[?(@.prenom)]").exists())
-                .andExpect(jsonPath("$[?(@.has_idref)]").exists());
-    }
-
     /* ----------- */
     /*  Completion */
     /* ----------- */
