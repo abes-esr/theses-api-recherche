@@ -42,7 +42,7 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public List<PersonneLiteResponseDto> recherche(@RequestParam final String q) throws Exception {
-        String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
+        String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : "+decodedQuery);
         return searchQueryBuilder.rechercher(decodedQuery);
     }

@@ -111,7 +111,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le booléen ET : +")
     @EnableOnIntegrationTest
     public void rechercherBooleenEtPlus() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20+Rousseau"))
+        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20+%20Rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
