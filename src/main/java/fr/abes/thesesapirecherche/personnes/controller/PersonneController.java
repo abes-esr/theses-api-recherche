@@ -17,7 +17,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/personne/")
+@RequestMapping("/api/v1/personnes/")
 public class PersonneController {
 
     @Autowired
@@ -30,7 +30,7 @@ public class PersonneController {
      * @return Une liste de personnes correspondant à la recherche
      * @throws ApiException
      */
-    @GetMapping(value = "/rechercher")
+    @GetMapping(value = "/recherche")
     @ApiOperation(
             value = "Rechercher une personne avec un mot",
             notes = "Retourne une liste de personnes correspondant à la recherche")
@@ -65,7 +65,7 @@ public class PersonneController {
         return searchQueryBuilder.completion(q);
     }
 
-    @GetMapping(value = "/rechercher/{id}")
+    @GetMapping(value = "/personne/{id}")
     @ApiOperation(
             value = "Rechercher une personne par son identifiant",
             notes = "Retourne la personne correspondante à la recherche")
