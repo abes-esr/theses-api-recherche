@@ -48,6 +48,19 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$[?(@.has_idref)]").exists());
     }
 
+    @Test
+    @DisplayName("Rechercher personne avec des booléens")
+    @EnableOnIntegrationTest
+    public void rechercherBooleans() throws Exception {
+        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20NOT%20Rousseaux"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[?(@.id)]").exists())
+                .andExpect(jsonPath("$[?(@.nom)]").exists())
+                .andExpect(jsonPath("$[?(@.prenom)]").exists())
+                .andExpect(jsonPath("$[?(@.has_idref)]").exists());
+    }
+
     /* ----------- */
     /*  Completion */
     /* ----------- */

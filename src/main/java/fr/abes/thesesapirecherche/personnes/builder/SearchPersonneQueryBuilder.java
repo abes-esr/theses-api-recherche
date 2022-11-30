@@ -88,18 +88,19 @@ public class SearchPersonneQueryBuilder {
      */
     public List<PersonneLiteResponseDto> rechercher(String chaine) throws Exception {
 
-        // Liste des champs utilisés pour la recherche
-        FuzzyQuery nomQuery = QueryBuilders.fuzzy().field("nom").value(chaine).build();
-        FuzzyQuery prenomQuery = QueryBuilders.fuzzy().field("prenom").value(chaine).build();
+        QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
+        builderQuery.query(chaine);
+        builderQuery.defaultOperator(Operator.And);
+        builderQuery.fields(List.of("nom","prenom"));
 
-        // La valeur doit être trouvé dans l'un ou l'autres des champs
-        BoolQuery boolQuery = new BoolQuery.Builder().should(nomQuery._toQuery(), prenomQuery._toQuery()).build();
+        builderQuery.quoteFieldSuffix(".exact");
+        Query queryString = builderQuery.build()._toQuery();
 
         // Boost IdRef
         TermQuery termQuery = QueryBuilders.term().field("has_idref").value(true).build();
         FunctionScore functionScore = new FunctionScore.Builder().filter(termQuery._toQuery()).weight(360.0).build();
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
-                .query(boolQuery._toQuery())
+                .query(queryString)
                 .functions(List.of(functionScore))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
