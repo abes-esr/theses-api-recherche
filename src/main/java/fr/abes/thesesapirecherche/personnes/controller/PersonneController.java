@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -40,8 +42,9 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public List<PersonneLiteResponseDto> recherche(@RequestParam final String q) throws Exception {
-        log.debug("Rechercher une personne...");
-        return searchQueryBuilder.rechercher(q);
+        String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
+        log.debug("Rechercher une personne... : "+decodedQuery);
+        return searchQueryBuilder.rechercher(decodedQuery);
     }
 
     /**
@@ -61,8 +64,9 @@ public class PersonneController {
     })
     public List<SuggestionPersonneResponseDto> completion(
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
+        String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(q);
+        return searchQueryBuilder.completion(decodedQuery);
     }
 
     @GetMapping(value = "/personne/{id}")
