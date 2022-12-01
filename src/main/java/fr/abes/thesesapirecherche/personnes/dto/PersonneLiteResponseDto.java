@@ -1,7 +1,6 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.abes.thesesapirecherche.theses.dto.PersonnesTheseResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

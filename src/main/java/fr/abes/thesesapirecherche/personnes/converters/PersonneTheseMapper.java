@@ -1,6 +1,6 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
-import fr.abes.thesesapirecherche.theses.dto.PersonnesTheseResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.PersonnesTheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
 import java.util.ArrayList;
