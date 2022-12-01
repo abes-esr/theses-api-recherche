@@ -91,7 +91,7 @@ public class SearchPersonneQueryBuilder {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
-        builderQuery.fields(List.of("nom","prenom"));
+        builderQuery.fields(List.of("nom","prenom","nom_complet","nom_complet.exact"));
 
         builderQuery.quoteFieldSuffix(".exact");
         Query queryString = builderQuery.build()._toQuery();
