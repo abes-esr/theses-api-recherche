@@ -22,7 +22,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherExpressionExacteNomPrenom() throws Exception {
         mockMvc.perform(get("/api/v1/personnes/recherche/?q=%2522Erwan%2520Rousseau%2522"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(10)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
@@ -36,7 +36,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherExpressionExactePrenomNom() throws Exception {
         mockMvc.perform(get("/api/v1/personnes/recherche/?q=%2522Rousseau%2520Erwan%2520%2522"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(10)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
@@ -56,7 +56,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherTroncatureArriereWildchar() throws Exception {
         mockMvc.perform(get("/api/v1/personnes/recherche/?q=Rouss*"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(8)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
