@@ -4,17 +4,19 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.FieldSuggester;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.core.search.SuggestFuzziness;
-import co.elastic.clients.elasticsearch.core.search.Suggester;
+import co.elastic.clients.elasticsearch.core.search.*;
 import co.elastic.clients.json.jackson.JacksonJsonpGenerator;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import com.fasterxml.jackson.core.JsonFactory;
+import fr.abes.thesesapirecherche.personnes.model.Personne;
+import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
+import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Component;
 import javax.net.ssl.SSLContext;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,6 +61,8 @@ public class SearchQueryBuilder {
     private String esIndexName = "theses-sample-2";
 
     private final TheseMapper theseMapper = new TheseMapper();
+    private final TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
+
     private ElasticsearchClient getElasticsearchClient() throws Exception {
         if (this.client == null) {
             try {
@@ -87,7 +92,7 @@ public class SearchQueryBuilder {
         return this.client;
     }
 
-    public String simple(String chaine, Integer debut, Integer nombre) throws Exception {
+    public ResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre) throws Exception {
 
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
@@ -105,15 +110,21 @@ public class SearchQueryBuilder {
                                         .must(query)
                                 ))
                         .from(debut)
-                        .size(nombre),
+                        .size(nombre)
+                        .trackTotalHits(t->t.enabled(Boolean.TRUE)),
                 These.class
         );
 
-        final StringWriter writer = new StringWriter();
-        try (final JacksonJsonpGenerator generator = new JacksonJsonpGenerator(new JsonFactory().createGenerator(writer))) {
-            response.serialize(generator, new JacksonJsonpMapper());
+        ResponseTheseLiteDto res = new ResponseTheseLiteDto();
+        List<TheseLiteResponseDto> liste = new ArrayList<>();
+        Iterator<Hit<These>> iterator = response.hits().hits().iterator();
+        while (iterator.hasNext()) {
+            Hit<These> theseHit = iterator.next();
+            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
-        return writer.toString();
+        res.setTheses(liste);
+        res.setTotalHits(response.hits().total().value());
+        return res;
     }
 
     public TheseResponseDto rechercheSurId(String nnt) throws Exception {

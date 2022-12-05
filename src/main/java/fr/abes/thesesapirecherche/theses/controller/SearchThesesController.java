@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
+import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -29,7 +30,7 @@ public class SearchThesesController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public String simple(
+    public ResponseTheseLiteDto simple(
             @RequestParam @ApiParam(name = "q", value = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @ApiParam(name = "debut", value = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
             @RequestParam @ApiParam(name = "nombre", value = "nombre de thèse du lot", example = "10") Optional<Integer> nombre) throws Exception {
