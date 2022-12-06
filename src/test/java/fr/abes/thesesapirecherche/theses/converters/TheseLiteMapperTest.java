@@ -22,6 +22,7 @@ public class TheseLiteMapperTest {
     These these2 = new These();
     PersonneThese pers1 = new PersonneThese();
     PersonneThese pers2 = new PersonneThese();
+    PersonneThese pers3 = new PersonneThese();
     SearchResponse<These> searchResponse;
 
     @BeforeEach
@@ -29,24 +30,34 @@ public class TheseLiteMapperTest {
 
         // these 1
         these1.setTitres(new HashMap<>() {{
-            put("fr", "titre en fr");
-            put("en", "title in en");
+            put("fr", "Avancées en chimie de coordination des phosphines nitroaromatiques : synthèse et chimie supramoléculaire de dérivés alkyl - aryl-carbo-benzènes");
+            put("en", "Advances in the coordination chemistry of nitroaromatic phosphines : synthesis and supramolecular chemistry of alkyl/aryl carbo-benzene derivatives");
         }});
-        pers1.setNom("bukowski");
-        pers1.setPrenom("charles");
-        pers1.setPpn("111");
-        pers2.setNom("dumas");
-        pers2.setPrenom("alex");
-        pers2.setPpn("222");
+        pers1.setNom("Zhu");
+        pers1.setPrenom("Chongwei");
+        pers1.setPpn("232771227");
+        pers2.setPpn("196425964");
+        pers2.setPrenom("Valérie");
+        pers2.setNom("Maraval");
+        pers3.setPpn("07227817X");
+        pers3.setNom("Chauvin");
+        pers3.setPrenom("Rémi");
         List<PersonneThese> auteurs = new ArrayList<>();
+        List<PersonneThese> directeurs = new ArrayList<>();
         auteurs.add(pers1);
-        auteurs.add(pers2);
+        directeurs.add(pers2);
+        directeurs.add(pers3);
+
         these1.setAuteurs(auteurs);
+        these1.setDirecteurs(directeurs);
+        these1.setNnt("2017TOU30281");
+        these1.setCodeEtab("TOU3");
+        these1.setDiscipline("Chimie organométallique de coordination");
 
         // these 2
         these2.setTitres(new HashMap<>() {{
-            put("fr", "le titre 2");
-            put("en", "title 2");
+            put("fr", "Propriétés structurales et de transport de pérovskites doubles Sr2FeMoO6 élaborées par chimie douce");
+            put("en", "Structural and transport properties of Sr2FeMoO6 double perovskites prepared by chimie douce");
         }});
 
         searchResponse = SearchResponse.of(b -> b
@@ -76,8 +87,28 @@ public class TheseLiteMapperTest {
 
         TheseLiteResponseDto thesesLite = theseLiteMapper.theseLiteToDto(searchResponse.hits().hits().get(0));
 
-        Assertions.assertEquals("titre en fr", thesesLite.getTitres().get("fr"));
-        Assertions.assertEquals("title in en", thesesLite.getTitres().get("en"));
+        Assertions.assertEquals("Avancées en chimie de coordination des phosphines nitroaromatiques : synthèse et chimie supramoléculaire de dérivés alkyl - aryl-carbo-benzènes",
+                thesesLite.getTitres().get("fr"));
+        Assertions.assertEquals("Advances in the coordination chemistry of nitroaromatic phosphines : synthesis and supramolecular chemistry of alkyl/aryl carbo-benzene derivatives",
+                thesesLite.getTitres().get("en"));
+        Assertions.assertEquals("Zhu",
+                thesesLite.getAuteurs().get(0).getNom());
+        Assertions.assertEquals("Maraval",
+                thesesLite.getDirecteurs().get(0).getNom());
+        Assertions.assertEquals("Chauvin",
+                thesesLite.getDirecteurs().get(1).getNom());
+        Assertions.assertEquals("2017TOU30281",
+                thesesLite.getNnt());
+        Assertions.assertEquals("TOU3",
+                thesesLite.getCodeEtab());
+        Assertions.assertEquals("Chimie organométallique de coordination",
+                thesesLite.getDiscipline());
+
+
+
+
+
+
 
     }
 }

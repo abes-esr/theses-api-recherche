@@ -12,6 +12,12 @@ public class TheseLiteMapper {
     public TheseLiteResponseDto theseLiteToDto(Hit<These> theseHit) {
         return TheseLiteResponseDto.builder()
                 .titres(theseHit.source().getTitres())
+                .dateSoutenance(theseHit.source().getDateSoutenance())
+                .auteurs(theseHit.source().getAuteurs())
+                .directeurs(theseHit.source().getDirecteurs())
+                .nnt(theseHit.source().getNnt())
+                .codeEtab(theseHit.source().getCodeEtab())
+                .discipline(theseHit.source().getDiscipline())
                 .build();
     }
 }
