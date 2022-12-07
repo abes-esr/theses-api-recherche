@@ -20,7 +20,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec l'expression exacte : nom prénom")
     @EnableOnIntegrationTest
     public void rechercherExpressionExacteNomPrenom() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=%2522Erwan%2520Rousseau%2522"))
+        mockMvc.perform(get("/api/v1/personnes/recherche/?q=%22Erwan%20Rousseau%22"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
@@ -34,7 +34,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec l'expression exacte : prénom nom")
     @EnableOnIntegrationTest
     public void rechercherExpressionExactePrenomNom() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=%2522Rousseau%2520Erwan%2520%2522"))
+        mockMvc.perform(get("/api/v1/personnes/recherche/?q=%22Rousseau%20Erwan%22"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
