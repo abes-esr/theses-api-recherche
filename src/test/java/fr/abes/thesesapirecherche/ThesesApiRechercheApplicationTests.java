@@ -15,7 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-@SpringBootTest(classes = {ThesesApiRechercheApplication.class, HandlerMappingIntrospector.class, SpringSecurityConfig.class})
+@SpringBootTest(classes = {ThesesApiRechercheApplication.class, HandlerMappingIntrospector.class, SpringSecurityConfig.class}
+// La suite suivante est à décommenter pour exécuter les tests d'intégrations
+//        ,properties = { "spring.profiles.active=test-es" }
+)
 public class ThesesApiRechercheApplicationTests {
 
     @Autowired
