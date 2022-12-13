@@ -55,7 +55,7 @@ public class SearchQueryBuilder {
 
     private ElasticsearchClient client;
 
-    private String esIndexName = "theses-sample";
+    private String esIndexName = "theses-sample-2";
 
     private final TheseMapper theseMapper = new TheseMapper();
     private ElasticsearchClient getElasticsearchClient() throws Exception {
