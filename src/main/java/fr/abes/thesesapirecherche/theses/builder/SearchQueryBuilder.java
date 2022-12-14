@@ -54,8 +54,9 @@ public class SearchQueryBuilder {
     private String esPassword;
 
     private ElasticsearchClient client;
-
-    private String esIndexName = "theses-sample-2";
+    
+    @Value("${es.indexname}")
+    private String esIndexName;
 
     private final TheseMapper theseMapper = new TheseMapper();
     private ElasticsearchClient getElasticsearchClient() throws Exception {
