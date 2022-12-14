@@ -54,6 +54,7 @@ public class SearchQueryBuilder {
     private String esPassword;
 
     private ElasticsearchClient client;
+    
     @Value("${es.indexname}")
     private String esIndexName;
 
