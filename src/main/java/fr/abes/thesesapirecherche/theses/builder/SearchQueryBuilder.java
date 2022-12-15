@@ -55,7 +55,7 @@ public class SearchQueryBuilder {
 
     private ElasticsearchClient client;
     
-    @Value("${es.indexname}")
+    @Value("${es.theses.indexname}")
     private String esIndexName;
 
     private final TheseMapper theseMapper = new TheseMapper();
