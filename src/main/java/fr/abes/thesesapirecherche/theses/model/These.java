@@ -13,6 +13,7 @@ import java.util.Map;
 @Setter
 public class These {
 
+    String cas;
     String titrePrincipal;
     String nnt;
     String accessible;
@@ -28,17 +29,25 @@ public class These {
     Map<String, String> titres;
     Map<String, String> resumes;
     Organisme etabSoutenance;
-    List<Organisme> etabCotutelle;
+    String etabSoutenanceN;
     List<Organisme> partenairesRecherche;
+    List<String> partenairesRechercheN;
     List<String> sujetsRameau;
     List<PersonneThese> membresJury;
+    List<String> membresJuryNP;
     List<PersonneThese> rapporteurs;
+    List<String> rapporteursNP;
     List<PersonneThese> auteurs;
+    List<String> auteursNP;
     List<PersonneThese> directeurs;
-    String cas;
+    List<String> directeursNP;
+
     List<Organisme> ecolesDoctorales;
+    List<String> ecolesDoctoralesN;
     List<Organisme> etabsCotutelle;
+    List<String> etabsCotutelleN;
     PersonneThese presidentJury;
+    String presidentJuryNP;
     String theseTravaux;
 
     public String getDateSoutenance() {
