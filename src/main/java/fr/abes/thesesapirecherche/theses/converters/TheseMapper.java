@@ -19,7 +19,7 @@ public class TheseMapper {
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
                 .etabSoutenance(organismeMapper.organismeToDto(these.getEtabSoutenance()))
-                .etabCotutelle(organismeMapper.organismesToDto(these.getEtabCotutelle()))
+                .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
                 .sujetsRameau(these.getSujetsRameau())
                 .membresJury(personneMapper.personnesToDto(these.getMembresJury()))

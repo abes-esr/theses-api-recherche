@@ -8,4 +8,5 @@ import lombok.Setter;
 public class Organisme {
     String ppn;
     String nom;
+    String type;
 }
