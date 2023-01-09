@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.theses.model;
 
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
