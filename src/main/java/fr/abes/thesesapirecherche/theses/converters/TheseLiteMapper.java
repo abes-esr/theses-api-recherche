@@ -12,6 +12,8 @@ public class TheseLiteMapper {
     public TheseLiteResponseDto theseLiteToDto(Hit<These> theseHit) {
         return TheseLiteResponseDto.builder()
                 .titres(theseHit.source().getTitres())
+                .titrePrincipal(theseHit.source().getTitrePrincipal())
+                .etabSoutenanceN(theseHit.source().getEtabSoutenanceN())
                 .dateSoutenance(theseHit.source().getDateSoutenance())
                 .auteurs(theseHit.source().getAuteurs())
                 .directeurs(theseHit.source().getDirecteurs())
