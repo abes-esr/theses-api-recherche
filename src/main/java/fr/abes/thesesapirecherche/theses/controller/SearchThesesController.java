@@ -33,15 +33,13 @@ public class SearchThesesController {
     public ResponseTheseLiteDto simple(
             @RequestParam @ApiParam(name = "q", value = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @ApiParam(name = "debut", value = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
-            @RequestParam @ApiParam(name = "nombre", value = "nombre de thèse du lot", example = "10") Optional<Integer> nombre) throws Exception {
+            @RequestParam @ApiParam(name = "nombre", value = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
+        @RequestParam @ApiParam(name = "tri", value = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri
+            ) throws Exception {
         log.info("debut de rechercheSurLeTitre...");
         try {
             String chaine = remplaceEtOuSauf(q);
-            if (debut.isPresent() && nombre.isPresent())
-                return searchQueryBuilder.simple(chaine, debut.get(), nombre.get());
-            else
-                return searchQueryBuilder.simple(chaine, 0, 10);
-
+            return searchQueryBuilder.simple(chaine, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
