@@ -101,6 +101,7 @@ public class ExceptionControllerHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleMappingException(Exception ex) {
         log.error(ex.toString());
+        ex.printStackTrace();
         return buildResponseEntity(new ApiExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 }

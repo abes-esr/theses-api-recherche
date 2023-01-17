@@ -15,11 +15,9 @@ import java.util.Map;
 public class TheseLiteResponseDto {
     String titrePrincipal;
     String etabSoutenanceN;
-    Map<String, String> titres;
     String dateSoutenance;
     List<PersonneThese> auteurs;
     List<PersonneThese> directeurs;
     String nnt;
-    String codeEtab;
     String discipline;
 }

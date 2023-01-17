@@ -1,6 +1,8 @@
 package fr.abes.thesesapirecherche.theses.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOptions;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
@@ -93,7 +95,7 @@ public class SearchQueryBuilder {
         return this.client;
     }
 
-    public ResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre) throws Exception {
+    public ResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre, String tri) throws Exception {
 
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
@@ -112,6 +114,7 @@ public class SearchQueryBuilder {
                                 ))
                         .from(debut)
                         .size(nombre)
+                        .sort(addTri(tri))
                         .trackTotalHits(t->t.enabled(Boolean.TRUE)),
                 These.class
         );
@@ -166,5 +169,23 @@ public class SearchQueryBuilder {
         response.suggest().entrySet().forEach(a->a.getValue().forEach(s->s.completion().options().forEach(b->listeSuggestions.add(b.text()))));
 
         return listeSuggestions;
+    }
+
+    private List<SortOptions> addTri(String tri) {
+        List<SortOptions> list = new ArrayList<>();
+        if(!tri.equals("")) {
+            SortOptions sort = switch (tri) {
+                case "dateAsc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Asc)).build();
+                case "dateDesc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Desc)).build();
+                case "auteursAsc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.tri").order(SortOrder.Asc)).build();
+                case "auteursDesc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.tri").order(SortOrder.Desc)).build();
+                case "disciplineAsc" -> new SortOptions.Builder().field(f -> f.field("discipline.tri").order(SortOrder.Asc)).build();
+                case "disciplineDesc" -> new SortOptions.Builder().field(f -> f.field("discipline.tri").order(SortOrder.Desc)).build();
+                default -> null;
+            };
+            if(sort != null)
+                list.add(sort);
+        }
+        return list;
     }
 }
