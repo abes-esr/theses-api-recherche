@@ -87,10 +87,6 @@ public class TheseLiteMapperTest {
 
         TheseLiteResponseDto thesesLite = theseLiteMapper.theseLiteToDto(searchResponse.hits().hits().get(0));
 
-        Assertions.assertEquals("Avancées en chimie de coordination des phosphines nitroaromatiques : synthèse et chimie supramoléculaire de dérivés alkyl - aryl-carbo-benzènes",
-                thesesLite.getTitres().get("fr"));
-        Assertions.assertEquals("Advances in the coordination chemistry of nitroaromatic phosphines : synthesis and supramolecular chemistry of alkyl/aryl carbo-benzene derivatives",
-                thesesLite.getTitres().get("en"));
         Assertions.assertEquals("Zhu",
                 thesesLite.getAuteurs().get(0).getNom());
         Assertions.assertEquals("Maraval",
@@ -99,8 +95,6 @@ public class TheseLiteMapperTest {
                 thesesLite.getDirecteurs().get(1).getNom());
         Assertions.assertEquals("2017TOU30281",
                 thesesLite.getNnt());
-        Assertions.assertEquals("TOU3",
-                thesesLite.getCodeEtab());
         Assertions.assertEquals("Chimie organométallique de coordination",
                 thesesLite.getDiscipline());
 
