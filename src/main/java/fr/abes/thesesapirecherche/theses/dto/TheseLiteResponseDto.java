@@ -13,7 +13,8 @@ import java.util.Map;
 @Getter
 @Setter
 public class TheseLiteResponseDto {
-
+    String titrePrincipal;
+    String etabSoutenanceN;
     Map<String, String> titres;
     String dateSoutenance;
     List<PersonneThese> auteurs;
