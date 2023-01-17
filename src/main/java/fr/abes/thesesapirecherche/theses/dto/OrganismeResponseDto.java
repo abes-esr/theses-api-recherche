@@ -10,4 +10,5 @@ import lombok.Setter;
 public class OrganismeResponseDto {
     private String ppn;
     private String nom;
+    private String type;
 }

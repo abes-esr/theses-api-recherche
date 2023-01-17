@@ -11,6 +11,7 @@ public class OrganismeMapper {
         return OrganismeResponseDto.builder()
                 .ppn(these.getPpn())
                 .nom(these.getNom())
+                .type(these.getType())
                 .build();
     }
 
