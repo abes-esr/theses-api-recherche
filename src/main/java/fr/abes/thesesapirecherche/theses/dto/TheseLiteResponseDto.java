@@ -20,4 +20,5 @@ public class TheseLiteResponseDto {
     List<PersonneThese> directeurs;
     String nnt;
     String discipline;
+    String status;
 }
