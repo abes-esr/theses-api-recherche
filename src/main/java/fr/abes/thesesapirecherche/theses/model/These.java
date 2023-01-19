@@ -25,7 +25,8 @@ public class These {
     Date dateFinEmbargo;
     List<String> langues;
     List<String> oaiSets;
-    Map<String, String> sujets;
+    List<String> sujetsFR;
+    List<String> sujetsEN;
     String discipline;
     Map<String, String> titres;
     Map<String, String> resumes;

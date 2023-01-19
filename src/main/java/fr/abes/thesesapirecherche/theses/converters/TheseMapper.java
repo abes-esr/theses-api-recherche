@@ -22,6 +22,8 @@ public class TheseMapper {
                 .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
                 .sujetsRameau(these.getSujetsRameau())
+                .sujetsFR(these.getSujetsFR())
+                .sujetsEN(these.getSujetsEN())
                 .membresJury(personneMapper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
                 .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
@@ -29,6 +31,8 @@ public class TheseMapper {
                 .cas(these.getCas())
                 .ecolesDoctorales(organismeMapper.organismesToDto(these.getEcolesDoctorales()))
                 .presidentJury(personneMapper.personneToDto(these.getPresidentJury()))
+                .source(these.getSource())
+                .status(these.getStatus())
                 .build();
     }
 

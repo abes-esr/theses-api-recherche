@@ -18,6 +18,7 @@ public class TheseLiteMapper {
                 .directeurs(theseHit.source().getDirecteurs())
                 .nnt(theseHit.source().getNnt())
                 .discipline(theseHit.source().getDiscipline())
+                .status(theseHit.source().getStatus())
                 .build();
     }
 }
