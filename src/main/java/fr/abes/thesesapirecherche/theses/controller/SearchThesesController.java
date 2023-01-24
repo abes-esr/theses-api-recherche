@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -92,4 +93,16 @@ public class SearchThesesController {
         log.info("debut de completion...");
         return searchQueryBuilder.completion(q);
     }
+
+    @GetMapping(value = "/facets/")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    @ApiOperation(
+            value = "Retourne une liste de facets/filtres pour une recherche simple")
+    public Map<String, Long> facets(@RequestParam final String q) throws Exception {
+        return searchQueryBuilder.facets(q);
+     }
 }
