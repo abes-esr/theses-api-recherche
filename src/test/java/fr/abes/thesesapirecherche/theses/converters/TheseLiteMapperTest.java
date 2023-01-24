@@ -87,6 +87,7 @@ public class TheseLiteMapperTest {
 
         TheseLiteResponseDto thesesLite = theseLiteMapper.theseLiteToDto(searchResponse.hits().hits().get(0));
 
+        Assertions.assertEquals("127566635", thesesLite.getId());
         Assertions.assertEquals("Zhu",
                 thesesLite.getAuteurs().get(0).getNom());
         Assertions.assertEquals("Maraval",
@@ -97,12 +98,5 @@ public class TheseLiteMapperTest {
                 thesesLite.getNnt());
         Assertions.assertEquals("Chimie organométallique de coordination",
                 thesesLite.getDiscipline());
-
-
-
-
-
-
-
     }
 }
