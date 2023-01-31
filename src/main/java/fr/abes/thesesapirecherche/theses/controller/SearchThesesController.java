@@ -35,12 +35,13 @@ public class SearchThesesController {
             @RequestParam @ApiParam(name = "q", value = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @ApiParam(name = "debut", value = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
             @RequestParam @ApiParam(name = "nombre", value = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
-        @RequestParam @ApiParam(name = "tri", value = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri
+        @RequestParam @ApiParam(name = "tri", value = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
+            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "soutenue, accessible") Optional<String> filtres
             ) throws Exception {
         log.info("debut de rechercheSurLeTitre...");
         try {
             String chaine = remplaceEtOuSauf(q);
-            return searchQueryBuilder.simple(chaine, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
+            return searchQueryBuilder.simple(chaine, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;

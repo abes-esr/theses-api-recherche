@@ -7,9 +7,7 @@ import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.aggregations.MultiBucketBase;
 import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
 import co.elastic.clients.elasticsearch._types.aggregations.TermsAggregation;
-import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.*;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
@@ -97,18 +95,18 @@ public class SearchQueryBuilder {
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
         builderQuery.fields("resumes.*^30","titres.*^30","nnt^15","discipline^15","sujetsRameau^15","sujets^15","auteursNP^12","directeursNP^2","ecolesDoctoralesN^5","etabSoutenanceN^5","oaiSets^5","etabsCotutelleN^1","membresJuryNP^1","partenairesRechercheN^1","presidentJuryNP^1","rapporteurs^1");
-
         builderQuery.quoteFieldSuffix(".exact");
 
         return builderQuery.build()._toQuery();
     }
-    public ResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre, String tri) throws Exception {
+    public ResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         SearchResponse<These> response = this.getElasticsearchClient().search(
                 s -> s
                         .index(esIndexName)
                         .query(q->q
                                 .bool(t-> t
                                         .must(buildQuery(chaine))
+                                        .filter(addFilters(filtres))
                                 ))
                         .from(debut)
                         .size(nombre)
@@ -217,5 +215,28 @@ public class SearchQueryBuilder {
                 list.add(sort);
         }
         return list;
+    }
+
+    private List<Query> addFilters(String f) {
+        List<Query> listeFiltres = new ArrayList<>();
+
+        if(f.contains("soutenue")) {
+            listeFiltres.add(buildFilter("status", "soutenue"));
+        }
+
+        if(f.contains("enCours")) {
+            listeFiltres.add(buildFilter("status", "enCours"));
+        }
+
+        if(f.contains("accessible")) {
+            listeFiltres.add(buildFilter("accessible", "oui"));
+        }
+
+        return listeFiltres;
+    }
+
+    private Query buildFilter(String field, String value) {
+        TermQuery termQuery = QueryBuilders.term().field(field).value(value).build();
+        return new Query.Builder().term(termQuery).build();
     }
 }
