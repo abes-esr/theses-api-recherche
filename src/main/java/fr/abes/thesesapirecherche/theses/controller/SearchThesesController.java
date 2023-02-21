@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/recherche/")
+@RequestMapping("/api/v1/recherche-java/")
 public class SearchThesesController {
 
     @Autowired
@@ -103,7 +103,7 @@ public class SearchThesesController {
     })
     @ApiOperation(
             value = "Retourne une liste de facets/filtres pour une recherche simple")
-    public Map<String, Long> facets(@RequestParam final String q) throws Exception {
+    public Map<String, Map<String, Long>> facets(@RequestParam final String q) throws Exception {
         return searchQueryBuilder.facets(q);
      }
 }

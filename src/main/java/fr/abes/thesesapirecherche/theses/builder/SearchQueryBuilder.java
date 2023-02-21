@@ -58,6 +58,9 @@ public class SearchQueryBuilder {
     @Value("${es.theses.indexname}")
     private String esIndexName;
 
+    @Value("#{${theses.listFacets}}")
+    private Map<String, String> listFacets;
+
     private final TheseMapper theseMapper = new TheseMapper();
     private final TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
 
@@ -127,19 +130,17 @@ public class SearchQueryBuilder {
         return res;
     }
 
-    public  Map<String, Long>  facets(String chaine) throws Exception {
+    public  Map<String, Map<String, Long>>  facets(String chaine) throws Exception {
         Map<String, Aggregation> map = new HashMap<>();
 
-        //Agg type thèse (Soutenue ou non + accessible)
-        Aggregation aggregationAccessible = new Aggregation.Builder()
-                .terms(new TermsAggregation.Builder().field("accessible").build())
-                .build();
-        Aggregation aggregationStatus = new Aggregation.Builder()
-                .terms(new TermsAggregation.Builder().field("status").build())
-                .build();
 
-        map.put("status", aggregationStatus);
-        map.put("accessible", aggregationAccessible);
+        listFacets.forEach((k, v) -> {
+            Aggregation agg = new Aggregation.Builder()
+                    .terms(new TermsAggregation.Builder().field(v).build())
+                    .build();
+
+            map.put(v, agg);
+        });
 
         SearchResponse<Void> response = this.getElasticsearchClient().search(
                 s -> s
@@ -152,9 +153,14 @@ public class SearchQueryBuilder {
                 Void.class
         );
 
-        Map<String, Long> facets = new HashMap<>();
-        response.aggregations().get("accessible").sterms().buckets().array().forEach(a -> {if(a.key().equals("oui")) facets.put("accessible", a.docCount());});
-        response.aggregations().get("status").sterms().buckets().array().forEach(a -> facets.put(a.key(), a.docCount()));
+        Map<String, Map<String, Long>> facets = new HashMap<>();
+
+
+        listFacets.forEach((k, v) -> {
+            Map<String, Long> subFacet = new HashMap<>();
+            response.aggregations().get(v).sterms().buckets().array().forEach(a -> subFacet.put(a.key(), a.docCount()));
+            facets.put(k, subFacet);
+        });
 
         return facets;
     }
