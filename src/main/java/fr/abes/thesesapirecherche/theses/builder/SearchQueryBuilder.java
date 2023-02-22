@@ -15,6 +15,7 @@ import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
+import fr.abes.thesesapirecherche.theses.dto.Facet;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
@@ -60,6 +61,9 @@ public class SearchQueryBuilder {
 
     @Value("#{${theses.listFacets}}")
     private Map<String, String> listFacets;
+
+    @Value("#{${theses.subFacets}}")
+    private Map<String, String> subFacets;
 
     private final TheseMapper theseMapper = new TheseMapper();
     private final TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
@@ -130,7 +134,7 @@ public class SearchQueryBuilder {
         return res;
     }
 
-    public  Map<String, Map<String, Long>>  facets(String chaine) throws Exception {
+    public  List<Facet> facets(String chaine) throws Exception {
         Map<String, Aggregation> map = new HashMap<>();
 
 
@@ -153,13 +157,31 @@ public class SearchQueryBuilder {
                 Void.class
         );
 
-        Map<String, Map<String, Long>> facets = new HashMap<>();
-
+        List<Facet> facets = new ArrayList<>();
 
         listFacets.forEach((k, v) -> {
-            Map<String, Long> subFacet = new HashMap<>();
-            response.aggregations().get(v).sterms().buckets().array().forEach(a -> subFacet.put(a.key(), a.docCount()));
-            facets.put(k, subFacet);
+            Facet f = new Facet();
+            Map<String, Long> facet = new HashMap<>();
+            //Cas particulier pour la facette "accessible"
+            if(v.equals("accessible")){
+                response.aggregations().get(v).sterms().buckets().array().forEach(a ->
+                {
+                    if(a.key().equals("oui"))
+                        facet.put("accessible", a.docCount());
+                });
+            } else {
+                response.aggregations().get(v).sterms().buckets().array().forEach(a -> facet.put(a.key(), a.docCount()));
+            }
+            f.setName(k);
+            f.setData(facet);
+            if(subFacets.containsValue(v)){
+                f.setParentName(subFacets
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> v.equals(entry.getValue()))
+                        .map(Map.Entry::getKey).findFirst().get());
+            }
+            facets.add(f);
         });
 
         return facets;
@@ -211,10 +233,10 @@ public class SearchQueryBuilder {
             SortOptions sort = switch (tri) {
                 case "dateAsc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Asc)).build();
                 case "dateDesc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Desc)).build();
-                case "auteursAsc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.tri").order(SortOrder.Asc)).build();
-                case "auteursDesc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.tri").order(SortOrder.Desc)).build();
-                case "disciplineAsc" -> new SortOptions.Builder().field(f -> f.field("discipline.tri").order(SortOrder.Asc)).build();
-                case "disciplineDesc" -> new SortOptions.Builder().field(f -> f.field("discipline.tri").order(SortOrder.Desc)).build();
+                case "auteursAsc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Asc)).build();
+                case "auteursDesc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Desc)).build();
+                case "disciplineAsc" -> new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Asc)).build();
+                case "disciplineDesc" -> new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Desc)).build();
                 default -> null;
             };
             if(sort != null)

@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
+import fr.abes.thesesapirecherche.theses.dto.Facet;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -40,46 +41,13 @@ public class SearchThesesController {
             ) throws Exception {
         log.info("debut de rechercheSurLeTitre...");
         try {
-            String chaine = remplaceEtOuSauf(q);
-            return searchQueryBuilder.simple(chaine, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+            return searchQueryBuilder.simple(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
         }
     }
 
-    public String remplaceEtOuSauf(String q) {
-        q = remplacerMotsCles(q, q,"ET", "AND", 0);
-        q = remplacerMotsCles(q, q,"OU", "OR", 0);
-        q = remplacerMotsCles(q, q,"SAUF", "NOT", 0);
-
-        return q;
-    }
-
-    /**
-     * Remplace les motCle par les nouveauMotCle dans q, s'ils ne sont pas entre guillemets
-     */
-    private static String remplacerMotsCles(String q, String ref, String motCle, String nouveauMotCle, int limit) {
-        limit++;
-        if (limit>1000) {
-            return q;
-        }
-        int index = q.indexOf(" " + motCle + " ");
-        if (index >= 0) {
-            int indexRef = index + (ref.length() - q.length());
-            long nombreGuillemets = ref.substring(0, indexRef).chars().filter(s -> s == '\"').count();
-            if (nombreGuillemets % 2 == 0) {
-                q = q.substring(0, index) + " " + nouveauMotCle + " " + q.substring(index + motCle.length() + 2);
-                return q.substring(0, index + 2) +
-                        remplacerMotsCles(q.substring(index + 2), ref, motCle, nouveauMotCle, limit);
-            } else {
-                int indexProchainGuillemets = q.substring(index).indexOf("\"") + index + 1;
-                return q.substring(0, indexProchainGuillemets) +
-                 remplacerMotsCles(q.substring(indexProchainGuillemets), ref, motCle, nouveauMotCle, limit);
-            }
-        }
-        return q;
-    }
     @GetMapping(value = "/completion/")
     @ApiOperation(
             value = "Proposer l'automcompletion basée sur les mots clés libres, les mots clés rameau et la discipline",
@@ -103,7 +71,7 @@ public class SearchThesesController {
     })
     @ApiOperation(
             value = "Retourne une liste de facets/filtres pour une recherche simple")
-    public Map<String, Map<String, Long>> facets(@RequestParam final String q) throws Exception {
+    public List<Facet> facets(@RequestParam final String q) throws Exception {
         return searchQueryBuilder.facets(q);
      }
 }
