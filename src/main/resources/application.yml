@@ -1,0 +1,18 @@
+facets:
+  main:
+    - libelle: Statut
+      champ: status
+      searchBar: false
+    - libelle: Etablissements
+      champ: etabSoutenanceN.exact
+      searchBar: true
+    - libelle: Discipline
+      champ: discipline.exact
+      searchBar: true
+    - libelle: Langues
+      champ: langues
+      searchBar: true
+  subs:
+    - libelle: Accessible en ligne
+      champ: accessible
+      parentName: soutenue

@@ -4,12 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
 @Setter
 public class Facet {
-    String parentName;
     String name;
-    Map<String, Long> data;
+    boolean searchBar;
+    List<Checkbox> checkboxes;
 }
+
