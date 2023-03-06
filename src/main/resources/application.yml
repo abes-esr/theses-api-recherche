@@ -12,6 +12,9 @@ facets:
     - libelle: Langues
       champ: langues
       searchBar: true
+    - libelle: Ecole doctorale
+      champ: ecolesDoctoralesN.exact
+      searchBar: true
   subs:
     - libelle: Accessible en ligne
       champ: accessible
