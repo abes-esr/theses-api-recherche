@@ -22,7 +22,6 @@ public class FacetProps {
     public static class MainFacet {
         private String libelle;
         private String champ;
-
         private boolean searchBar;
     }
 

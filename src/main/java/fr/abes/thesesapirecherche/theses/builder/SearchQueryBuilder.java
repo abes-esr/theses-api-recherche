@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.theses.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
@@ -248,22 +249,17 @@ public class SearchQueryBuilder {
     }
 
 
+    //TODO : Sortir les fields dans un fichier properties
     private List<SortOptions> addTri(String tri) {
         List<SortOptions> list = new ArrayList<>();
         if (!tri.equals("")) {
             SortOptions sort = switch (tri) {
-                case "dateAsc" ->
-                        new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Asc)).build();
-                case "dateDesc" ->
-                        new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Desc)).build();
-                case "auteursAsc" ->
-                        new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Asc)).build();
-                case "auteursDesc" ->
-                        new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Desc)).build();
-                case "disciplineAsc" ->
-                        new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Asc)).build();
-                case "disciplineDesc" ->
-                        new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Desc)).build();
+                case "dateAsc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Asc)).build();
+                case "dateDesc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Desc)).build();
+                case "auteursAsc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Asc)).build();
+                case "auteursDesc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Desc)).build();
+                case "disciplineAsc" -> new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Asc)).build();
+                case "disciplineDesc" -> new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Desc)).build();
                 default -> null;
             };
             if (sort != null)
@@ -273,25 +269,64 @@ public class SearchQueryBuilder {
     }
 
     private List<Query> addFilters(String f) {
+        //Nettoyage et mise en forme de la map des filtres
+        //Suppression des [] et découpage de la string des filtres vers une map
+        String[] filtres = f.replace("[", "").replace("\"]", "").split("\"\\&");
+
+        //Création d'une map : NomFiltre (key) / liste valeurs (values)
+        Map<String, List<String>> mapFiltres = new HashMap<>();
+        for (String s : filtres) {
+            String[] filtreSplit = s.split("=\"");
+            if (filtreSplit.length > 1) {
+                String key = filtreSplit[0];
+                String value = filtreSplit[1];
+
+                //Gestion des sous-facets
+                for (FacetProps.SubFacet facet : facetProps.getSubs()) {
+                    if (value.equals(facet.getLibelle().toLowerCase())) {
+                        key = facet.getLibelle().toLowerCase();
+                    }
+                }
+                // Gestion des facets principales
+                List<String> a = new ArrayList<>();
+                if (mapFiltres.containsKey(key)) {
+                    a = mapFiltres.get(key);
+                }
+                a.add(value);
+                mapFiltres.put(key, a);
+            }
+        }
+
         List<Query> listeFiltres = new ArrayList<>();
 
-        if (f.contains("soutenue")) {
-            listeFiltres.add(buildFilter("status", "soutenue"));
-        }
-
-        if (f.contains("enCours")) {
-            listeFiltres.add(buildFilter("status", "enCours"));
-        }
-
-        if (f.contains("accessible")) {
-            listeFiltres.add(buildFilter("accessible", "oui"));
-        }
-
+        //Pour chaque filtre présent dans la map, on crée une TermsQuery que l'on ajoute à la liste
+        mapFiltres.forEach((k, v) -> {
+            for (FacetProps.MainFacet facet : facetProps.getMain()) {
+                if (facet.getLibelle().toLowerCase().equals(k)) {
+                    listeFiltres.add(buildFilter(facet.getChamp(), v));
+                }
+            }
+            for (FacetProps.SubFacet facet : facetProps.getSubs()) {
+                if (facet.getLibelle().toLowerCase().equals(k)) {
+                    //Cas particulier Accessible en ligne
+                    if (facet.getChamp().equals("accessible"))
+                        listeFiltres.add(buildFilter(facet.getChamp(), List.of("oui")));
+                    else
+                        listeFiltres.add(buildFilter(facet.getChamp(), v));
+                }
+            }
+        });
         return listeFiltres;
     }
 
-    private Query buildFilter(String field, String value) {
-        TermQuery termQuery = QueryBuilders.term().field(field).value(value).build();
-        return new Query.Builder().term(termQuery).build();
+    private Query buildFilter(String field, List<String> values) {
+        //Termsquery : Field / Liste de values
+        TermsQueryField termsQueryField = new TermsQueryField.Builder()
+                .value(values.stream().map(FieldValue::of).toList())
+                .build();
+
+        TermsQuery termsQuery = QueryBuilders.terms().field(field).terms(termsQueryField).build();
+
+        return new Query.Builder().terms(termsQuery).build();
     }
 }

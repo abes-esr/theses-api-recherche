@@ -9,10 +9,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -36,9 +38,9 @@ public class SearchThesesController {
             @RequestParam @ApiParam(name = "q", value = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @ApiParam(name = "debut", value = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
             @RequestParam @ApiParam(name = "nombre", value = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
-        @RequestParam @ApiParam(name = "tri", value = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
-            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "soutenue, accessible") Optional<String> filtres
-            ) throws Exception {
+            @RequestParam @ApiParam(name = "tri", value = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
+            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
+    ) throws Exception {
         log.info("debut de rechercheSurLeTitre...");
         try {
             return searchQueryBuilder.simple(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
@@ -73,5 +75,5 @@ public class SearchThesesController {
             value = "Retourne une liste de facets/filtres pour une recherche simple")
     public List<Facet> facets(@RequestParam final String q) throws Exception {
         return searchQueryBuilder.facets(q);
-     }
+    }
 }
