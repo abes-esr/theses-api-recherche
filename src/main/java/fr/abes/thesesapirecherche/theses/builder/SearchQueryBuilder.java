@@ -58,6 +58,10 @@ public class SearchQueryBuilder {
     private ElasticsearchClient client;
     @Value("${es.theses.indexname}")
     private String esIndexName;
+
+    @Value("${maxfacetsvalues}")
+    private int maxFacetsValues;
+
     @Autowired
     private FacetProps facetProps;
 
@@ -134,7 +138,7 @@ public class SearchQueryBuilder {
         //Aggregation des facets
         facetProps.getMain().forEach((i) -> {
             Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).build())
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).size(maxFacetsValues).build())
                     .build();
             map.put(i.getChamp(), agg);
         });
@@ -254,12 +258,18 @@ public class SearchQueryBuilder {
         List<SortOptions> list = new ArrayList<>();
         if (!tri.equals("")) {
             SortOptions sort = switch (tri) {
-                case "dateAsc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Asc)).build();
-                case "dateDesc" -> new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Desc)).build();
-                case "auteursAsc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Asc)).build();
-                case "auteursDesc" -> new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Desc)).build();
-                case "disciplineAsc" -> new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Asc)).build();
-                case "disciplineDesc" -> new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Desc)).build();
+                case "dateAsc" ->
+                        new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Asc)).build();
+                case "dateDesc" ->
+                        new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Desc)).build();
+                case "auteursAsc" ->
+                        new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Asc)).build();
+                case "auteursDesc" ->
+                        new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Desc)).build();
+                case "disciplineAsc" ->
+                        new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Asc)).build();
+                case "disciplineDesc" ->
+                        new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Desc)).build();
                 default -> null;
             };
             if (sort != null)
