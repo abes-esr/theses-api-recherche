@@ -1,6 +1,5 @@
 package fr.abes.thesesapirecherche.theses.model;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,6 +24,8 @@ public class These {
     Date dateFinEmbargo;
     List<String> langues;
     List<String> oaiSets;
+
+    List<String> oaiSetNames;
     List<String> sujetsFR;
     List<String> sujetsEN;
     String discipline;
