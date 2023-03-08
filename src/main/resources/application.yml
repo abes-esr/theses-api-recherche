@@ -5,6 +5,8 @@ facets:
       searchBar: false
     - libelle: Etablissements
       champ: etabSoutenanceN.exact
+    - libelle: Domaines thématique
+      champ: oaiSetNames
       searchBar: true
     - libelle: Discipline
       champ: discipline.exact
