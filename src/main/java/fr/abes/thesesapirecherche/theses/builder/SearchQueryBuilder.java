@@ -134,11 +134,18 @@ public class SearchQueryBuilder {
     public List<Facet> facets(String chaine) throws Exception {
         Map<String, Aggregation> map = new HashMap<>();
 
+        // Tri par ordre alphabétique sur les clés
+        List<Map<String, SortOrder>> order = new ArrayList<>();
+        Map<String, SortOrder> orderMap = new HashMap<>();
+        orderMap.put("_key", SortOrder.Asc);
+        order.add(orderMap);
 
         //Aggregation des facets
         facetProps.getMain().forEach((i) -> {
+
+
             Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).size(maxFacetsValues).build())
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetsValues).build())
                     .build();
             map.put(i.getChamp(), agg);
         });
@@ -146,7 +153,7 @@ public class SearchQueryBuilder {
         // Aggregation des sous-facets
         facetProps.getSubs().forEach((i) -> {
             Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).build())
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetsValues).build())
                     .build();
             map.put(i.getChamp(), agg);
         });
