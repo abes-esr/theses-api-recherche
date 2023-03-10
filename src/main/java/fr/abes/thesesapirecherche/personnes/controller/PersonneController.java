@@ -42,7 +42,7 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<PersonneLiteResponseDto> recherche(@RequestParam final String q) throws Exception {
+    public List<PersonneLiteResponseDto> recherche(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
         return searchQueryBuilder.rechercher(decodedQuery);
@@ -71,6 +71,26 @@ public class PersonneController {
         return searchQueryBuilder.completion(decodedQuery);
     }
 
+    /**
+     * Retourne une liste de facettes avec le nombre d'occurence pour chaque facette
+     *
+     * @param q Chaîne de caractère à rechercher
+     * @return Retourne une liste de facettes en fonction du critère de recherche
+     * @throws Exception
+     */
+    @GetMapping(value = "/facets")
+    @ApiOperation(
+            value = "Retourne une liste de facettes avec le nombre d'ocurence pour chaque facette",
+            notes = "Retourne une liste de facettes en fonction du critère de recherche")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
+        return searchQueryBuilder.facets(q);
+    }
+
     @GetMapping(value = "/personne/{id}")
     @ApiOperation(
             value = "Rechercher une personne par son identifiant",
@@ -89,11 +109,6 @@ public class PersonneController {
             log.error(e.toString());
             throw new ApiException(e.getLocalizedMessage());
         }
-    }
-
-    @GetMapping(value = "/facets/")
-    public List<Facet> facets(@RequestParam final String q) throws Exception {
-        return searchQueryBuilder.facets(q);
     }
 
 }

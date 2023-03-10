@@ -168,6 +168,16 @@ public class SearchPersonneQueryBuilder {
     }
 
     /**
+     * Retourne une liste de facettes en fonction du critère de recherche
+     * @param chaine Chaîne de caractère à rechercher
+     * @return Retourne la liste des facettes au format Dto
+     * @throws Exception
+     */
+    public List<Facet> facets(String chaine) throws Exception {
+        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), esIndexName, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues);
+    }
+
+    /**
      * Rechercher dans ElasticSearch une personne avec son identifiant.
      *
      * @param id Chaîne de caractère de l'identifiant de la personne
@@ -193,9 +203,4 @@ public class SearchPersonneQueryBuilder {
 
         return personneMapper.personneToDto(response.hits().hits().get(0));
     }
-
-    public List<Facet> facets(String chaine) throws Exception {
-        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), esIndexName, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues);
-    }
-
 }
