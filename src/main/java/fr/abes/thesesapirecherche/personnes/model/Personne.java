@@ -30,4 +30,8 @@ public class Personne {
     @Setter
     List<ThesePersonne> theses;
 
+    @Getter
+    @Setter
+    List<String> roles;
+
 }

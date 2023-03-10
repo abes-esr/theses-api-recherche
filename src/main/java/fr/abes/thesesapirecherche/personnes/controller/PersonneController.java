@@ -1,10 +1,11 @@
 package fr.abes.thesesapirecherche.personnes.controller;
 
-import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
-import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.exception.ApiException;
+import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -43,12 +44,13 @@ public class PersonneController {
     })
     public List<PersonneLiteResponseDto> recherche(@RequestParam final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
-        log.debug("Rechercher une personne... : "+decodedQuery);
+        log.debug("Rechercher une personne... : " + decodedQuery);
         return searchQueryBuilder.rechercher(decodedQuery);
     }
 
     /**
      * Proposer l'autocompletion basée sur les noms et prénoms
+     *
      * @param q Chaîne de caractère à compléter
      * @return Retourne 10 propositions avec une priorité sur les personnes avec un identifiant Idref
      * @throws Exception
@@ -87,6 +89,11 @@ public class PersonneController {
             log.error(e.toString());
             throw new ApiException(e.getLocalizedMessage());
         }
+    }
+
+    @GetMapping(value = "/facets/")
+    public List<Facet> facets(@RequestParam final String q) throws Exception {
+        return searchQueryBuilder.facets(q);
     }
 
 }

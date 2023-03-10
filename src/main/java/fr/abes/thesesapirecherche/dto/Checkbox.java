@@ -1,4 +1,4 @@
-package fr.abes.thesesapirecherche.theses.dto;
+package fr.abes.thesesapirecherche.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
