@@ -1,10 +1,11 @@
 package fr.abes.thesesapirecherche.personnes.controller;
 
-import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
-import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.exception.ApiException;
+import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -41,14 +42,15 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<PersonneLiteResponseDto> recherche(@RequestParam final String q) throws Exception {
+    public List<PersonneLiteResponseDto> recherche(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
-        log.debug("Rechercher une personne... : "+decodedQuery);
+        log.debug("Rechercher une personne... : " + decodedQuery);
         return searchQueryBuilder.rechercher(decodedQuery);
     }
 
     /**
      * Proposer l'autocompletion basée sur les noms et prénoms
+     *
      * @param q Chaîne de caractère à compléter
      * @return Retourne 10 propositions avec une priorité sur les personnes avec un identifiant Idref
      * @throws Exception
@@ -67,6 +69,26 @@ public class PersonneController {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
         return searchQueryBuilder.completion(decodedQuery);
+    }
+
+    /**
+     * Retourne une liste de facettes avec le nombre d'occurence pour chaque facette
+     *
+     * @param q Chaîne de caractère à rechercher
+     * @return Retourne une liste de facettes en fonction du critère de recherche
+     * @throws Exception
+     */
+    @GetMapping(value = "/facets")
+    @ApiOperation(
+            value = "Retourne une liste de facettes avec le nombre d'ocurence pour chaque facette",
+            notes = "Retourne une liste de facettes en fonction du critère de recherche")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
+        return searchQueryBuilder.facets(q);
     }
 
     @GetMapping(value = "/personne/{id}")

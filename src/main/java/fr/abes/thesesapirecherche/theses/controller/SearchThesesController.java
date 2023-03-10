@@ -1,7 +1,7 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
+import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
-import fr.abes.thesesapirecherche.theses.dto.Facet;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/recherche/")
+@RequestMapping("/api/v1/recherche-java/")
 public class SearchThesesController {
 
     @Autowired
