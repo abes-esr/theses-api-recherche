@@ -53,8 +53,9 @@ public class PersonneController {
             @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres
         ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
+        String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName,filtres.orElse(""));
+        return searchQueryBuilder.rechercher(decodedQuery, esIndexName,decodedFilters);
     }
 
     /**
