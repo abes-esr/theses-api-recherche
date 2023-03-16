@@ -97,11 +97,20 @@ public class SearchPersonneQueryBuilder {
         Query queryString = builderQuery.build()._toQuery();
 
         // Boost IdRef
-        TermQuery termQuery = QueryBuilders.term().field("has_idref").value(true).build();
-        FunctionScore functionScore = new FunctionScore.Builder().filter(termQuery._toQuery()).weight(360.0).build();
+        TermQuery idrefQuery = QueryBuilders.term().field("has_idref").value(true).build();
+        FunctionScore functionScoreIdref = new FunctionScore.Builder().filter(idrefQuery._toQuery()).weight(360.0).build();
+
+        // Boost Role Directeur de thèse
+        TermQuery roleDirecteurQuery = QueryBuilders.term().field("roles").value("directeur de thèse").build();
+        FunctionScore functionScoreRoleDirecteur = new FunctionScore.Builder().filter(roleDirecteurQuery._toQuery()).weight(360.0).build();
+
+        // Boost Role Rapporteur
+        TermQuery roleRapporteurQuery = QueryBuilders.term().field("roles").value("rapporteur").build();
+        FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(360.0).build();
+
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(queryString)
-                .functions(List.of(functionScore))
+                .functions(List.of(functionScoreIdref,functionScoreRoleDirecteur,functionScoreRoleRapporteur))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
                 .build();
