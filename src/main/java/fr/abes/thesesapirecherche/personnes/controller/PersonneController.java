@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -34,6 +35,7 @@ public class PersonneController {
      * Rechercher une personne avec un mot
      *
      * @param q Chaîne de caractère à rechercher
+     * @param filtres Filtres des résultats
      * @return Une liste de personnes correspondant à la recherche
      * @throws ApiException
      */
@@ -47,11 +49,12 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public List<PersonneLiteResponseDto> recherche(
-            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q
+            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
+            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres
         ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName);
+        return searchQueryBuilder.rechercher(decodedQuery, esIndexName,filtres.orElse(""));
     }
 
     /**

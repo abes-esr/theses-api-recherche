@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
 import javax.net.ssl.SSLContext;
 import java.util.List;
 
+import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
+
 @Slf4j
 @Component
 public class SearchPersonneQueryBuilder {
@@ -115,12 +117,16 @@ public class SearchPersonneQueryBuilder {
      * @return Une liste de personnes au format Dto web
      * @throws Exception si une erreur est survenue
      */
-    public List<PersonneLiteResponseDto> rechercher(String chaine, String index) throws Exception {
+    public List<PersonneLiteResponseDto> rechercher(String chaine, String index, String filtres) throws Exception {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(index)
                 .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses")))))
-                .query(buildQuery(chaine))
+                .query(q -> q
+                        .bool(t -> t
+                                .must(buildQuery(chaine))
+                                .filter(addFilters(filtres, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes()))
+                        ))
                 .build();
 
         SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest, Personne.class);
