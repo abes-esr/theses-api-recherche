@@ -1,6 +1,8 @@
 package fr.abes.thesesapirecherche.personnes.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.SortOptions;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
+import java.util.ArrayList;
 import java.util.List;
 
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
@@ -86,7 +89,6 @@ public class SearchPersonneQueryBuilder {
         return this.client;
     }
 
-
     public Query buildQuery(String chaine) {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
@@ -98,15 +100,15 @@ public class SearchPersonneQueryBuilder {
 
         // Boost IdRef
         TermQuery idrefQuery = QueryBuilders.term().field("has_idref").value(true).build();
-        FunctionScore functionScoreIdref = new FunctionScore.Builder().filter(idrefQuery._toQuery()).weight(360.0).build();
+        FunctionScore functionScoreIdref = new FunctionScore.Builder().filter(idrefQuery._toQuery()).weight(150.0).build();
 
         // Boost Role Directeur de thèse
         TermQuery roleDirecteurQuery = QueryBuilders.term().field("roles").value("directeur de thèse").build();
-        FunctionScore functionScoreRoleDirecteur = new FunctionScore.Builder().filter(roleDirecteurQuery._toQuery()).weight(360.0).build();
+        FunctionScore functionScoreRoleDirecteur = new FunctionScore.Builder().filter(roleDirecteurQuery._toQuery()).weight(100.0).build();
 
         // Boost Role Rapporteur
         TermQuery roleRapporteurQuery = QueryBuilders.term().field("roles").value("rapporteur").build();
-        FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(360.0).build();
+        FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(100.0).build();
 
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(queryString)
@@ -116,6 +118,20 @@ public class SearchPersonneQueryBuilder {
                 .build();
 
         return new Query.Builder().functionScore(functionScoreQuery).build();
+    }
+
+    /**
+     * Fonction pour trier les résultats.
+     * @return Liste d'options de tri Elastic Search
+     */
+    private List<SortOptions> buildSort() {
+        List<SortOptions> list = new ArrayList<>();
+
+        list.add(new SortOptions.Builder().field(f -> f.field("_score").order(SortOrder.Desc)).build());
+        list.add(new SortOptions.Builder().field(f -> f.field("nom.sort").order(SortOrder.Asc)).build());
+        list.add(new SortOptions.Builder().field(f -> f.field("prenom.sort").order(SortOrder.Asc)).build());
+
+        return list;
     }
 
     /**
@@ -136,6 +152,7 @@ public class SearchPersonneQueryBuilder {
                                 .must(buildQuery(chaine))
                                 .filter(addFilters(filtres, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes()))
                         ))
+                .sort(buildSort())
                 .build();
 
         SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest, Personne.class);
@@ -146,6 +163,7 @@ public class SearchPersonneQueryBuilder {
     /**
      * Retourne 10 suggestion de personnes à partir de son nom ou prénom
      * Les personnes avec un identifiant Idref sont priorisées
+     * Les personnes avec un rôle de directeur de thèse ou de rapporteur sont priorisées
      *
      * @param q Chaîne de caractère à compléter
      * @param index Nom de l'index ES à requêter
@@ -155,10 +173,14 @@ public class SearchPersonneQueryBuilder {
     public List<SuggestionPersonneResponseDto> completion(String q, String index) throws Exception {
 
         // Définition du contexte pour booster les personnes avec Idref
-        Context catSansIdref = new Context.Builder().category("false").build();
         Context catAvecIdref = new Context.Builder().category("true").build();
-        CompletionContext contextSansIdref = new CompletionContext.Builder().context(catSansIdref).build();
-        CompletionContext contextAvecIdref = new CompletionContext.Builder().context(catAvecIdref).boost(2.0).build();
+        CompletionContext contextAvecIdref = new CompletionContext.Builder().context(catAvecIdref).boost(150.0).build();
+
+        // Définition du contexte pour booster les personnes avec le rôle
+        Context catDirecteur = new Context.Builder().category("directeur de thèse").build();
+        Context catRapporteur = new Context.Builder().category("rapporteur").build();
+        CompletionContext contextDirecteur = new CompletionContext.Builder().context(catDirecteur).boost(100.0).build();
+        CompletionContext contextRapporteur = new CompletionContext.Builder().context(catRapporteur).boost(100.0).build();
 
         FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
                 .completion(cs ->
@@ -166,7 +188,10 @@ public class SearchPersonneQueryBuilder {
                                 .size(10)
                                 .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
                                 .field("suggestion")
-                                .contexts("has_idref", List.of(contextSansIdref, contextAvecIdref))));
+                                .contexts("has_idref", List.of(contextAvecIdref))
+                                .contexts("roles", List.of(contextDirecteur,contextRapporteur))
+                )
+        );
 
         Suggester suggester = Suggester.of(s -> s
                 .suggesters("personne-suggestion", fieldSuggester)

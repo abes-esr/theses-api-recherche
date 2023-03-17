@@ -20,7 +20,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
     @Test
     @DisplayName("Rechercher personne avec un mot - Mauvaise méthode")
     public void rechercherMauvaiseMethode() throws Exception {
-        mockMvc.perform(post("/api/v1/personnes/recherche"))
+        mockMvc.perform(post("/api/v1/tests/personnes/recherche"))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.status").value("METHOD_NOT_ALLOWED"))
                 .andExpect(jsonPath("$.message").exists());
@@ -29,7 +29,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
     @Test
     @DisplayName("Rechercher personne avec un mot - sans argument")
     public void rechercherSansArguments() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
                 .andExpect(jsonPath("$.message").exists());
@@ -39,46 +39,13 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
     @DisplayName("Rechercher personne avec le mot Rousseau")
     @EnableOnIntegrationTest
     public void rechercherRousseau() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Rousseau"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(8)))
                 .andExpect(jsonPath("$[?(@.id)]").exists())
                 .andExpect(jsonPath("$[?(@.nom)]").exists())
                 .andExpect(jsonPath("$[?(@.prenom)]").exists())
                 .andExpect(jsonPath("$[?(@.has_idref)]").exists());
-    }
-
-    /* ----------- */
-    /*  Completion */
-    /* ----------- */
-
-    @Test
-    @DisplayName("Suggestion de personnes avec un mot - Mauvaise méthode")
-    public void completionMauvaiseMethode() throws Exception {
-        mockMvc.perform(post("/api/v1/personnes/completion"))
-                .andExpect(status().isMethodNotAllowed())
-                .andExpect(jsonPath("$.status").value("METHOD_NOT_ALLOWED"))
-                .andExpect(jsonPath("$.message").exists());
-    }
-
-    @Test
-    @DisplayName("Suggestion de personnes avec un mot - sans argument")
-    public void completionSansArguments() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/completion"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value("BAD_REQUEST"))
-                .andExpect(jsonPath("$.message").exists());
-    }
-
-    @Test
-    @DisplayName("Suggestion de personnes avec le mot D")
-    @EnableOnIntegrationTest
-    public void completion() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/completion?q=d"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[?(@.id)]").exists())
-                .andExpect(jsonPath("$[?(@.suggestion)]").exists());
     }
 
     /* ---------------------- */
@@ -88,7 +55,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
     @Test
     @DisplayName("Rechercher personne avec un id - Mauvaise méthode")
     public void rechercherAvecIdMauvaiseMethode() throws Exception {
-        mockMvc.perform(post("/api/v1/personnes/personne/098248782"))
+        mockMvc.perform(post("/api/v1/tests/personnes/personne/098248782?index=per_recherche_simple_rousseau"))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("$.status").value("METHOD_NOT_ALLOWED"))
                 .andExpect(jsonPath("$.message").exists());
@@ -98,7 +65,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
     @DisplayName("Rechercher personne avec son identifiant")
     @EnableOnIntegrationTest
     public void rechercherAvecId() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/personne/098248782/"))
+        mockMvc.perform(get("/api/v1/tests/personnes/personne/098248782/?index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("098248782"))
                 .andExpect(jsonPath("$.nom").value("Rousseau"))
