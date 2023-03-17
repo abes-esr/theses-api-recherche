@@ -12,28 +12,35 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * Cette classe ne sert que pour tester les tests d'intégrations avec les jeux de données dans ElasticSearch.
+ * Les routes sont exactement les mêmes que pour les personnes mais il y a un argument supplémentaire
+ * qui permet de choisir l'index ElasticSearch à requêter.
+ * Les tests d'intégrations sont exécutés sur des jeux de données spécifiques qui donne lieu à des index spécifiques dans ElasticSearch.
+ * Par exemple, l'index ElasticSearch 'per_recherche_simple_rousseau' contient un échantillon de personnes qui permet de tester les requêtes de recherche simple.
+ *
+ * !! Cette classe est donc à retirer dans la version en production !!
+ */
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/personnes/")
-public class PersonneController {
+@RequestMapping("/api/v1/tests/personnes/")
+@Deprecated
+public class PersonneTestController {
 
     @Autowired
     SearchPersonneQueryBuilder searchQueryBuilder;
 
-    @Value("${es.personnes.indexname}")
-    private String esIndexName;
-
-    /**
-     * Rechercher une personne avec un mot
+     /**
+     *  Rechercher une personne avec un mot en choissant l'index ES à requêter
      *
      * @param q Chaîne de caractère à rechercher
+     * @param index Nom de l'index ES à requêter
      * @return Une liste de personnes correspondant à la recherche
      * @throws ApiException
      */
@@ -47,17 +54,19 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public List<PersonneLiteResponseDto> recherche(
-            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q
-        ) throws Exception {
+            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
+            @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index
+    ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName);
+        return searchQueryBuilder.rechercher(decodedQuery, index);
     }
 
     /**
      * Proposer l'autocompletion basée sur les noms et prénoms
      *
      * @param q Chaîne de caractère à compléter
+     * @param index Nom de l'index ES à requêter
      * @return Retourne 10 propositions avec une priorité sur les personnes avec un identifiant Idref
      * @throws Exception
      */
@@ -71,16 +80,19 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public List<SuggestionPersonneResponseDto> completion(
-            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
+            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q,
+            @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index
+    ) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(decodedQuery,esIndexName);
+        return searchQueryBuilder.completion(decodedQuery,index);
     }
 
     /**
      * Retourne une liste de facettes avec le nombre d'occurence pour chaque facette
      *
      * @param q Chaîne de caractère à rechercher
+     * @param index Nom de l'index ES à requêter
      * @return Retourne une liste de facettes en fonction du critère de recherche
      * @throws Exception
      */
@@ -93,13 +105,15 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
-        return searchQueryBuilder.facets(q,"personnes");
+    public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
+                              @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index) throws Exception {
+        return searchQueryBuilder.facets(q,index);
     }
 
     /**
      * Recherche une personne à partir de son identifiant
      * @param id Identifiant de la personne
+     * @param index Nom de l'index ES à requêter
      * @return Retourne la personne
      * @throws ApiException si la personne n'est pas trouvée
      */
@@ -112,10 +126,11 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
+    public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id,
+                                                        @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
-            return searchQueryBuilder.rechercherParIdentifiant(id,esIndexName);
+            return searchQueryBuilder.rechercherParIdentifiant(id,index);
 
         } catch (Exception e) {
             log.error(e.toString());

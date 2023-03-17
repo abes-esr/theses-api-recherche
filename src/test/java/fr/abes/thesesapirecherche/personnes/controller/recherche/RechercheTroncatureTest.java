@@ -20,7 +20,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec l'expression exacte : nom prénom")
     @EnableOnIntegrationTest
     public void rechercherExpressionExacteNomPrenom() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=%22Erwan%20Rousseau%22"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=%22Erwan%20Rousseau%22&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
@@ -34,7 +34,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec l'expression exacte : prénom nom")
     @EnableOnIntegrationTest
     public void rechercherExpressionExactePrenomNom() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=%22Rousseau%20Erwan%22"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=%22Rousseau%20Erwan%22&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
@@ -54,7 +54,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec la troncature arrière *")
     @EnableOnIntegrationTest
     public void rechercherTroncatureArriereWildchar() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Rouss*"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Rouss*&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(8)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
@@ -81,7 +81,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec la troncature avant *")
     @EnableOnIntegrationTest
     public void rechercherTroncatureAvantWildchar() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=*wan"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=*wan&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(5)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
