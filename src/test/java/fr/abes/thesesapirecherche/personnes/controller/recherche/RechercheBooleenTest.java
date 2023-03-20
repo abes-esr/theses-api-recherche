@@ -1,14 +1,12 @@
 package fr.abes.thesesapirecherche.personnes.controller.recherche;
 
 import fr.abes.thesesapirecherche.EnableOnIntegrationTest;
-import fr.abes.thesesapirecherche.ThesesApiRechercheApplicationTests;
 import fr.abes.thesesapirecherche.personnes.controller.PersonneControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,7 +20,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le booléen OU : OR")
     @EnableOnIntegrationTest
     public void rechercherBooleenOuOrt() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20OR%20Rousseau"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20OR%20Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(10)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
@@ -56,7 +54,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le booléen SAUF : NOT")
     @EnableOnIntegrationTest
     public void rechercherBooleenSaufNot() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20NOT%20Rousseau"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20NOT%20Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020REN1B015')])]").exists())
@@ -67,7 +65,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le booléen SAUF : -")
     @EnableOnIntegrationTest
     public void rechercherBooleenSaufMoins() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20-Rousseau"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20-Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020REN1B015')])]").exists())
@@ -78,7 +76,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes 2 - avec le booléen SAUF : NOT")
     @EnableOnIntegrationTest
     public void rechercher2BooleenSaufNot() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Rousseau%20NOT%20Erwan"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Rousseau%20NOT%20Erwan&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(5)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2011ANGE0040')])]").exists())
@@ -97,7 +95,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le booléen ET : AND")
     @EnableOnIntegrationTest
     public void rechercherBooleenEtAnd() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20AND%20Rousseau"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20AND%20Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
@@ -111,7 +109,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le booléen ET : +")
     @EnableOnIntegrationTest
     public void rechercherBooleenEtPlus() throws Exception {
-        mockMvc.perform(get("/api/v1/personnes/recherche/?q=Erwan%20+%20Rousseau"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20+%20Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())

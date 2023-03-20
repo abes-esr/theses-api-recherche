@@ -10,10 +10,16 @@ import lombok.*;
 @NoArgsConstructor
 public class ThesePersonne {
 
-    @Getter @Setter
+    @Getter
+    @Setter
     String nnt;
 
-    @Getter @Setter
+    @Getter
+    @Setter
     String role;
+
+    @Getter
+    @Setter
+    String titre;
 
 }

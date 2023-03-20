@@ -13,9 +13,11 @@ import java.util.List;
 @Getter
 @Setter
 public class FacetProps {
+    private List<MainFacet> mainTheses;
+    private List<SubFacet> subsTheses;
 
-    private List<MainFacet> main;
-    private List<SubFacet> subs;
+    private List<MainFacet> mainPersonnes;
+    private List<SubFacet> subsPersonnes;
 
     @Setter
     @Getter
