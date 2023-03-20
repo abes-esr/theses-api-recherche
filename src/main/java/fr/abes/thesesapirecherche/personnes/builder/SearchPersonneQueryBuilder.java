@@ -90,13 +90,25 @@ public class SearchPersonneQueryBuilder {
     }
 
     public Query buildQuery(String chaine) {
-        QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
-        builderQuery.query(chaine);
-        builderQuery.defaultOperator(Operator.And);
-        builderQuery.fields(List.of("nom", "prenom", "nom_complet", "nom_complet.exact"));
 
-        builderQuery.quoteFieldSuffix(".exact");
-        Query queryString = builderQuery.build()._toQuery();
+        // Recherche par nom et prénom
+        QueryStringQuery.Builder nomPrenomBuilderQuery = new QueryStringQuery.Builder();
+        nomPrenomBuilderQuery.query(chaine);
+        nomPrenomBuilderQuery.defaultOperator(Operator.And);
+        nomPrenomBuilderQuery.fields(List.of("nom", "prenom", "nom_complet", "nom_complet.exact"));
+        nomPrenomBuilderQuery.quoteFieldSuffix(".exact");
+        Query nomPrenomQueryString = nomPrenomBuilderQuery.build()._toQuery();
+
+        // Recherche par thématique
+        QueryStringQuery.Builder thematiqueBuilderQuery = new QueryStringQuery.Builder();
+        thematiqueBuilderQuery.query(chaine);
+        thematiqueBuilderQuery.defaultOperator(Operator.And);
+        thematiqueBuilderQuery.fields(List.of("theses.sujets.*","theses.sujets_rameau","theses.resumes.*","theses.discipline"));
+        thematiqueBuilderQuery.quoteFieldSuffix(".exact");
+        Query nestedThematiqueQuery = new NestedQuery.Builder().query(thematiqueBuilderQuery.build()._toQuery()).path("theses").build()._toQuery();
+
+        // Recherche par nom et prénom ou par thématique
+        Query thematiqueQueryString = QueryBuilders.bool().should(nomPrenomQueryString, nestedThematiqueQuery).build()._toQuery();
 
         // Boost IdRef
         TermQuery idrefQuery = QueryBuilders.term().field("has_idref").value(true).build();
@@ -111,7 +123,7 @@ public class SearchPersonneQueryBuilder {
         FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(100.0).build();
 
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
-                .query(queryString)
+                .query(thematiqueQueryString)
                 .functions(List.of(functionScoreIdref,functionScoreRoleDirecteur,functionScoreRoleRapporteur))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
