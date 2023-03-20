@@ -1,7 +1,6 @@
 package fr.abes.thesesapirecherche.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,11 +29,12 @@ public class Checkbox {
     /**
      * Transforme le caractère suivant un caractère qui n'est pas en alphanumérique (alinéa, espace etc) en majuscule
      * Tri sur la valeur de Character.getType() - seuil = 9
+     *
      * @param name
      * @return
      */
     private static String capitalize(String name) {
-        if(name == null || name.isEmpty()) {
+        if (name == null || name.isEmpty()) {
             return name;
         }
 
@@ -53,6 +53,6 @@ public class Checkbox {
             }
             converted.append(ch);
         }
-            return converted.toString();
+        return converted.toString();
     }
 }

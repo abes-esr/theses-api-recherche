@@ -34,7 +34,7 @@ public class PersonneController {
     /**
      * Rechercher une personne avec un mot
      *
-     * @param q Chaîne de caractère à rechercher
+     * @param q       Chaîne de caractère à rechercher
      * @param filtres Filtres des résultats
      * @return Une liste de personnes correspondant à la recherche
      * @throws ApiException
@@ -51,11 +51,11 @@ public class PersonneController {
     public List<PersonneLiteResponseDto> recherche(
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
             @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres
-        ) throws Exception {
+    ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName,decodedFilters);
+        return searchQueryBuilder.rechercher(decodedQuery, esIndexName, decodedFilters);
     }
 
     /**
@@ -78,7 +78,7 @@ public class PersonneController {
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(decodedQuery,esIndexName);
+        return searchQueryBuilder.completion(decodedQuery, esIndexName);
     }
 
     /**
@@ -98,11 +98,12 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
-        return searchQueryBuilder.facets(q,"personnes");
+        return searchQueryBuilder.facets(q, "personnes");
     }
 
     /**
      * Recherche une personne à partir de son identifiant
+     *
      * @param id Identifiant de la personne
      * @return Retourne la personne
      * @throws ApiException si la personne n'est pas trouvée

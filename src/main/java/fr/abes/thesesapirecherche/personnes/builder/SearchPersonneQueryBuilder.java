@@ -113,7 +113,7 @@ public class SearchPersonneQueryBuilder {
      * Rechercher dans ElasticSearch une personne avec son nom et prénom.
      *
      * @param chaine Chaîne de caractère à rechercher
-     * @param index Nom de l'index ES à requêter
+     * @param index  Nom de l'index ES à requêter
      * @return Une liste de personnes au format Dto web
      * @throws Exception si une erreur est survenue
      */
@@ -138,7 +138,7 @@ public class SearchPersonneQueryBuilder {
      * Retourne 10 suggestion de personnes à partir de son nom ou prénom
      * Les personnes avec un identifiant Idref sont priorisées
      *
-     * @param q Chaîne de caractère à compléter
+     * @param q     Chaîne de caractère à compléter
      * @param index Nom de l'index ES à requêter
      * @return Une liste de suggestions de personnes au format Dto web
      * @throws Exception
@@ -175,24 +175,25 @@ public class SearchPersonneQueryBuilder {
 
     /**
      * Retourne une liste de facettes en fonction du critère de recherche
+     *
      * @param chaine Chaîne de caractère à rechercher
-     * @param index Nom de l'index ES à requêter
+     * @param index  Nom de l'index ES à requêter
      * @return Retourne la liste des facettes au format Dto
      * @throws Exception
      */
-    public List<Facet> facets(String chaine,String index) throws Exception {
+    public List<Facet> facets(String chaine, String index) throws Exception {
         return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues);
     }
 
     /**
      * Rechercher dans ElasticSearch une personne avec son identifiant.
      *
-     * @param id Chaîne de caractère de l'identifiant de la personne
+     * @param id    Chaîne de caractère de l'identifiant de la personne
      * @param index Nom de l'index ES à requêter
      * @return Une personne au format Dto web
      * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
      */
-    public PersonneResponseDto rechercherParIdentifiant(String id,String index) throws Exception {
+    public PersonneResponseDto rechercherParIdentifiant(String id, String index) throws Exception {
 
         TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
         Query query = new Query.Builder().term(termQuery).build();

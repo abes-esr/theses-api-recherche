@@ -2,6 +2,7 @@ package fr.abes.thesesapirecherche.commons.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.aggregations.TermsAggregation;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
@@ -31,10 +32,16 @@ public class FacetQueryBuilder {
             subsFacets = new ArrayList<>();
         }
 
+        // Tri par ordre alphabétique sur les clés
+        List<Map<String, SortOrder>> order = new ArrayList<>();
+        Map<String, SortOrder> orderMap = new HashMap<>();
+        orderMap.put("_key", SortOrder.Asc);
+        order.add(orderMap);
+
         //Aggregation des facets
         mainFacets.forEach((i) -> {
             Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).size(maxFacetValues).build())
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).build())
                     .build();
             map.put(i.getChamp(), agg);
         });
@@ -42,7 +49,7 @@ public class FacetQueryBuilder {
         // Aggregation des sous-facets
         subsFacets.forEach((i) -> {
             Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).build())
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).build())
                     .build();
             map.put(i.getChamp(), agg);
         });

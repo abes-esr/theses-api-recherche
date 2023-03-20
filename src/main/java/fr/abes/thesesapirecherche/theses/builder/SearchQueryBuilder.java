@@ -207,6 +207,4 @@ public class SearchQueryBuilder {
         }
         return list;
     }
-
-
 }
