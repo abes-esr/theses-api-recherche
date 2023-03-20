@@ -116,11 +116,14 @@ public class FacetQueryBuilder {
                 String value = filtreSplit[1];
 
                 //Gestion des sous-facets
-                for (FacetProps.SubFacet facet : subsFacets) {
-                    if (value.equals(facet.getLibelle().toLowerCase())) {
-                        key = facet.getLibelle().toLowerCase();
+                if (subsFacets != null) {
+                    for (FacetProps.SubFacet facet : subsFacets) {
+                        if (value.equals(facet.getLibelle().toLowerCase())) {
+                            key = facet.getLibelle().toLowerCase();
+                        }
                     }
                 }
+
                 // Gestion des facets principales
                 List<String> a = new ArrayList<>();
                 if (mapFiltres.containsKey(key)) {
@@ -140,13 +143,16 @@ public class FacetQueryBuilder {
                     listeFiltres.add(buildFilter(facet.getChamp(), v));
                 }
             }
-            for (FacetProps.SubFacet facet : subsFacets) {
-                if (facet.getLibelle().toLowerCase().equals(k)) {
-                    //Cas particulier Accessible en ligne
-                    if (facet.getChamp().equals("accessible"))
-                        listeFiltres.add(buildFilter(facet.getChamp(), List.of("oui")));
-                    else
-                        listeFiltres.add(buildFilter(facet.getChamp(), v));
+
+            if (subsFacets != null) {
+                for (FacetProps.SubFacet facet : subsFacets) {
+                    if (facet.getLibelle().toLowerCase().equals(k)) {
+                        //Cas particulier Accessible en ligne
+                        if (facet.getChamp().equals("accessible"))
+                            listeFiltres.add(buildFilter(facet.getChamp(), List.of("oui")));
+                        else
+                            listeFiltres.add(buildFilter(facet.getChamp(), v));
+                    }
                 }
             }
         });

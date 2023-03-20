@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Cette classe ne sert que pour tester les tests d'intégrations avec les jeux de données dans ElasticSearch.
@@ -41,6 +42,7 @@ public class PersonneTestController {
      *
      * @param q Chaîne de caractère à rechercher
      * @param index Nom de l'index ES à requêter
+     * @param filtres Filtres des résultats
      * @return Une liste de personnes correspondant à la recherche
      * @throws ApiException
      */
@@ -55,11 +57,13 @@ public class PersonneTestController {
     })
     public List<PersonneLiteResponseDto> recherche(
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
-            @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index
+            @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index,
+            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres
     ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
+        String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, index);
+        return searchQueryBuilder.rechercher(decodedQuery, index,decodedFilters);
     }
 
     /**
