@@ -164,6 +164,7 @@ public class SearchPersonneQueryBuilder {
                                 .must(buildQuery(chaine))
                                 .filter(addFilters(filtres, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes()))
                         ))
+                .size(1000)
                 .sort(buildSort())
                 .build();
 
