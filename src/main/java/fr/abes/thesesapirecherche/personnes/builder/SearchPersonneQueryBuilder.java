@@ -16,6 +16,7 @@ import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import lombok.extern.slf4j.Slf4j;
@@ -151,10 +152,13 @@ public class SearchPersonneQueryBuilder {
      *
      * @param chaine Chaîne de caractère à rechercher
      * @param index  Nom de l'index ES à requêter
-     * @return Une liste de personnes au format Dto web
+     * @param filtres Tri à appliquer à la requête ES
+     * @param debut Numéro de la page courante
+     * @param nombre Nombre de résultats à retourner
+     * @return Un objet réponse de la recherche au format Dto web
      * @throws Exception si une erreur est survenue
      */
-    public List<PersonneLiteResponseDto> rechercher(String chaine, String index, String filtres) throws Exception {
+    public RechercheResponseDto rechercher(String chaine, String index, String filtres,  Integer debut, Integer nombre) throws Exception {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(index)
@@ -164,13 +168,15 @@ public class SearchPersonneQueryBuilder {
                                 .must(buildQuery(chaine))
                                 .filter(addFilters(filtres, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes()))
                         ))
-                .size(1000)
+                .from(debut)
+                .size(nombre)
                 .sort(buildSort())
+                .trackTotalHits(t -> t.enabled(Boolean.TRUE))
                 .build();
 
         SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest, Personne.class);
 
-        return personneMapper.personnesListToDto(response.hits().hits());
+        return RechercheResponseDto.builder().personnes(personneMapper.personnesListToDto(response.hits().hits())).totalHits(response.hits().total().value()).build();
     }
 
     /**
