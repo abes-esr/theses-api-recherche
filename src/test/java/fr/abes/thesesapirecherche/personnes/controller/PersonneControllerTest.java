@@ -62,7 +62,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
     public void rechercherThematiqueHyperbolicité() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=hyperbolicité&index=per_recherche_sujet"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(32)))
+                .andExpect(jsonPath("$", hasSize(36)))
                 .andExpect(jsonPath("$[?(@.id=='221478388')]").exists())
                 .andExpect(jsonPath("$[?(@.id=='07069348X')]").exists())
                 .andExpect(jsonPath("$[?(@.id=='156182831')]").exists())

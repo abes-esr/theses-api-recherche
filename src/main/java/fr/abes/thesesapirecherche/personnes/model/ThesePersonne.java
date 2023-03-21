@@ -33,7 +33,7 @@ public class ThesePersonne {
 
     @Getter
     @Setter
-    Map<String, String> sujets = new HashMap<String, String>();
+    Map<String, List<String>> sujets = new HashMap<>();
 
     @Getter
     @Setter
