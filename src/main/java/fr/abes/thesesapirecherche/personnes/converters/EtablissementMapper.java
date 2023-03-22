@@ -20,11 +20,16 @@ public class EtablissementMapper {
      * @return
      */
     public EtablissementResponseDto etablissementToDto(Etablissement item) {
-        return EtablissementResponseDto.builder()
-                .ppn(item.getPpn())
-                .nom(item.getNom())
-                .type(item.getType())
-                .build();
+
+        if(item == null) {
+            return null;
+        } else {
+            return EtablissementResponseDto.builder()
+                    .ppn(item.getPpn())
+                    .nom(item.getNom())
+                    .type(item.getType())
+                    .build();
+        }
     }
 
     /**
