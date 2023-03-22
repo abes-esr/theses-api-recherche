@@ -22,12 +22,12 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherExpressionExacteNomPrenom() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=%22Erwan%20Rousseau%22&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='s347820')])]").exists());
+                .andExpect(jsonPath("$.totalHits").value(2))
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='s347820')])]").exists());
     }
 
     @Test
@@ -36,13 +36,13 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherExpressionExactePrenomNom() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=%22Rousseau%20Erwan%22&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2007PA066375')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='s347820')])]").exists());
+                .andExpect(jsonPath("$.totalHits").value(2))
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2007PA066375')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='s347820')])]").exists());
     }
 
 
@@ -56,25 +56,25 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherTroncatureArriereWildchar() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Rouss*&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(8)))
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2007PA066375')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='s347820')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2011ANGE0040')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2003PA066582')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='1997PA040286')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020PA01H073')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021SORUL154')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2019LYSE2095')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017PA01H038')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='S233939')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2019LYSES011')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2018LYSE1193')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017ECLI0025')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2016SACLN057')])]").exists());
+                .andExpect(jsonPath("$.totalHits").value(8))
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2007PA066375')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='s347820')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2011ANGE0040')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2003PA066582')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='1997PA040286')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020PA01H073')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021SORUL154')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2019LYSE2095')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017PA01H038')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='S233939')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2019LYSES011')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018LYSE1193')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017ECLI0025')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2016SACLN057')])]").exists());
     }
 
     @Test
@@ -83,14 +83,14 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherTroncatureAvantWildchar() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=*wan&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(5)))
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='s347820')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='2020REN1B015')])]").exists())
-                .andExpect(jsonPath("$[?(@.theses[?(@.nnt=='1999ROUES082')])]").exists());
+                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='s347820')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020REN1B015')])]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='1999ROUES082')])]").exists());
 
     }
 }

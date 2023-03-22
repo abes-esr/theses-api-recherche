@@ -29,6 +29,10 @@ public class ThesePersonne {
 
     @Getter
     @Setter
+    Map<String, String> titres = new HashMap<String, String>();
+
+    @Getter
+    @Setter
     List<String> sujets_rameau = new ArrayList<>();
 
     @Getter
@@ -41,6 +45,26 @@ public class ThesePersonne {
 
     @Getter
     @Setter
-    Map<String, String> resumes = new HashMap<String, String>();
+    Map<String, String> resumes = new HashMap<>();
+
+    @Getter
+    @Setter
+    String date_soutenance;
+
+    @Getter
+    @Setter
+    Etablissement etablissement_soutenance = new Etablissement();
+
+    @Getter
+    @Setter
+    List<Etablissement> etablissements_cotutelle = new ArrayList<>();
+
+    @Getter
+    @Setter
+    String status;
+
+    @Getter
+    @Setter
+    String source;
 
 }

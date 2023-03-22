@@ -36,5 +36,5 @@ public class PersonneLiteResponseDto {
     @Getter
     @Setter
     @JsonProperty("theses")
-    List<PersonnesTheseResponseDto> theses;
+    List<PersonnesTheseLiteResponseDto> theses;
 }
