@@ -98,7 +98,7 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
-        return searchQueryBuilder.facets(q, "personnes");
+        return searchQueryBuilder.facets(q, esIndexName);
     }
 
     /**
