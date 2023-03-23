@@ -7,15 +7,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DTO web retournée par l'API ppour un ensemble de thèses en lien avec une personne
  */
 @Builder
-public class PersonnesTheseLiteResponseDto {
+public class TheseLiteResponseDto {
     @Getter
     @Setter
     @JsonProperty("nnt")

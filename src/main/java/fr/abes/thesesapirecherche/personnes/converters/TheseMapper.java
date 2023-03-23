@@ -1,7 +1,7 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
-import fr.abes.thesesapirecherche.personnes.dto.PersonnesTheseLiteResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonnesTheseResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.TheseLiteResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
 import java.util.ArrayList;
@@ -10,17 +10,18 @@ import java.util.List;
 /**
  * Convertisseur de format pour les objets Thèses
  */
-public class PersonneTheseMapper {
+public class TheseMapper {
 
     EtablissementMapper etablissementMapper = new EtablissementMapper();
+    ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
 
     /**
      * Transforme une thèse en web dto
      * @param these
      * @return
      */
-    public PersonnesTheseResponseDto theseToDto(ThesePersonne these) {
-        return PersonnesTheseResponseDto.builder()
+    public TheseResponseDto theseToDto(ThesePersonne these) {
+        return TheseResponseDto.builder()
                 .nnt(these.getNnt())
                 .titre(these.getTitre())
                 .role(these.getRole())
@@ -28,6 +29,8 @@ public class PersonneTheseMapper {
                 .status(these.getStatus())
                 .etablissement_soutenance(etablissementMapper.etablissementToDto(these.getEtablissement_soutenance()))
                 .date_soutenance(these.getDate_soutenance())
+                .auteurs(personneMapper.personnesLiteToDto(these.getAuteurs()))
+                .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
                 .build();
     }
 
@@ -36,8 +39,8 @@ public class PersonneTheseMapper {
      * @param theses
      * @return
      */
-    public List<PersonnesTheseResponseDto> thesesToDto(List<ThesePersonne> theses) {
-        List<PersonnesTheseResponseDto> results = new ArrayList<>();
+    public List<TheseResponseDto> thesesToDto(List<ThesePersonne> theses) {
+        List<TheseResponseDto> results = new ArrayList<>();
         if (theses != null) {
             for (ThesePersonne item : theses) {
                 results.add(theseToDto(item));
@@ -51,8 +54,8 @@ public class PersonneTheseMapper {
      * @param these
      * @return
      */
-    public PersonnesTheseLiteResponseDto theseLiteToDto(ThesePersonne these) {
-        return PersonnesTheseLiteResponseDto.builder()
+    public TheseLiteResponseDto theseLiteToDto(ThesePersonne these) {
+        return TheseLiteResponseDto.builder()
                 .nnt(these.getNnt())
                 .role(these.getRole())
                 .discipline(these.getDiscipline())
@@ -64,8 +67,8 @@ public class PersonneTheseMapper {
      * @param theses
      * @return
      */
-    public List<PersonnesTheseLiteResponseDto> thesesLiteToDto(List<ThesePersonne> theses) {
-        List<PersonnesTheseLiteResponseDto> results = new ArrayList<>();
+    public List<TheseLiteResponseDto> thesesLiteToDto(List<ThesePersonne> theses) {
+        List<TheseLiteResponseDto> results = new ArrayList<>();
         if (theses != null) {
             for (ThesePersonne item : theses) {
                 results.add(theseLiteToDto(item));

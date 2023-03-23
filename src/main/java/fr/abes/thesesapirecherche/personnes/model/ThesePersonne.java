@@ -67,4 +67,12 @@ public class ThesePersonne {
     @Setter
     String source;
 
+    @Getter
+    @Setter
+    List<PersonneLite> auteurs = new ArrayList<>();
+
+    @Getter
+    @Setter
+    List<PersonneLite> directeurs = new ArrayList<>();
+
 }

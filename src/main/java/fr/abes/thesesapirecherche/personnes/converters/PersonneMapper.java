@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class PersonneMapper {
 
-    PersonneTheseMapper theseMapper = new PersonneTheseMapper();
+    TheseMapper theseMapper = new TheseMapper();
 
     /**
      * Conversion d'une personne du format ES au format DTO pour une liste de personnes.

@@ -5,13 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 /**
- * DTO web retournée par l'API pour un ensemble de personnes
+ * DTO web retournée par l'API pour une personne dans une thèse (auteurs, directeurs)
  */
 @Builder
-public class PersonneLiteResponseDto {
+public class ThesePersonneLiteResponseDto {
 
     @Getter
     @Setter
@@ -32,9 +30,4 @@ public class PersonneLiteResponseDto {
     @Setter
     @JsonProperty("has_idref")
     Boolean hasIdref;
-
-    @Getter
-    @Setter
-    @JsonProperty("theses")
-    List<TheseLiteResponseDto> theses;
 }

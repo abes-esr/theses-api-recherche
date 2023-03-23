@@ -1,7 +1,6 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.abes.thesesapirecherche.personnes.model.Etablissement;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +14,7 @@ import java.util.Map;
  * DTO web retournée par l'API pour une thèse en lien avec une personne
  */
 @Builder
-public class PersonnesTheseResponseDto {
+public class TheseResponseDto {
     @Getter
     @Setter
     @JsonProperty("nnt")
@@ -80,4 +79,14 @@ public class PersonnesTheseResponseDto {
     @Setter
     @JsonProperty("source")
     String source;
+
+    @Getter
+    @Setter
+    @JsonProperty("auteurs")
+    List<ThesePersonneLiteResponseDto> auteurs = new ArrayList<>();
+
+    @Getter
+    @Setter
+    @JsonProperty("directeurs")
+    List<ThesePersonneLiteResponseDto> directeurs = new ArrayList<>();
 }
