@@ -23,7 +23,7 @@ public class RecherchePonderationTest extends PersonneControllerTest {
     public void rechercherRousseauBoostIdrefRole() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(8))
+                .andExpect(jsonPath("$.totalHits").value(17))
                 .andExpect(jsonPath("$.personnes[0].id").value("098248782"))
                 .andExpect(jsonPath("$.personnes[1].id").value("050646176"))
                 .andExpect(jsonPath("$.personnes[2].id").value("081954522"))
@@ -44,7 +44,7 @@ public class RecherchePonderationTest extends PersonneControllerTest {
     public void rechercherErwanBoostIdrefRole() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=erwan&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(12))
                 .andExpect(jsonPath("$.personnes[0].id").value("098248782"))
                 .andExpect(jsonPath("$.personnes[1].id").value("182866122"))
                 .andExpect(jsonPath("$.personnes[2].id").value("178429708"))

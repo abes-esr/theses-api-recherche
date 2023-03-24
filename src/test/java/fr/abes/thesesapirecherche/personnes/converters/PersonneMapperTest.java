@@ -34,8 +34,8 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
             .timedOut(false)
             .hits(h -> h
                     .total(t -> t.value(0).relation(TotalHitsRelation.Eq))
-                    .hits(Hit.of(z -> z.index("personnes").id("127566635").source(Personne.builder().nom("Rousseau").prenom("Erwann").hasIdref(true).theses(List.of(ThesePersonne.builder().role("auteur").nnt("2007PA066375").build())).build())),
-                            Hit.of(z -> z.index("personnes").id("D_Cs1oMBVl5--j0CzKFo").source(Personne.builder().nom("Rousseau").prenom("Erwan").hasIdref(false).theses(List.of(ThesePersonne.builder().role("directeur de thèse").nnt("s347820").build())).build())))
+                    .hits(Hit.of(z -> z.index("personnes").id("127566635").source(Personne.builder().nom("Rousseau").prenom("Erwann").hasIdref(true).theses(List.of(ThesePersonne.builder().roles(List.of("auteur")).nnt("2007PA066375").build())).build())),
+                            Hit.of(z -> z.index("personnes").id("D_Cs1oMBVl5--j0CzKFo").source(Personne.builder().nom("Rousseau").prenom("Erwan").hasIdref(false).theses(List.of(ThesePersonne.builder().roles(List.of("directeur de thèse")).nnt("s347820").build())).build())))
             )
             .shards(s -> s
                     .total(1)
@@ -80,7 +80,7 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("Erwann", results.get(0).getPrenom());
         Assertions.assertEquals(true, results.get(0).getHasIdref());
         Assertions.assertEquals(1, results.get(0).getTheses().size());
-        Assertions.assertEquals("auteur", results.get(0).getTheses().get(0).getRole());
+        Assertions.assertEquals("auteur", results.get(0).getTheses().get(0).getRoles().get(0));
         Assertions.assertEquals("2007PA066375", results.get(0).getTheses().get(0).getNnt());
 
         // 2ème personne
@@ -89,7 +89,7 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("Erwan", results.get(1).getPrenom());
         Assertions.assertEquals(false, results.get(1).getHasIdref());
         Assertions.assertEquals(1, results.get(1).getTheses().size());
-        Assertions.assertEquals("directeur de thèse", results.get(1).getTheses().get(0).getRole());
+        Assertions.assertEquals("directeur de thèse", results.get(1).getTheses().get(0).getRoles().get(0));
         Assertions.assertEquals("s347820", results.get(1).getTheses().get(0).getNnt());
 
     }
@@ -106,7 +106,7 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("Erwann", results.getPrenom());
         Assertions.assertEquals(true, results.getHasIdref());
         Assertions.assertEquals(1, results.getTheses().size());
-        Assertions.assertEquals("auteur", results.getTheses().get(0).getRole());
+        Assertions.assertEquals("auteur", results.getTheses().get(0).getRoles().get(0));
         Assertions.assertEquals("2007PA066375", results.getTheses().get(0).getNnt());
 
     }

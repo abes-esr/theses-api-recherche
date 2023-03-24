@@ -21,7 +21,7 @@ public class ThesePersonne {
 
     @Getter
     @Setter
-    String role;
+    List<String> roles = new ArrayList<>();
 
     @Getter
     @Setter

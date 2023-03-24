@@ -22,7 +22,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleAuteur() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"auteur\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(6))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2007PA066375')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2011ANGE0040')])]").exists())
@@ -40,7 +40,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleDirecteur() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"directeur de thèse\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(7))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0659')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0198')])]").exists())
@@ -109,7 +109,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRolePresident() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"président du jury\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(2))
+                .andExpect(jsonPath("$.totalHits").value(3))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021SORUL154')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020PA01H040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018PA01H049')])]").exists())
@@ -136,7 +136,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleRapporteur() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"rapporteur\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(3))
+                .andExpect(jsonPath("$.totalHits").value(5))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2016SACLS213')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021PA080021')])]").exists())
@@ -159,7 +159,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleMembre() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"membre du jury\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(3))
+                .andExpect(jsonPath("$.totalHits").value(6))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2020AIXM0184')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0224')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0140')])]").exists())
@@ -191,7 +191,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleAuteurOuDirecteur() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"auteur\"%26role=\"directeur de thèse\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(8))
+                .andExpect(jsonPath("$.totalHits").value(11))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2007PA066375')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2011ANGE0040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2003PA066582')])]").exists())
@@ -265,7 +265,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleDirecteurouRapporteur() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"directeur de thèse\"%26role=\"rapporteur\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(9))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='s347820')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='s233939')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
@@ -344,7 +344,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleDirecteurouPresident() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"directeur de thèse\"%26role=\"président du jury\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(8))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0659')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0198')])]").exists())
@@ -427,7 +427,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     public void rechercherRoleDirecteurouMembre() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_recherche_simple_rousseau&filtres=[role=\"directeur de thèse\"%26role=\"membre du jury\"]"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(10))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0659')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2018AIXM0198')])]").exists())

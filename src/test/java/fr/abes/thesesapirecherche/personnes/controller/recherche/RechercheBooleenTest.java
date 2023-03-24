@@ -22,7 +22,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     public void rechercherBooleenOuOr() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20OR%20Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(10))
+                .andExpect(jsonPath("$.totalHits").value(19))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
@@ -78,7 +78,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     public void rechercher2BooleenSaufNot() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Rousseau%20NOT%20Erwan&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(8))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2011ANGE0040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2003PA066582')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='1997PA040286')])]").exists())
@@ -97,7 +97,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     public void rechercherBooleenEtAnd() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20AND%20Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(3))
+                .andExpect(jsonPath("$.totalHits").value(10))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
@@ -111,7 +111,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     public void rechercherBooleenEtPlus() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20+%20Rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(3))
+                .andExpect(jsonPath("$.totalHits").value(10))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())

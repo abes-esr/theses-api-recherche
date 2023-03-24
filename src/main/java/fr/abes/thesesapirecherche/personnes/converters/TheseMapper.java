@@ -24,7 +24,7 @@ public class TheseMapper {
         return TheseResponseDto.builder()
                 .nnt(these.getNnt())
                 .titre(these.getTitre())
-                .role(these.getRole())
+                .roles(these.getRoles())
                 .discipline(these.getDiscipline())
                 .status(these.getStatus())
                 .etablissement_soutenance(etablissementMapper.etablissementToDto(these.getEtablissement_soutenance()))
@@ -57,7 +57,7 @@ public class TheseMapper {
     public TheseLiteResponseDto theseLiteToDto(ThesePersonne these) {
         return TheseLiteResponseDto.builder()
                 .nnt(these.getNnt())
-                .role(these.getRole())
+                .roles(these.getRoles())
                 .discipline(these.getDiscipline())
                 .build();
     }

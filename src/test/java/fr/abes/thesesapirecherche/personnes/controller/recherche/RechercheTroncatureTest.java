@@ -22,7 +22,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherExpressionExacteNomPrenom() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=%22Erwan%20Rousseau%22&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(2))
+                .andExpect(jsonPath("$.totalHits").value(9))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
@@ -56,7 +56,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherTroncatureArriereWildchar() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Rouss*&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(8))
+                .andExpect(jsonPath("$.totalHits").value(17))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
@@ -83,7 +83,7 @@ public class RechercheTroncatureTest extends PersonneControllerTest {
     public void rechercherTroncatureAvantWildchar() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=*wan&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(5))
+                .andExpect(jsonPath("$.totalHits").value(12))
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2004BRES2040')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2021AIXM0253')])]").exists())
                 .andExpect(jsonPath("$.personnes[?(@.theses[?(@.nnt=='2017GREAM026')])]").exists())
