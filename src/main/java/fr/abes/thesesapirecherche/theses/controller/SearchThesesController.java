@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/recherche-java/")
+@RequestMapping("/api/v1/recherche/")
 public class SearchThesesController {
 
     @Autowired

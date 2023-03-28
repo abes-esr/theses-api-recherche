@@ -5,11 +5,9 @@ import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.aggregations.TermsAggregation;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermsQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermsQueryField;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.json.JsonData;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.dto.Checkbox;
 import fr.abes.thesesapirecherche.dto.Facet;
@@ -116,6 +114,9 @@ public class FacetQueryBuilder {
 
         //Création d'une map : NomFiltre (key) / liste valeurs (values)
         Map<String, List<String>> mapFiltres = new HashMap<>();
+        String dateDebut = "";
+        String dateFin = "";
+
         for (String s : filtres) {
             String[] filtreSplit = s.split("=\"");
             if (filtreSplit.length > 1) {
@@ -138,6 +139,13 @@ public class FacetQueryBuilder {
                 }
                 a.add(value);
                 mapFiltres.put(key, a);
+
+                //Gestion des dates
+                if (key.equals("datedebut")) {
+                    dateDebut = value;
+                } else if (key.equals("datefin")) {
+                    dateFin = value;
+                }
             }
         }
 
@@ -163,6 +171,11 @@ public class FacetQueryBuilder {
                 }
             }
         });
+
+        if (!dateDebut.isEmpty() || !dateFin.isEmpty()) {
+            listeFiltres.add(dateFilter(dateDebut, dateFin, f));
+        }
+
         return listeFiltres;
     }
 
@@ -176,4 +189,25 @@ public class FacetQueryBuilder {
 
         return new Query.Builder().terms(termsQuery).build();
     }
+
+    private static Query dateFilter(String dateMin, String dateMax, String filtres) {
+        String field;
+
+        //TODO : Corriger ce champ une fois l'indexation faite
+        if (filtres.contains("enCours")) {
+            field = "dateSoutenance";
+        } else {
+            field = "dateSoutenance";
+        }
+
+        Query dateRangeQuery = RangeQuery.of(r -> r
+                .field(field)
+                .gte(JsonData.of(dateMin.equals("") ? "01/01/1000" : dateMin))
+                .lte(JsonData.of(dateMax.equals("") ? "01/01/2999" : dateMax))
+                .format("dd/MM/yyyy")
+        )._toQuery();
+
+        return dateRangeQuery;
+    }
+
 }

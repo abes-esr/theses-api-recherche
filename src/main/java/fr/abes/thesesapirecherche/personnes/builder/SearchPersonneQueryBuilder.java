@@ -195,11 +195,6 @@ public class SearchPersonneQueryBuilder {
         Context catAvecIdref = new Context.Builder().category("true").build();
         CompletionContext contextAvecIdref = new CompletionContext.Builder().context(catAvecIdref).boost(150.0).build();
 
-        // Définition du contexte pour booster les personnes avec le rôle
-        Context catDirecteur = new Context.Builder().category("directeur de thèse").build();
-        Context catRapporteur = new Context.Builder().category("rapporteur").build();
-        CompletionContext contextDirecteur = new CompletionContext.Builder().context(catDirecteur).boost(100.0).build();
-        CompletionContext contextRapporteur = new CompletionContext.Builder().context(catRapporteur).boost(100.0).build();
 
         FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
                 .completion(cs ->
@@ -208,7 +203,6 @@ public class SearchPersonneQueryBuilder {
                                 .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
                                 .field("suggestion")
                                 .contexts("has_idref", List.of(contextAvecIdref))
-                                .contexts("roles", List.of(contextDirecteur,contextRapporteur))
                 )
         );
 
