@@ -203,16 +203,16 @@ public class FacetQueryBuilder {
 
         //TODO : Corriger ce champ une fois l'indexation faite
         if (filtres.contains("enCours")) {
-            field = "dateSoutenance";
+            field = "datePremiereInscriptionDoctorat";
         } else {
             field = "dateSoutenance";
         }
 
         Query dateRangeQuery = RangeQuery.of(r -> r
                 .field(field)
-                .gte(JsonData.of(dateMin.equals("") ? "01/01/1000" : dateMin))
-                .lte(JsonData.of(dateMax.equals("") ? "01/01/2999" : dateMax))
-                .format("dd/MM/yyyy")
+                .gte(JsonData.of(dateMin.equals("") ? "1000" : dateMin))
+                .lte(JsonData.of(dateMax.equals("") ? "2999" : dateMax))
+                .format("yyyy")
         )._toQuery();
 
         return dateRangeQuery;
