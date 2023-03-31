@@ -22,6 +22,7 @@ public class These {
     String codeEtab;
     Date dateSoutenance;
     Date dateFinEmbargo;
+    Date datePremiereInscriptionDoctorat;
     List<String> langues;
     List<String> oaiSets;
 
