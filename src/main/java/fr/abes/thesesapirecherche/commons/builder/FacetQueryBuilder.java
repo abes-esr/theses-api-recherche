@@ -38,16 +38,24 @@ public class FacetQueryBuilder {
 
         //Aggregation des facets
         mainFacets.forEach((i) -> {
-            Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).build())
-                    .build();
+            Aggregation agg;
+            // Pour les disciplines, on ne remonte que les valeurs ayant + de 5 theses
+            if (i.getChamp().equals("discipline.exact")) {
+                agg = new Aggregation.Builder()
+                        .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).minDocCount(5).build())
+                        .build();
+            } else {
+                agg = new Aggregation.Builder()
+                        .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).build())
+                        .build();
+            }
             map.put(i.getChamp(), agg);
         });
 
         // Aggregation des sous-facets
         subsFacets.forEach((i) -> {
             Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).build())
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).build())
                     .build();
             map.put(i.getChamp(), agg);
         });
@@ -209,5 +217,4 @@ public class FacetQueryBuilder {
 
         return dateRangeQuery;
     }
-
 }
