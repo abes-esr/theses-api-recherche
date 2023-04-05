@@ -73,7 +73,9 @@ public class SearchThesesController {
     })
     @ApiOperation(
             value = "Retourne une liste de facets/filtres pour une recherche simple")
-    public List<Facet> facets(@RequestParam final String q) throws Exception {
-        return searchQueryBuilder.facets(q);
+    public List<Facet> facets(@RequestParam final String q,
+                              @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
+    ) throws Exception {
+        return searchQueryBuilder.facets(q, filtres.orElse(""));
     }
 }

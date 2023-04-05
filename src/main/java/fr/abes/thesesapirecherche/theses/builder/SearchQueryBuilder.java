@@ -139,8 +139,8 @@ public class SearchQueryBuilder {
         return res;
     }
 
-    public List<Facet> facets(String chaine) throws Exception {
-        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), esIndexName, facetProps.getMainTheses(), facetProps.getSubsTheses(), maxFacetsValues);
+    public List<Facet> facets(String chaine, String filtres) throws Exception {
+        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), esIndexName, facetProps.getMainTheses(), facetProps.getSubsTheses(), maxFacetsValues, filtres);
     }
 
     public TheseResponseDto rechercheSurId(String nnt) throws Exception {

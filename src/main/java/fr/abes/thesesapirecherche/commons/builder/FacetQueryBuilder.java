@@ -23,7 +23,7 @@ import java.util.Map;
 @EnableConfigurationProperties(value = FacetProps.class)
 public class FacetQueryBuilder {
 
-    public static List<Facet> facets(ElasticsearchClient client, Query query, String index, List<FacetProps.MainFacet> mainFacets, List<FacetProps.SubFacet> subsFacets, int maxFacetValues) throws Exception {
+    public static List<Facet> facets(ElasticsearchClient client, Query query, String index, List<FacetProps.MainFacet> mainFacets, List<FacetProps.SubFacet> subsFacets, int maxFacetValues, String filtres) throws Exception {
         Map<String, Aggregation> map = new HashMap<>();
 
         if (subsFacets == null) {
@@ -60,6 +60,8 @@ public class FacetQueryBuilder {
             map.put(i.getChamp(), agg);
         });
 
+        List<FacetProps.SubFacet> finalSubsFacets = subsFacets;
+
         //Requête ES
         SearchResponse<Void> response = client.search(
                 s -> s
@@ -67,6 +69,7 @@ public class FacetQueryBuilder {
                         .query(q -> q
                                 .bool(t -> t
                                         .must(query)
+                                        .filter(addFilters(filtres, mainFacets, finalSubsFacets))
                                 ))
                         .size(0).aggregations(map),
                 Void.class
@@ -75,7 +78,6 @@ public class FacetQueryBuilder {
         List<Facet> facets = new ArrayList<>();
 
         // Récupération des facets
-        List<FacetProps.SubFacet> finalSubsFacets = subsFacets;
         mainFacets.forEach((i) -> {
             Facet f = new Facet();
             List<Checkbox> checkboxes = new ArrayList<>();
@@ -201,18 +203,18 @@ public class FacetQueryBuilder {
     private static Query dateFilter(String dateMin, String dateMax, String filtres) {
         String field;
 
-        //TODO : Corriger ce champ une fois l'indexation faite
         if (filtres.contains("enCours")) {
             field = "datePremiereInscriptionDoctorat";
         } else {
             field = "dateSoutenance";
         }
 
+
         Query dateRangeQuery = RangeQuery.of(r -> r
                 .field(field)
-                .gte(JsonData.of(dateMin.equals("") ? "1000" : dateMin))
-                .lte(JsonData.of(dateMax.equals("") ? "2999" : dateMax))
-                .format("yyyy")
+                .gte(JsonData.of(dateMin.equals("") ? "01/01/1000" : "01/01/" + dateMin))
+                .lte(JsonData.of(dateMax.equals("") ? "31/12/2999" : "31/12/" + dateMax))
+                .format("dd/MM/yyyy")
         )._toQuery();
 
         return dateRangeQuery;

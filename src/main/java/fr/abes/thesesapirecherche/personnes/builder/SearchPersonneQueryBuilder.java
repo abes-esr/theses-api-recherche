@@ -1,8 +1,6 @@
 package fr.abes.thesesapirecherche.personnes.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.SortOptions;
-import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -33,7 +31,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.SSLContext;
-import java.util.ArrayList;
 import java.util.List;
 
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
@@ -112,7 +109,7 @@ public class SearchPersonneQueryBuilder {
 
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(queryString)
-                .functions(List.of(functionScoreIdref,functionScoreRoleDirecteur,functionScoreRoleRapporteur))
+                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
                 .build();
@@ -195,7 +192,7 @@ public class SearchPersonneQueryBuilder {
      * @throws Exception
      */
     public List<Facet> facets(String chaine, String index) throws Exception {
-        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues);
+        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, "");
     }
 
     /**
