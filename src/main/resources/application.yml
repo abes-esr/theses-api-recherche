@@ -6,16 +6,16 @@ facets:
     - libelle: Etablissements
       champ: etabSoutenanceN.exact
       searchBar: true
-    - libelle: Domaines thématique
+    - libelle: Domaines thématiques
       champ: oaiSetNames
       searchBar: true
-    - libelle: Discipline
+    - libelle: Disciplines
       champ: discipline.exact
       searchBar: true
     - libelle: Langues
       champ: langues
       searchBar: true
-    - libelle: Ecole doctorale
+    - libelle: Écoles doctorales
       champ: ecolesDoctoralesN.exact
       searchBar: true
   subsTheses:
