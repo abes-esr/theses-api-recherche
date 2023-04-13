@@ -13,6 +13,7 @@ import java.util.Map;
 @Setter
 public class These {
 
+    String dateInsertionDansES;
     String cas;
     String titrePrincipal;
     String nnt;
