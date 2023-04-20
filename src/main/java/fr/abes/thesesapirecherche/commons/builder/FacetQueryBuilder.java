@@ -2,7 +2,6 @@ package fr.abes.thesesapirecherche.commons.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.FieldValue;
-import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.aggregations.TermsAggregation;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
@@ -30,32 +29,20 @@ public class FacetQueryBuilder {
             subsFacets = new ArrayList<>();
         }
 
-        // Tri par ordre alphabétique sur les clés
-        List<Map<String, SortOrder>> order = new ArrayList<>();
-        Map<String, SortOrder> orderMap = new HashMap<>();
-        orderMap.put("_key", SortOrder.Asc);
-        order.add(orderMap);
-
         //Aggregation des facets
         mainFacets.forEach((i) -> {
             Aggregation agg;
-            // Pour les disciplines, on ne remonte que les valeurs ayant + de 5 theses
-            if (i.getChamp().equals("discipline.exact")) {
-                agg = new Aggregation.Builder()
-                        .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).minDocCount(5).build())
-                        .build();
-            } else {
-                agg = new Aggregation.Builder()
-                        .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).build())
-                        .build();
-            }
+            agg = new Aggregation.Builder()
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).size(maxFacetValues).build())
+                    .build();
+
             map.put(i.getChamp(), agg);
         });
 
         // Aggregation des sous-facets
         subsFacets.forEach((i) -> {
             Aggregation agg = new Aggregation.Builder()
-                    .terms(new TermsAggregation.Builder().field(i.getChamp()).order(order).size(maxFacetValues).build())
+                    .terms(new TermsAggregation.Builder().field(i.getChamp()).size(maxFacetValues).build())
                     .build();
             map.put(i.getChamp(), agg);
         });
@@ -112,6 +99,7 @@ public class FacetQueryBuilder {
             f.setName(i.getLibelle());
             f.setCheckboxes(checkboxes);
             f.setSearchBar(i.isSearchBar());
+            f.sortCheckboxes();
             facets.add(f);
         });
         return facets;
@@ -136,8 +124,8 @@ public class FacetQueryBuilder {
                 //Gestion des sous-facets
                 if (subsFacets != null) {
                     for (FacetProps.SubFacet facet : subsFacets) {
-                        if (value.equals(facet.getLibelle().toLowerCase())) {
-                            key = facet.getLibelle().toLowerCase();
+                        if (value.equals(facet.getLibelle())) {
+                            key = facet.getLibelle();
                         }
                     }
                 }
@@ -164,14 +152,14 @@ public class FacetQueryBuilder {
         //Pour chaque filtre présent dans la map, on crée une TermsQuery que l'on ajoute à la liste
         mapFiltres.forEach((k, v) -> {
             for (FacetProps.MainFacet facet : mainFacets) {
-                if (facet.getLibelle().toLowerCase().equals(k)) {
+                if (facet.getLibelle().equals(k)) {
                     listeFiltres.add(buildFilter(facet.getChamp(), v));
                 }
             }
 
             if (subsFacets != null) {
                 for (FacetProps.SubFacet facet : subsFacets) {
-                    if (facet.getLibelle().toLowerCase().equals(k)) {
+                    if (facet.getLibelle().equals(k)) {
                         //Cas particulier Accessible en ligne
                         if (facet.getChamp().equals("accessible"))
                             listeFiltres.add(buildFilter(facet.getChamp(), List.of("oui")));
@@ -201,17 +189,8 @@ public class FacetQueryBuilder {
     }
 
     private static Query dateFilter(String dateMin, String dateMax, String filtres) {
-        String field;
-
-        if (filtres.contains("enCours")) {
-            field = "datePremiereInscriptionDoctorat";
-        } else {
-            field = "dateSoutenance";
-        }
-
-
         Query dateRangeQuery = RangeQuery.of(r -> r
-                .field(field)
+                .field("dateFiltre")
                 .gte(JsonData.of(dateMin.equals("") ? "01/01/1000" : "01/01/" + dateMin))
                 .lte(JsonData.of(dateMax.equals("") ? "31/12/2999" : "31/12/" + dateMax))
                 .format("dd/MM/yyyy")
