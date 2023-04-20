@@ -5,13 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Checkbox {
+public class Checkbox implements Comparable<Checkbox> {
     String name;
     String label;
     Long value;
@@ -23,36 +25,14 @@ public class Checkbox {
         this.value = value;
         this.parentName = parentName;
         this.checkboxes = checkboxes;
-        this.label = capitalize(name);
+        // @TODO Supprimer le champ label et son utilisation dans le client
+        this.label = name;
     }
 
-    /**
-     * Transforme le caractère suivant un caractère qui n'est pas en alphanumérique (alinéa, espace etc) en majuscule
-     * Tri sur la valeur de Character.getType() - seuil = 9
-     *
-     * @param name
-     * @return
-     */
-    private static String capitalize(String name) {
-        if (name == null || name.isEmpty()) {
-            return name;
-        }
-
-        StringBuilder converted = new StringBuilder();
-
-        boolean convertNext = true;
-        for (char ch : name.toCharArray()) {
-            int type = Character.getType(ch);
-            if (Character.getType(ch) > 9) {
-                convertNext = true;
-            } else if (convertNext) {
-                ch = Character.toTitleCase(ch);
-                convertNext = false;
-            } else {
-                ch = Character.toLowerCase(ch);
-            }
-            converted.append(ch);
-        }
-        return converted.toString();
+    @Override
+    public int compareTo(Checkbox other) {
+        // Utiliser la comparaison basée sur le champ name
+        Collator collator = Collator.getInstance(Locale.FRENCH);
+        return collator.compare(this.name, other.name);
     }
 }

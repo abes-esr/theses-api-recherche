@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Builder
 @Getter
@@ -17,6 +15,7 @@ public class TheseLiteResponseDto {
     String titrePrincipal;
     String etabSoutenanceN;
     String dateSoutenance;
+    String datePremiereInscriptionDoctorat;
     List<PersonneThese> auteurs;
     List<PersonneThese> directeurs;
     String nnt;
