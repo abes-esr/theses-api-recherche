@@ -10,7 +10,7 @@ facets:
       champ: oaiSetNames
       searchBar: true
     - libelle: Disciplines
-      champ: discipline.raw
+      champ: discipline.exact
       searchBar: true
     - libelle: Langues
       champ: langues
