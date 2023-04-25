@@ -6,11 +6,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/theses")
 public class TheseController {
 
     final
@@ -20,7 +23,7 @@ public class TheseController {
         this.searchQueryBuilder = searchQueryBuilder;
     }
 
-    @GetMapping(value = "/recherche/these/{id}")
+    @GetMapping(value = "/these/{id}")
     @ApiOperation(
             value = "Renvoyer une thèse à partir de son nnt",
             notes = "Retourne la thèse correspondante au nnt")

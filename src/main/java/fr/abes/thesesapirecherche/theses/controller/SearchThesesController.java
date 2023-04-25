@@ -19,13 +19,13 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/recherche/")
+@RequestMapping("/api/v1/theses/")
 public class SearchThesesController {
 
     @Autowired
     SearchQueryBuilder searchQueryBuilder;
 
-    @GetMapping(value = "/simple/")
+    @GetMapping(value = "/recherche/")
     @ApiOperation(
             value = "Rechercher une thèse via le titre",
             notes = "Retourne une liste de thèses correspondant à la recherche")
