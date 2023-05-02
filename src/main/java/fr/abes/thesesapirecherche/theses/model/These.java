@@ -13,6 +13,7 @@ import java.util.Map;
 @Setter
 public class These {
 
+    String dateInsertionDansES;
     String cas;
     String titrePrincipal;
     String nnt;
@@ -22,6 +23,8 @@ public class These {
     String codeEtab;
     Date dateSoutenance;
     Date dateFinEmbargo;
+    Date dateFiltre;
+    Date datePremiereInscriptionDoctorat;
     List<String> langues;
     List<String> oaiSets;
 
@@ -55,5 +58,10 @@ public class These {
     public String getDateSoutenance() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return dateSoutenance != null ? dateFormat.format(dateSoutenance) : null;
+    }
+
+    public String getDatePremiereInscriptionDoctorat() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return datePremiereInscriptionDoctorat != null ? dateFormat.format(datePremiereInscriptionDoctorat) : null;
     }
 }

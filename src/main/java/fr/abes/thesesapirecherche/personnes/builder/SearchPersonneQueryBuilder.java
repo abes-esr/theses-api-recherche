@@ -229,7 +229,7 @@ public class SearchPersonneQueryBuilder {
      * @throws Exception
      */
     public List<Facet> facets(String chaine, String index) throws Exception {
-        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues);
+        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, "");
     }
 
     /**

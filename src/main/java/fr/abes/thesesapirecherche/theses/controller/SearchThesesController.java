@@ -19,13 +19,13 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/recherche/")
+@RequestMapping("/api/v1/theses/")
 public class SearchThesesController {
 
     @Autowired
     SearchQueryBuilder searchQueryBuilder;
 
-    @GetMapping(value = "/simple/")
+    @GetMapping(value = "/recherche/")
     @ApiOperation(
             value = "Rechercher une thèse via le titre",
             notes = "Retourne une liste de thèses correspondant à la recherche")
@@ -73,7 +73,9 @@ public class SearchThesesController {
     })
     @ApiOperation(
             value = "Retourne une liste de facets/filtres pour une recherche simple")
-    public List<Facet> facets(@RequestParam final String q) throws Exception {
-        return searchQueryBuilder.facets(q);
+    public List<Facet> facets(@RequestParam final String q,
+                              @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
+    ) throws Exception {
+        return searchQueryBuilder.facets(q, filtres.orElse(""));
     }
 }

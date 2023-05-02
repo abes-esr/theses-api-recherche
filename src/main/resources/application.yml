@@ -3,23 +3,23 @@ facets:
     - libelle: Statut
       champ: status
       searchBar: false
-    - libelle: Etablissements
+    - libelle: Établissements
       champ: etabSoutenanceN.exact
       searchBar: true
-    - libelle: Domaines thématique
+    - libelle: Domaines thématiques
       champ: oaiSetNames
       searchBar: true
-    - libelle: Discipline
+    - libelle: Disciplines
       champ: discipline.exact
       searchBar: true
     - libelle: Langues
       champ: langues
       searchBar: true
-    - libelle: Ecole doctorale
+    - libelle: Écoles doctorales
       champ: ecolesDoctoralesN.exact
       searchBar: true
   subsTheses:
-    - libelle: Accessible en ligne
+    - libelle: Accessibles en ligne
       champ: accessible
       parentName: soutenue
   mainPersonnes:
