@@ -108,7 +108,12 @@ public class FacetQueryBuilder {
     public static List<Query> addFilters(String f, List<FacetProps.MainFacet> mainFacets, List<FacetProps.SubFacet> subsFacets) {
         //Nettoyage et mise en forme de la map des filtres
         //Suppression des [] et découpage de la string des filtres vers une map
-        String[] filtres = f.replace("[", "").replace("\"]", "").split("\"\\&");
+        int firstBracketIndex = f.indexOf('[');
+        int lastBracketIndex = f.lastIndexOf(']');
+        if (firstBracketIndex != -1 && lastBracketIndex != -1)
+            f = f.substring(firstBracketIndex + 1, lastBracketIndex - 1);
+
+        String[] filtres = f.split("\"\\&");
 
         //Création d'une map : NomFiltre (key) / liste valeurs (values)
         Map<String, List<String>> mapFiltres = new HashMap<>();
