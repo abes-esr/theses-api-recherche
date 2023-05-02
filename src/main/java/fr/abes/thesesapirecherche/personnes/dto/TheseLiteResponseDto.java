@@ -21,8 +21,8 @@ public class TheseLiteResponseDto {
 
     @Getter
     @Setter
-    @JsonProperty("roles")
-    List<String> roles;
+    @JsonProperty("role")
+    String role;
 
     @Getter
     @Setter
