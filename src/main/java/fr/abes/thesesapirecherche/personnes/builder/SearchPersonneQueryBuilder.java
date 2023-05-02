@@ -14,10 +14,7 @@ import fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.*;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -104,7 +101,7 @@ public class SearchPersonneQueryBuilder {
         QueryStringQuery.Builder thematiqueBuilderQuery = new QueryStringQuery.Builder();
         thematiqueBuilderQuery.query(chaine);
         thematiqueBuilderQuery.defaultOperator(Operator.And);
-        thematiqueBuilderQuery.fields(List.of("theses.sujets.*","theses.sujets_rameau","theses.resumes.*","theses.discipline"));
+        thematiqueBuilderQuery.fields(List.of("theses.sujets.*", "theses.sujets_rameau", "theses.resumes.*", "theses.discipline"));
         thematiqueBuilderQuery.quoteFieldSuffix(".exact");
         Query nestedThematiqueQuery = new NestedQuery.Builder().query(thematiqueBuilderQuery.build()._toQuery()).path("theses").build()._toQuery();
 
@@ -125,7 +122,7 @@ public class SearchPersonneQueryBuilder {
 
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(thematiqueQueryString)
-                .functions(List.of(functionScoreIdref,functionScoreRoleDirecteur,functionScoreRoleRapporteur))
+                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
                 .build();
@@ -135,6 +132,7 @@ public class SearchPersonneQueryBuilder {
 
     /**
      * Fonction pour trier les résultats.
+     *
      * @return Liste d'options de tri Elastic Search
      */
     private List<SortOptions> buildSort() {
@@ -150,15 +148,15 @@ public class SearchPersonneQueryBuilder {
     /**
      * Rechercher dans ElasticSearch une personne avec son nom et prénom.
      *
-     * @param chaine Chaîne de caractère à rechercher
-     * @param index  Nom de l'index ES à requêter
+     * @param chaine  Chaîne de caractère à rechercher
+     * @param index   Nom de l'index ES à requêter
      * @param filtres Tri à appliquer à la requête ES
-     * @param debut Numéro de la page courante
-     * @param nombre Nombre de résultats à retourner
+     * @param debut   Numéro de la page courante
+     * @param nombre  Nombre de résultats à retourner
      * @return Un objet réponse de la recherche au format Dto web
      * @throws Exception si une erreur est survenue
      */
-    public RechercheResponseDto rechercher(String chaine, String index, String filtres,  Integer debut, Integer nombre) throws Exception {
+    public RechercheResponseDto rechercher(String chaine, String index, String filtres, Integer debut, Integer nombre) throws Exception {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(index)
@@ -179,6 +177,10 @@ public class SearchPersonneQueryBuilder {
         return RechercheResponseDto.builder().personnes(personneMapper.personnesListToDto(response.hits().hits())).totalHits(response.hits().total().value()).build();
     }
 
+    public SuggestionResponseDto completion(String q, String index) throws Exception {
+        return SuggestionResponseDto.builder().personnes(completionPersonne(q, index)).thematiques(completionThematique(q, index)).build();
+    }
+
     /**
      * Retourne 10 suggestion de personnes à partir de son nom ou prénom
      * Les personnes avec un identifiant Idref sont priorisées
@@ -189,12 +191,17 @@ public class SearchPersonneQueryBuilder {
      * @return Une liste de suggestions de personnes au format Dto web
      * @throws Exception
      */
-    public List<SuggestionPersonneResponseDto> completion(String q, String index) throws Exception {
+    public List<SuggestionPersonneResponseDto> completionPersonne(String q, String index) throws Exception {
 
         // Définition du contexte pour booster les personnes avec Idref
         Context catAvecIdref = new Context.Builder().category("true").build();
         CompletionContext contextAvecIdref = new CompletionContext.Builder().context(catAvecIdref).boost(150.0).build();
 
+        // Définition du contexte pour booster les personnes avec le rôle
+        Context catDirecteur = new Context.Builder().category("directeur de thèse").build();
+        Context catRapporteur = new Context.Builder().category("rapporteur").build();
+        CompletionContext contextDirecteur = new CompletionContext.Builder().context(catDirecteur).boost(100.0).build();
+        CompletionContext contextRapporteur = new CompletionContext.Builder().context(catRapporteur).boost(100.0).build();
 
         FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
                 .completion(cs ->
@@ -203,6 +210,7 @@ public class SearchPersonneQueryBuilder {
                                 .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
                                 .field("suggestion")
                                 .contexts("has_idref", List.of(contextAvecIdref))
+                                .contexts("roles", List.of(contextDirecteur, contextRapporteur))
                 )
         );
 
@@ -218,6 +226,38 @@ public class SearchPersonneQueryBuilder {
 
         return personneMapper.suggestionListPersonneToDto(response.suggest());
 
+    }
+
+    /**
+     * Retourne 10 suggestion de thématiques à partir d'un mot
+     *
+     * @param q     Chaîne de caractère à compléter
+     * @param index Nom de l'index ES à requêter
+     * @return Une liste de suggestions de thématiques au format Dto web
+     * @throws Exception
+     */
+    public List<SuggestionPersonneResponseDto> completionThematique(String q, String index) throws Exception {
+
+        FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
+                .completion(cs ->
+                        cs.skipDuplicates(true)
+                                .size(10)
+                                .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
+                                .field("thematiques")
+                )
+        );
+
+        Suggester suggester = Suggester.of(s -> s
+                .suggesters("thematique-suggestion", fieldSuggester)
+                .text(q)
+        );
+
+        SearchResponse<Void> response = this.getElasticsearchClient().search(s -> s
+                        .index(index)
+                        .suggest(suggester)
+                , Void.class);
+
+        return personneMapper.suggestionListPersonneToDto(response.suggest());
     }
 
     /**

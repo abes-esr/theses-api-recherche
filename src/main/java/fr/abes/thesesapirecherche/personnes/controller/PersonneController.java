@@ -3,10 +3,7 @@ package fr.abes.thesesapirecherche.personnes.controller;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.exception.ApiException;
 import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -79,7 +76,7 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<SuggestionPersonneResponseDto> completion(
+    public SuggestionResponseDto completion(
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
