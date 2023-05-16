@@ -32,11 +32,11 @@ public class TheseLiteResponseDto {
     @Getter
     @Setter
     @JsonProperty("etablissement_soutenance")
-    Etablissement etablissement_soutenance = new Etablissement();
+    Etablissement etablissement_soutenance;
 
     @Getter
     @Setter
     @JsonProperty("etabliseements_cotutelle")
-    List<Etablissement> etablissements_cotutelle = new ArrayList<>();
+    List<Etablissement> etablissements_cotutelle;
 
 }

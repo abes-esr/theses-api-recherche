@@ -208,7 +208,7 @@ public class SearchPersonneQueryBuilder {
                         cs.skipDuplicates(true)
                                 .size(10)
                                 .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
-                                .field("suggestion")
+                                .field("completion_nom")
                                 .contexts("has_idref", List.of(contextAvecIdref))
                                 .contexts("roles", List.of(contextDirecteur, contextRapporteur))
                 )
@@ -243,7 +243,7 @@ public class SearchPersonneQueryBuilder {
                         cs.skipDuplicates(true)
                                 .size(10)
                                 .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
-                                .field("thematiques")
+                                .field("completion_thematique")
                 )
         );
 
