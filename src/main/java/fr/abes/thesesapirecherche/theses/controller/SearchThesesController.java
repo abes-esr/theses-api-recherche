@@ -78,4 +78,28 @@ public class SearchThesesController {
     ) throws Exception {
         return searchQueryBuilder.facets(q, filtres.orElse(""));
     }
+
+    @GetMapping(value = "/statsTheses")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    @ApiOperation(
+            value = "Retourne le nombre de theses soutenues")
+    public long statsTheses() throws Exception {
+        return searchQueryBuilder.getStatsTheses("soutenue");
+    }
+
+    @GetMapping(value = "/statsSujets")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    @ApiOperation(
+            value = "Retourne le nombre de theses en préparation")
+    public long statsSujets() throws Exception {
+        return searchQueryBuilder.getStatsTheses("enCours");
+    }
 }

@@ -2,6 +2,7 @@ package fr.abes.thesesapirecherche.personnes.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.elasticsearch.core.CountResponse;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.*;
@@ -221,5 +222,11 @@ public class SearchPersonneQueryBuilder {
         }
 
         return personneMapper.personneToDto(response.hits().hits().get(0));
+    }
+
+    //Retourne le nb total de personnes dans l'index
+    public long getStatsPersonnes(String index) throws Exception {
+        CountResponse countResponse = this.getElasticsearchClient().count(s -> s.index(index));
+        return countResponse.count();
     }
 }

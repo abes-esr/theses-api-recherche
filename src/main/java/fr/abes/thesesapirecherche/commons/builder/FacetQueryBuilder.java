@@ -182,7 +182,7 @@ public class FacetQueryBuilder {
         return listeFiltres;
     }
 
-    private static Query buildFilter(String field, List<String> values) {
+    public static Query buildFilter(String field, List<String> values) {
         //Termsquery : Field / Liste de values
         TermsQueryField termsQueryField = new TermsQueryField.Builder()
                 .value(values.stream().map(FieldValue::of).toList())

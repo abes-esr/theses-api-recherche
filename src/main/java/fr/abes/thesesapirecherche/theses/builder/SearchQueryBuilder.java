@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
+import co.elastic.clients.elasticsearch.core.CountResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.FieldSuggester;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
+import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.buildFilter;
 
 @Slf4j
 @Component
@@ -105,7 +107,7 @@ public class SearchQueryBuilder {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
-        builderQuery.fields("resumes.*^30", "titres.*^30", "nnt^15", "discipline^15", "sujetsRameau^15", "sujets^15", "auteursNP^12", "directeursNP^2", "ecolesDoctoralesN^5", "etabSoutenanceN^5", "oaiSets^5", "etabsCotutelleN^1", "membresJuryNP^1", "partenairesRechercheN^1", "presidentJuryNP^1", "rapporteurs^1");
+        builderQuery.fields("resumes.*^30", "titres.*^30", "nnt^15", "discipline^15", "^15", "sujets^15", "auteursNP^12", "directeursNP^2", "ecolesDoctoralesN^5", "etabSoutenanceN^5", "oaiSets^5", "etabsCotutelleN^1", "membresJuryNP^1", "partenairesRechercheN^1", "presidentJuryNP^1", "rapporteurs^1");
         builderQuery.quoteFieldSuffix(".exact");
 
         return builderQuery.build()._toQuery();
@@ -137,6 +139,20 @@ public class SearchQueryBuilder {
         res.setTheses(liste);
         res.setTotalHits(response.hits().total().value());
         return res;
+    }
+
+    public long getStatsTheses(String statusFilter) throws Exception {
+        List<String> list = List.of(statusFilter);
+        CountResponse countResponse = this.getElasticsearchClient().count(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .bool(t -> t
+                                        .filter(buildFilter("status", list))
+                                ))
+        );
+
+        return countResponse.count();
     }
 
     public List<Facet> facets(String chaine, String filtres) throws Exception {
@@ -189,9 +205,9 @@ public class SearchQueryBuilder {
         if (!tri.equals("")) {
             SortOptions sort = switch (tri) {
                 case "dateAsc" ->
-                        new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Asc)).build();
+                        new SortOptions.Builder().field(f -> f.field("dateFiltre").order(SortOrder.Asc)).build();
                 case "dateDesc" ->
-                        new SortOptions.Builder().field(f -> f.field("dateSoutenance").order(SortOrder.Desc)).build();
+                        new SortOptions.Builder().field(f -> f.field("dateFiltre").order(SortOrder.Desc)).build();
                 case "auteursAsc" ->
                         new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Asc)).build();
                 case "auteursDesc" ->
