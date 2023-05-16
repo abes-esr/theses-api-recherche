@@ -6,10 +6,6 @@ import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,18 +43,10 @@ public class PersonneTestController {
      * @throws ApiException
      */
     @GetMapping(value = "/recherche")
-    @ApiOperation(
-            value = "Rechercher une personne avec un mot",
-            notes = "Retourne une liste de personnes correspondant à la recherche")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
-            @ApiResponse(code = 400, message = "Mauvaise requête"),
-            @ApiResponse(code = 503, message = "Service indisponible"),
-    })
     public List<PersonneLiteResponseDto> recherche(
-            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
-            @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index,
-            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres
+            @RequestParam final String q,
+            @RequestParam final String index,
+            @RequestParam Optional<String> filtres
     ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
@@ -75,17 +63,9 @@ public class PersonneTestController {
      * @throws Exception
      */
     @GetMapping(value = "/completion")
-    @ApiOperation(
-            value = "Proposer l'autocompletion basée sur les noms et prénoms",
-            notes = "Retourne 10 propositions avec une priorité sur les personnes avec un identifiant Idref")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
-            @ApiResponse(code = 400, message = "Mauvaise requête"),
-            @ApiResponse(code = 503, message = "Service indisponible"),
-    })
     public List<SuggestionPersonneResponseDto> completion(
-            @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q,
-            @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index
+            @RequestParam final String q,
+            @RequestParam final String index
     ) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
@@ -101,16 +81,8 @@ public class PersonneTestController {
      * @throws Exception
      */
     @GetMapping(value = "/facets")
-    @ApiOperation(
-            value = "Retourne une liste de facettes avec le nombre d'ocurence pour chaque facette",
-            notes = "Retourne une liste de facettes en fonction du critère de recherche")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
-            @ApiResponse(code = 400, message = "Mauvaise requête"),
-            @ApiResponse(code = 503, message = "Service indisponible"),
-    })
-    public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
-                              @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index) throws Exception {
+    public List<Facet> facets(@RequestParam final String q,
+                              @RequestParam final String index) throws Exception {
         return searchQueryBuilder.facets(q, index);
     }
 
@@ -123,16 +95,8 @@ public class PersonneTestController {
      * @throws ApiException si la personne n'est pas trouvée
      */
     @GetMapping(value = "/personne/{id}")
-    @ApiOperation(
-            value = "Rechercher une personne par son identifiant",
-            notes = "Retourne la personne correspondante à la recherche")
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
-            @ApiResponse(code = 400, message = "Mauvaise requête"),
-            @ApiResponse(code = 503, message = "Service indisponible"),
-    })
     public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id,
-                                                        @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index) throws ApiException {
+                                                        @RequestParam final String index) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
             return searchQueryBuilder.rechercherParIdentifiant(id, index);
