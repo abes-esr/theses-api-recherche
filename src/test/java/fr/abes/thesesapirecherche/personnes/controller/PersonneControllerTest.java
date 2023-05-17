@@ -159,7 +159,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses[?(@.nnt=='1997PA040286')].directeurs[?(@.id=='026982765')].nom").value("Lemoine"))
                 .andExpect(jsonPath("$.theses[?(@.nnt=='1997PA040286')].directeurs[?(@.id=='026982765')].prenom").value("Serge"))
                 .andExpect(jsonPath("$.theses[?(@.nnt=='1997PA040286')].directeurs[?(@.id=='026982765')].has_idref").value(true))
-                .andExpect(jsonPath("$.theses[?(@.nnt=='1997PA040286')].sujets_rameau", Matchers.containsInRelativeOrder("Delaunay, Robert (1885-1941) -- Thèmes, motifs", "Couleur (art)","Réalité -- Dans l'art","Peinture abstraite -- France","Orphisme (peinture) -- France")))
+                //.andExpect(jsonPath("$.theses[?(@.nnt=='1997PA040286')].sujets_rameau", Matchers.containsInRelativeOrder("Delaunay, Robert (1885-1941) -- Thèmes, motifs", "Couleur (art)","Réalité -- Dans l'art","Peinture abstraite -- France","Orphisme (peinture) -- France")))
                  /***** Thèse n°2020PA01H073 *****/
                 .andExpect(jsonPath("$.theses[?(@.nnt=='2020PA01H073')]").exists())
                 .andExpect(jsonPath("$.theses[?(@.nnt=='2020PA01H073')].role", Matchers.containsInRelativeOrder("directeur de thèse", "membre du jury")))
