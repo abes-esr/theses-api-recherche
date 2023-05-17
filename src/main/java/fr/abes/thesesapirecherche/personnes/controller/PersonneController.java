@@ -122,12 +122,27 @@ public class PersonneController {
     public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
-            return searchQueryBuilder.rechercherParIdentifiant(id,esIndexName);
+            return searchQueryBuilder.rechercherParIdentifiant(id, esIndexName);
 
         } catch (Exception e) {
             log.error(e.toString());
             throw new ApiException(e.getLocalizedMessage());
         }
+    }
+
+    /**
+     * Retourne le nombre total de personnes
+     */
+    @GetMapping(value = "/stats")
+    @ApiOperation(
+            value = "Retourne le nombre total de personnes")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Opération terminée avec succès"),
+            @ApiResponse(code = 400, message = "Mauvaise requête"),
+            @ApiResponse(code = 503, message = "Service indisponible"),
+    })
+    public long getStatsPersonnes() throws Exception {
+        return searchQueryBuilder.getStatsPersonnes(esIndexName);
     }
 
 }
