@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class PersonneMapper {
 
-    PersonneTheseMapper theseMapper = new PersonneTheseMapper();
+    TheseMapper theseMapper = new TheseMapper();
 
     /**
      * Conversion d'une personne du format ES au format DTO pour une liste de personnes.
@@ -32,7 +32,7 @@ public class PersonneMapper {
                 .nom(personne.source().getNom())
                 .prenom(personne.source().getPrenom())
                 .hasIdref(personne.source().getHasIdref())
-                .theses(theseMapper.personnesToDto(personne.source().getTheses()))
+                .theses(theseMapper.thesesLiteToDto(personne.source().getTheses()))
                 .build();
     }
 
@@ -61,7 +61,7 @@ public class PersonneMapper {
                 .nom(personne.source().getNom())
                 .prenom(personne.source().getPrenom())
                 .hasIdref(personne.source().getHasIdref())
-                .theses(theseMapper.personnesToDto(personne.source().getTheses()))
+                .theses(theseMapper.thesesToDto(personne.source().getTheses()))
                 .build();
     }
 

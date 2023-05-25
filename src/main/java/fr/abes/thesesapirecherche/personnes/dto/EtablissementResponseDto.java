@@ -6,17 +6,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * DTO web retournée par l'API ppour un ensemble de thèses en lien avec une personne
+ * DTO web retournée par l'API pour un établissement lié à une thèse
  */
 @Builder
-public class PersonnesTheseResponseDto {
-    @Getter
-    @Setter
-    @JsonProperty("nnt")
-    String nnt;
+public class EtablissementResponseDto {
 
     @Getter
     @Setter
-    @JsonProperty("role")
-    String role;
+    @JsonProperty("nnt")
+    String ppn;
+
+    @Getter
+    @Setter
+    @JsonProperty("nom")
+    String nom;
+
+    @Getter
+    @Setter
+    @JsonProperty("type")
+    String type;
+
 }

@@ -3,9 +3,7 @@ package fr.abes.thesesapirecherche.personnes.controller;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.exception.ApiException;
 import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -36,7 +34,9 @@ public class PersonneController {
      *
      * @param q       Chaîne de caractère à rechercher
      * @param filtres Filtres des résultats
-     * @return Une liste de personnes correspondant à la recherche
+     * @param debut Numéro de la page courante
+     * @param nombre Nombre de résultats à retourner
+     * @return Une réponse de recherche
      * @throws ApiException
      */
     @GetMapping(value = "/recherche")
@@ -48,14 +48,16 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<PersonneLiteResponseDto> recherche(
+    public RechercheResponseDto recherche(
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
-            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres
+            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres,
+            @RequestParam @ApiParam(name = "debut", value = "indice de la première personne du lot", example = "10") Optional<Integer> debut,
+            @RequestParam @ApiParam(name = "nombre", value = "nombre de personne dans le lot", example = "10") Optional<Integer> nombre
     ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName, decodedFilters);
+        return searchQueryBuilder.rechercher(decodedQuery, esIndexName, decodedFilters,debut.orElse(0), nombre.orElse(10));
     }
 
     /**
@@ -74,7 +76,7 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<SuggestionPersonneResponseDto> completion(
+    public SuggestionResponseDto completion(
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
