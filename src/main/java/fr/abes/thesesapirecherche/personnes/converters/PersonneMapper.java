@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.core.search.Suggestion;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneComputedFields;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 
 import java.util.ArrayList;
@@ -27,13 +28,20 @@ public class PersonneMapper {
      * @return
      */
     public PersonneLiteResponseDto personnesToDto(Hit<Personne> personne) {
-        return PersonneLiteResponseDto.builder()
+        PersonneLiteResponseDto item = PersonneLiteResponseDto.builder()
                 .id(personne.id())
                 .nom(personne.source().getNom())
                 .prenom(personne.source().getPrenom())
                 .hasIdref(personne.source().getHasIdref())
-                .theses(theseMapper.thesesLiteToDto(personne.source().getTheses()))
+                .these(theseMapper.theseLiteToDto(personne.source().getTheses().get(0)))
                 .build();
+
+        // On remplit les champs calculés
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getTheses()));
+        item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.source().getTheses()));
+        item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.source().getTheses()));
+
+        return item;
     }
 
     /**
@@ -56,13 +64,18 @@ public class PersonneMapper {
      * @return
      */
     public PersonneResponseDto personneToDto(Hit<Personne> personne) {
-        return PersonneResponseDto.builder()
+        PersonneResponseDto item = PersonneResponseDto.builder()
                 .id(personne.id())
                 .nom(personne.source().getNom())
                 .prenom(personne.source().getPrenom())
                 .hasIdref(personne.source().getHasIdref())
                 .theses(theseMapper.thesesToDto(personne.source().getTheses()))
                 .build();
+
+        // On remplit les champs calculés
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getTheses()));
+
+        return item;
     }
 
     /**
