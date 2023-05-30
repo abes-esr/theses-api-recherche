@@ -52,12 +52,13 @@ public class PersonneController {
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
             @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres,
             @RequestParam @ApiParam(name = "debut", value = "indice de la première personne du lot", example = "10") Optional<Integer> debut,
-            @RequestParam @ApiParam(name = "nombre", value = "nombre de personne dans le lot", example = "10") Optional<Integer> nombre
+            @RequestParam @ApiParam(name = "nombre", value = "nombre de personne dans le lot", example = "10") Optional<Integer> nombre,
+            @RequestParam @ApiParam(name = "tri", value = "Type de tri", example = "pertinence, PersonneDesc, PersonnesAsc") Optional<String> tri
     ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName, decodedFilters,debut.orElse(0), nombre.orElse(10));
+        return searchQueryBuilder.rechercher(decodedQuery, esIndexName, decodedFilters,debut.orElse(0), nombre.orElse(10),tri.orElse(""));
     }
 
     /**
