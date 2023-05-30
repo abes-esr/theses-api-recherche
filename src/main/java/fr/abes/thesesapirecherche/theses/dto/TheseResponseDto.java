@@ -21,7 +21,7 @@ public class TheseResponseDto {
     OrganismeResponseDto etabSoutenance;
     List<OrganismeResponseDto> etabCotutelle;
     List<OrganismeResponseDto> partenairesRecherche;
-    List<String> sujetsRameau;
+    Map<String, String> sujetsRameau;
     Map<String, String> sujets;
     List<ThesePersoneResponseDto> membresJury;
     List<ThesePersoneResponseDto> rapporteurs;

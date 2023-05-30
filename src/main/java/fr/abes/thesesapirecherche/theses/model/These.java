@@ -37,7 +37,7 @@ public class These {
     String etabSoutenanceN;
     List<Organisme> partenairesRecherche;
     List<String> partenairesRechercheN;
-    List<String> sujetsRameau;
+    Map<String, String> sujetsRameau;
     List<PersonneThese> membresJury;
     List<String> membresJuryNP;
     List<PersonneThese> rapporteurs;
