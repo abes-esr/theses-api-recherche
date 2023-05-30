@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DTO web retournée par l'API pour une personne spécifique
@@ -32,6 +33,11 @@ public class PersonneResponseDto {
     @Setter
     @JsonProperty("has_idref")
     Boolean hasIdref;
+
+    @Getter
+    @Setter
+    @JsonProperty("roles")
+    Map<String,Integer> roles;
 
     @Getter
     @Setter
