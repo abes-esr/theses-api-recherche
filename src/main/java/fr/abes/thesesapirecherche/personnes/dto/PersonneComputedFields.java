@@ -37,7 +37,9 @@ public class PersonneComputedFields {
 
         if (items != null) {
             for (ThesePersonne item : items) {
-                results.add(item.getDiscipline());
+                if (item.getDiscipline() != null) {
+                    results.add(item.getDiscipline());
+                }
             }
             return sortArrayElementsByFrequency(results).stream().limit(3).collect(Collectors.toList());
         }
@@ -54,7 +56,9 @@ public class PersonneComputedFields {
 
         if (items != null) {
             for (ThesePersonne item : items) {
-                results.add(item.getEtablissement_soutenance().getNom());
+                if (item.getEtablissement_soutenance() != null) {
+                    results.add(item.getEtablissement_soutenance().getNom());
+                }
             }
             return sortArrayElementsByFrequency(results).stream().limit(3).collect(Collectors.toList());
         }

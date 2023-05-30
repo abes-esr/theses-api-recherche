@@ -79,18 +79,16 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("Rousseau", results.get(0).getNom());
         Assertions.assertEquals("Erwann", results.get(0).getPrenom());
         Assertions.assertEquals(true, results.get(0).getHasIdref());
-        Assertions.assertEquals(1, results.get(0).getTheses().size());
-        Assertions.assertEquals("auteur", results.get(0).getTheses().get(0).getRole());
-        Assertions.assertEquals("2007PA066375", results.get(0).getTheses().get(0).getNnt());
+        Assertions.assertEquals("auteur", results.get(0).getThese().getRole());
+        Assertions.assertEquals("2007PA066375", results.get(0).getThese().getNnt());
 
         // 2ème personne
         Assertions.assertEquals("D_Cs1oMBVl5--j0CzKFo", results.get(1).getId());
         Assertions.assertEquals("Rousseau", results.get(1).getNom());
         Assertions.assertEquals("Erwan", results.get(1).getPrenom());
         Assertions.assertEquals(false, results.get(1).getHasIdref());
-        Assertions.assertEquals(1, results.get(1).getTheses().size());
-        Assertions.assertEquals("directeur de thèse", results.get(1).getTheses().get(0).getRole());
-        Assertions.assertEquals("s347820", results.get(1).getTheses().get(0).getNnt());
+        Assertions.assertEquals("directeur de thèse", results.get(1).getThese().getRole());
+        Assertions.assertEquals("s347820", results.get(1).getThese().getNnt());
 
     }
 
