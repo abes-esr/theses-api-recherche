@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DTO web retournée par l'API pour un ensemble de personnes
@@ -35,6 +36,21 @@ public class PersonneLiteResponseDto {
 
     @Getter
     @Setter
-    @JsonProperty("theses")
-    List<TheseLiteResponseDto> theses;
+    @JsonProperty("roles")
+    Map<String,Integer> roles;
+
+    @Getter
+    @Setter
+    @JsonProperty("these")
+    TheseLiteResponseDto these;
+
+    @Getter
+    @Setter
+    @JsonProperty("disciplines")
+    List<String> disciplines;
+
+    @Getter
+    @Setter
+    @JsonProperty("etablissements")
+    List<String> etablissements;
 }
