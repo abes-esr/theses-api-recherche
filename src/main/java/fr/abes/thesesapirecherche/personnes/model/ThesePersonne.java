@@ -75,4 +75,8 @@ public class ThesePersonne {
     @Setter
     List<PersonneLite> directeurs = new ArrayList<>();
 
+    @Getter
+    @Setter
+    List<String> oaiSetNames = new ArrayList<>();
+
 }
