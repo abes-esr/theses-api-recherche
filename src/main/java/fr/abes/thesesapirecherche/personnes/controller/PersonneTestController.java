@@ -58,7 +58,7 @@ public class PersonneTestController {
     public RechercheResponseDto recherche(
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
             @RequestParam @ApiParam(name = "index", value = "nom de l'index à réquêter", example = "personnes") final String index,
-            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres,
+            @RequestParam @ApiParam(name = "filtres", value = "filtres", example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres,
             @RequestParam @ApiParam(name = "debut", value = "indice de la première personne du lot", example = "10") Optional<Integer> debut,
             @RequestParam @ApiParam(name = "nombre", value = "nombre de personne dans le lot", example = "10") Optional<Integer> nombre,
             @RequestParam @ApiParam(name = "tri", value = "Type de tri", example = "pertinence, PersonneDesc, PersonnesAsc") Optional<String> tri
