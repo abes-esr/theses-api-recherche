@@ -20,7 +20,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Auteur")
     @EnableOnIntegrationTest
     public void rechercherRoleAuteur() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"auteur\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"auteur\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2004BRES2040')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2007PA066375')]").exists())
@@ -37,12 +37,11 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Directeur de thèse")
     @EnableOnIntegrationTest
     public void rechercherRoleDirecteur() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021AIXM0253')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0659')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0198')]").exists())
-                //.andExpect(jsonPath("$..theses[?(@.nnt=='s347820')]").exists()) // Thèse en préparation
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H030')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2020PA01H073')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2019PA01H036')]").exists())
@@ -53,24 +52,6 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010707')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010644')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H081')]").exists())
-                /* .andExpect(jsonPath("$..theses[?(@.nnt=='s353038')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s303558')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s303565')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s261078')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236755')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236749')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236757')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236736')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216908')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216921')]").exists())  // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216950')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192553')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192600')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192592')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s170202')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s170210')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s127632')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s233939')]").exists()) // Thèse en préparation */
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2019LYSES011')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2019LYSES010')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2017LYSES022')]").exists())
@@ -105,7 +86,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Président du jury")
     @EnableOnIntegrationTest
     public void rechercherRolePresident() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"président du jury\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"président du jury\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021SORUL154')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2020PA01H040')]").exists())
@@ -131,7 +112,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Rapporteur")
     @EnableOnIntegrationTest
     public void rechercherRoleRapporteur() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"rapporteur\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"rapporteur\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2017GREAM026')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2016SACLS213')]").exists())
@@ -153,7 +134,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Membre du jury")
     @EnableOnIntegrationTest
     public void rechercherRoleMembre() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"membre du jury\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"membre du jury\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2020AIXM0184')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0224')]").exists())
@@ -184,7 +165,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Auteur ou Directeur")
     @EnableOnIntegrationTest
     public void rechercherRoleAuteurOuDirecteur() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"auteur\"%26role=\"directeur de thèse\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"auteur\"%26role=\"directeur de thèse\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2007PA066375')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2011ANGE0040')]").exists())
@@ -193,7 +174,6 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021AIXM0253')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0659')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0198')]").exists())
-                //.andExpect(jsonPath("$..theses[?(@.nnt=='s347820')]").exists()) // Thèse en préparation
                 .andExpect(jsonPath("$..theses[?(@.nnt=='1997PA040286')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H030')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2020PA01H073')]").exists())
@@ -205,24 +185,6 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010707')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010644')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H081')]").exists())
-                /*.andExpect(jsonPath("$..theses[?(@.nnt=='s353038')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s303558')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s303565')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s261078')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s236755')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s236749')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s236757')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s236736')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s216908')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s216921')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s216950')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s192553')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s192600')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s192592')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s170202')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s170210')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s127632')]").exists()) // Thèse en préparation
-                .andExpect(jsonPath("$..theses[?(@.nnt=='s233939')]").exists()) // Thèse en préparation */
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2019LYSES011')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2019LYSES010')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2017LYSES022')]").exists())
@@ -257,10 +219,8 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Directeur ou Rapporteur")
     @EnableOnIntegrationTest
     public void rechercherRoleDirecteurouRapporteur() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"%26role=\"rapporteur\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"%26role=\"rapporteur\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
-                // .andExpect(jsonPath("$..theses[?(@.nnt=='s347820')]").exists()) // Thèse en préparation
-                //  .andExpect(jsonPath("$..theses[?(@.nnt=='s233939')]").exists()) // Thèse en préparation
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021AIXM0253')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0659')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0198')]").exists())
@@ -276,23 +236,6 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010707')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010644')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H081')]").exists())
-                /*  .andExpect(jsonPath("$..theses[?(@.nnt=='s353038')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s303558')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s303565')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s261078')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s236755')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s236749')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s236757')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s236736')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s216908')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s216921')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s216950')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s192553')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s192600')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s192592')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s170202')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s170210')]").exists()) // Thèse en préparation
-                  .andExpect(jsonPath("$..theses[?(@.nnt=='s127632')]").exists()) // Thèse en préparation */
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021PA080021')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021SORUL154')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2019LYSE2095')]").exists())
@@ -335,13 +278,11 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Directeur ou Président du jury")
     @EnableOnIntegrationTest
     public void rechercherRoleDirecteurouPresident() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"%26role=\"président du jury\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"%26role=\"président du jury\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021AIXM0253')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0659')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0198')]").exists())
-                // .andExpect(jsonPath("$..theses[?(@.nnt=='s347820')]").exists()) // Thèse en préparation
-                //  .andExpect(jsonPath("$..theses[?(@.nnt=='s233939')]").exists()) // Thèse en préparation
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H030')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2020PA01H073')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2019PA01H036')]").exists())
@@ -352,23 +293,6 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010707')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010644')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H081')]").exists())
-                /* .andExpect(jsonPath("$..theses[?(@.nnt=='s353038')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s303558')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s303565')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s261078')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236755')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236749')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236757')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236736')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216908')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216921')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216950')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192553')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192600')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192592')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s170202')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s170210')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s127632')]").exists()) // Thèse en préparation */
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021SORUL154')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2020PA01H040')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018PA01H049')]").exists())
@@ -417,7 +341,7 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le filtre role : Directeur ou Membre du jury")
     @EnableOnIntegrationTest
     public void rechercherRoleDirecteurouMembre() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"%26role=\"membre du jury\"]"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc&filtres=[role=\"directeur de thèse\"%26role=\"membre du jury\"]&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021AIXM0253')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2018AIXM0659')]").exists())
@@ -437,23 +361,6 @@ public class RechercheFiltreRoleTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010707')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2012PA010644')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2022PA01H081')]").exists())
-                /* .andExpect(jsonPath("$..theses[?(@.nnt=='s353038')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s303558')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s303565')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s261078')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236755')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236749')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236757')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s236736')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216908')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216921')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s216950')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192553')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192600')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s192592')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s170202')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s170210')]").exists()) // Thèse en préparation
-                 .andExpect(jsonPath("$..theses[?(@.nnt=='s127632')]").exists()) // Thèse en préparation */
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2017PA01H038')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2016PA040191')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2016PA01H032')]").exists())

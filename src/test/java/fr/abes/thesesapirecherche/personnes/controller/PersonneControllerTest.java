@@ -60,7 +60,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
     @DisplayName("Rechercher personne avec la thématique 'hyperbolicité'")
     @EnableOnIntegrationTest
     public void rechercherThematiqueHyperbolicité() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=hyperbolicité&index=per_recherche_sujet&debut=0&nombre=100"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=hyperbolicité&index=per_recherche_sujet&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 // Test la présence des thèses
                 .andExpect(jsonPath("$..theses[?(@.nnt=='2021AIXM0253')]").exists())
