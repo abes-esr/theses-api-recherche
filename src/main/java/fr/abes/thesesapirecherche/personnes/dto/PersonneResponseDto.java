@@ -42,5 +42,5 @@ public class PersonneResponseDto {
     @Getter
     @Setter
     @JsonProperty("theses")
-    List<TheseResponseDto> theses;
+    Map<String,List<TheseResponseDto>> theses;
 }

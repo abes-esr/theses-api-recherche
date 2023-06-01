@@ -5,7 +5,9 @@ import fr.abes.thesesapirecherche.personnes.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Convertisseur de format pour les objets Thèses
@@ -39,11 +41,17 @@ public class TheseMapper {
      * @param theses
      * @return
      */
-    public List<TheseResponseDto> thesesToDto(List<ThesePersonne> theses) {
-        List<TheseResponseDto> results = new ArrayList<>();
+    public Map<String,List<TheseResponseDto>> thesesToDto(List<ThesePersonne> theses) {
+        Map<String,List<TheseResponseDto>> results = new HashMap<>();
         if (theses != null) {
             for (ThesePersonne item : theses) {
-                results.add(theseToDto(item));
+                if (results.containsKey(item.getRole())) {
+                    results.get(item.getRole()).add(theseToDto(item));
+                } else {
+                    List<TheseResponseDto> list = new ArrayList<>();
+                    list.add(theseToDto(item));
+                    results.put(item.getRole(),list);
+                }
             }
         }
         return results;
