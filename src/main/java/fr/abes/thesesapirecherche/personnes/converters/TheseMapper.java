@@ -4,10 +4,7 @@ import fr.abes.thesesapirecherche.personnes.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Convertisseur de format pour les objets Thèses
@@ -53,6 +50,11 @@ public class TheseMapper {
                     results.put(item.getRole(),list);
                 }
             }
+        }
+
+        //On tri les thèses par date
+        for (String role : results.keySet()) {
+            Collections.sort(results.get(role), Comparator.comparing(TheseResponseDto::getDate_soutenance).reversed());
         }
         return results;
     }
