@@ -14,6 +14,8 @@ public class TheseMapper {
     EtablissementMapper etablissementMapper = new EtablissementMapper();
     ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
 
+    SujetRameauMapper sujetRameauMapper = new SujetRameauMapper();
+
     /**
      * Transforme une thèse en web dto
      * @param these
@@ -30,6 +32,8 @@ public class TheseMapper {
                 .date_soutenance(these.getDate_soutenance())
                 .auteurs(personneMapper.personnesLiteToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
+                .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
+                .sujets(these.getSujets())
                 .build();
     }
 

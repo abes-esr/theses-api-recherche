@@ -143,7 +143,7 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.nom").value("Rousseau"))
                 .andExpect(jsonPath("$.prenom").value("Pascal"))
                 .andExpect(jsonPath("$.has_idref").value(true))
-                 /***** Thèse n°1997PA040286 *****/
+                /***** Thèse n°1997PA040286 *****/
                 .andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')]").exists())
                 .andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')].role").value("auteur"))
                 .andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')].status").value("soutenue"))
@@ -159,8 +159,8 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')].directeurs[?(@.id=='026982765')].nom").value("Lemoine"))
                 .andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')].directeurs[?(@.id=='026982765')].prenom").value("Serge"))
                 .andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')].directeurs[?(@.id=='026982765')].has_idref").value(true))
-                //.andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')].sujets_rameau", Matchers.containsInRelativeOrder("Delaunay, Robert (1885-1941) -- Thèmes, motifs", "Couleur (art)","Réalité -- Dans l'art","Peinture abstraite -- France","Orphisme (peinture) -- France")))
-                 /***** Thèse n°2020PA01H073 *****/
+                .andExpect(jsonPath("$.theses['auteur'][?(@.nnt=='1997PA040286')].sujets_rameau[*].libelle", Matchers.containsInRelativeOrder("Couleur (art)", "Réalité -- Dans l'art", "Peinture abstraite", "Orphisme (peinture)", "Delaunay, Robert (1885-1941)")))
+                /***** Thèse n°2020PA01H073 *****/
                 .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')]").exists())
                 .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].role").value("directeur de thèse"))
                 .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].status").value("soutenue"))
@@ -176,6 +176,29 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].directeurs[?(@.id=='050646176')].nom").value("Rousseau"))
                 .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].directeurs[?(@.id=='050646176')].prenom").value("Pascal"))
                 .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].directeurs[?(@.id=='050646176')].has_idref").value(true))
+                .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].sujets_rameau[*].libelle", Matchers.containsInRelativeOrder(
+                        "Mode",
+                        "Mode",
+                        "Mode",
+                        "Haute couture")))
+                .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].sujets.fr[*]", Matchers.containsInRelativeOrder(
+                        "Mode",
+                        "Historiographie",
+                        "Discours",
+                        "Presse de mode",
+                        "Physiologies",
+                        "Inventeur",
+                        "Haute couture",
+                        "Artification")))
+                .andExpect(jsonPath("$.theses['directeur de thèse'][?(@.nnt=='2020PA01H073')].sujets.en[*]", Matchers.containsInRelativeOrder(
+                        "Fashion",
+                        "Historiography",
+                        "Discourse",
+                        "Fashion press",
+                        "Physiologies",
+                        "Inventor",
+                        "Haute couture",
+                        "Artification")))
 
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')]").exists())
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')].role").value("membre du jury"))
@@ -192,7 +215,30 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')].directeurs[?(@.id=='050646176')].nom").value("Rousseau"))
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')].directeurs[?(@.id=='050646176')].prenom").value("Pascal"))
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')].directeurs[?(@.id=='050646176')].has_idref").value(true))
-                 /***** Thèse n°2021SORUL154 *****/
+                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')].sujets_rameau[*].libelle", Matchers.containsInRelativeOrder(
+                        "Mode",
+                        "Mode",
+                        "Mode",
+                        "Haute couture")))
+                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')].sujets.fr[*]", Matchers.containsInRelativeOrder(
+                        "Mode",
+                        "Historiographie",
+                        "Discours",
+                        "Presse de mode",
+                        "Physiologies",
+                        "Inventeur",
+                        "Haute couture",
+                        "Artification")))
+                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2020PA01H073')].sujets.en[*]", Matchers.containsInRelativeOrder(
+                        "Fashion",
+                        "Historiography",
+                        "Discourse",
+                        "Fashion press",
+                        "Physiologies",
+                        "Inventor",
+                        "Haute couture",
+                        "Artification")))
+                /***** Thèse n°2021SORUL154 *****/
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')]").exists())
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].role").value("rapporteur"))
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].status").value("soutenue"))
@@ -208,6 +254,30 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].directeurs[?(@.id=='033730342')].nom").value("Pierre"))
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].directeurs[?(@.id=='033730342')].prenom").value("Arnauld"))
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].directeurs[?(@.id=='033730342')].has_idref").value(true))
+                .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].sujets_rameau[*].libelle", Matchers.containsInRelativeOrder(
+                        "Musicalisme (peinture)",
+                        "Art et musique",
+                        "Art abstrait",
+                        "Synesthésie",
+                        "Valensi, Henry (1883-1960)")))
+                .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].sujets.fr[*]", Matchers.containsInRelativeOrder(
+                        "Musicalisme",
+                        "Artistes musicalistes",
+                        "Art moderne",
+                        "Art abstrait",
+                        "Art total",
+                        "Synesthésie",
+                        "Esthétique scientifique",
+                        "Occultisme")))
+                .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2021SORUL154')].sujets.en[*]", Matchers.containsInRelativeOrder(
+                        "Musicalisme",
+                        "Artistes musicalistes",
+                        "Modern art",
+                        "Abstract art",
+                        "Total art",
+                        "Synesthesia",
+                        "Scientific aesthetics",
+                        "Occultism")))
 
                 .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')]").exists())
                 .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')].role").value("président du jury"))
@@ -224,7 +294,30 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')].directeurs[?(@.id=='033730342')].nom").value("Pierre"))
                 .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')].directeurs[?(@.id=='033730342')].prenom").value("Arnauld"))
                 .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')].directeurs[?(@.id=='033730342')].has_idref").value(true))
-                 /***** Thèse n°2019LYSE2095 *****/
+                .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')].sujets_rameau[*].libelle", Matchers.containsInRelativeOrder(
+                        "Musicalisme (peinture)",
+                        "Art et musique",
+                        "Art abstrait",
+                        "Synesthésie", "Valensi, Henry (1883-1960)")))
+                .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')].sujets.fr[*]", Matchers.containsInRelativeOrder(
+                        "Musicalisme",
+                        "Artistes musicalistes",
+                        "Art moderne",
+                        "Art abstrait",
+                        "Art total",
+                        "Synesthésie",
+                        "Esthétique scientifique",
+                        "Occultisme")))
+                .andExpect(jsonPath("$.theses['président du jury'][?(@.nnt=='2021SORUL154')].sujets.en[*]", Matchers.containsInRelativeOrder(
+                        "Musicalisme",
+                        "Artistes musicalistes",
+                        "Modern art",
+                        "Abstract art",
+                        "Total art",
+                        "Synesthesia",
+                        "Scientific aesthetics",
+                        "Occultism")))
+                /***** Thèse n°2019LYSE2095 *****/
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')]").exists())
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].role").value("rapporteur"))
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].status").value("soutenue"))
@@ -240,6 +333,55 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].directeurs[?(@.id=='061620262')].nom").value("Claustres"))
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].directeurs[?(@.id=='061620262')].prenom").value("Annie"))
                 .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].directeurs[?(@.id=='061620262')].has_idref").value(true))
+                .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].sujets_rameau[*].libelle", Matchers.containsInRelativeOrder("Photographie de mode")))
+                .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].sujets.fr[*]", Matchers.containsInRelativeOrder(
+                        "Photographie de mode",
+                        "Image making",
+                        "Micro-monde",
+                        "Valeur culturelle",
+                        "Trajectoire",
+                        "Circulation",
+                        "Pratiques collaboratives",
+                        "Discours",
+                        "Making of ;",
+                        "Behind the scene",
+                        "Vogue",
+                        "Condé Nast",
+                        "Production",
+                        "Conventions",
+                        "Négociation",
+                        "Hiérarchie",
+                        "Tensions productives",
+                        "Réseaux",
+                        "Collection",
+                        "Exposition",
+                        "Institutions muséales",
+                        "Image plurielle",
+                        "Objet spécifique")))
+                .andExpect(jsonPath("$.theses['rapporteur'][?(@.nnt=='2019LYSE2095')].sujets.en[*]", Matchers.containsInRelativeOrder(
+                        "Fashion photography",
+                        "Image making",
+                        "Micro-world",
+                        "Cultural value",
+                        "Trajectory",
+                        "Circulation",
+                        "Collaborative practices",
+                        "Discourses",
+                        "Making of",
+                        "Behind the scene",
+                        "Vogue",
+                        "Condé Nast",
+                        "Production",
+                        "Conventions",
+                        "Hierarchy",
+                        "Productive tensions",
+                        "Networks",
+                        "Collection",
+                        "Exhibition",
+                        "Museum institutions",
+                        "Plural image",
+                        "Specific object",
+                        "Negotiation")))
                 /***** Thèse n°2017PA01H038 *****/
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')]").exists())
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].role").value("membre du jury"))
@@ -255,6 +397,23 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].directeurs[?(@.id=='032074638')]").exists())
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].directeurs[?(@.id=='032074638')].nom").value("Poivert"))
                 .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].directeurs[?(@.id=='032074638')].prenom").value("Michel"))
-                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].directeurs[?(@.id=='032074638')].has_idref").value(true));
+                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].directeurs[?(@.id=='032074638')].has_idref").value(true))
+                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].sujets_rameau[*].libelle", Matchers.containsInRelativeOrder("Photographie")))
+                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].sujets.fr[*]", Matchers.containsInRelativeOrder(
+                        "Contemporaine",
+                        "Espagne",
+                        "Franquisme",
+                        "Photographie",
+                        "Local-Global",
+                        "Interculturalité",
+                        "Transterritorialité",
+                        "Postmodernité")))
+                .andExpect(jsonPath("$.theses['membre du jury'][?(@.nnt=='2017PA01H038')].sujets.en[*]", Matchers.containsInRelativeOrder(
+                        "Contemporary",
+                        "Spain",
+                        "Francoism",
+                        "Photography",
+                        "Transterritoriality",
+                        "Postmodernity")));
     }
 }
