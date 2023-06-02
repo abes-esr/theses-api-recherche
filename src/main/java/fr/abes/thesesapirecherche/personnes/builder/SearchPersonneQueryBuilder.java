@@ -136,12 +136,24 @@ public class SearchPersonneQueryBuilder {
      *
      * @return Liste d'options de tri Elastic Search
      */
-    private List<SortOptions> buildSort() {
+    private List<SortOptions> buildSort(String tri ) {
         List<SortOptions> list = new ArrayList<>();
 
-        list.add(new SortOptions.Builder().field(f -> f.field("_score").order(SortOrder.Desc)).build());
-        list.add(new SortOptions.Builder().field(f -> f.field("nom.sort").order(SortOrder.Asc)).build());
-        list.add(new SortOptions.Builder().field(f -> f.field("prenom.sort").order(SortOrder.Asc)).build());
+        if (tri.equals("PersonnesAsc")) {
+            list.add(new SortOptions.Builder().field(f -> f.field("nom.sort").order(SortOrder.Asc)).build());
+            list.add(new SortOptions.Builder().field(f -> f.field("prenom.sort").order(SortOrder.Asc)).build());
+            list.add(new SortOptions.Builder().field(f -> f.field("_score").order(SortOrder.Desc)).build());
+
+        } else if (tri.equals("PersonnesDesc")) {
+            list.add(new SortOptions.Builder().field(f -> f.field("nom.sort").order(SortOrder.Desc)).build());
+            list.add(new SortOptions.Builder().field(f -> f.field("prenom.sort").order(SortOrder.Desc)).build());
+            list.add(new SortOptions.Builder().field(f -> f.field("_score").order(SortOrder.Desc)).build());
+        } else {
+            // Pertinence
+            list.add(new SortOptions.Builder().field(f -> f.field("_score").order(SortOrder.Desc)).build());
+            list.add(new SortOptions.Builder().field(f -> f.field("nom.sort").order(SortOrder.Asc)).build());
+            list.add(new SortOptions.Builder().field(f -> f.field("prenom.sort").order(SortOrder.Asc)).build());
+        }
 
         return list;
     }
@@ -151,13 +163,14 @@ public class SearchPersonneQueryBuilder {
      *
      * @param chaine  Chaîne de caractère à rechercher
      * @param index   Nom de l'index ES à requêter
-     * @param filtres Tri à appliquer à la requête ES
+     * @param filtres Filtres à appliquer à la requête ES
      * @param debut   Numéro de la page courante
      * @param nombre  Nombre de résultats à retourner
+     * @param tri     Tri à appliquer sur la requête ES
      * @return Un objet réponse de la recherche au format Dto web
      * @throws Exception si une erreur est survenue
      */
-    public RechercheResponseDto rechercher(String chaine, String index, String filtres, Integer debut, Integer nombre) throws Exception {
+    public RechercheResponseDto rechercher(String chaine, String index, String filtres, Integer debut, Integer nombre, String tri) throws Exception {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(index)
@@ -169,7 +182,7 @@ public class SearchPersonneQueryBuilder {
                         ))
                 .from(debut)
                 .size(nombre)
-                .sort(buildSort())
+                .sort(buildSort(tri))
                 .trackTotalHits(t -> t.enabled(Boolean.TRUE))
                 .build();
 
