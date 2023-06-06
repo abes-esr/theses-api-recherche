@@ -66,6 +66,54 @@ public class PersonneComputedFields {
     }
 
     /**
+     * Calcule les mots-clés selon leurs langues et leurs nombre d'occurence parmi un lot de thèses
+     * @param items Liste des thèses
+     * @return Une map avec les codes langues en clé et la liste des mots-clés en valeur
+     */
+    public static Map<String,List<String>> calculerMotsCles(List<ThesePersonne> items) {
+        Map<String,List<String>> results = new HashMap<>();
+
+        if (items != null) {
+            for (ThesePersonne item : items) {
+
+                // Sujets Rameau
+                if (item.getSujets_rameau() != null) {
+                    if (results.containsKey("fr")) {
+                        results.get("fr").addAll(item.getSujets_rameau().stream()
+                                .map(e->e.getLibelle())
+                                .collect(Collectors.toList()));
+                    } else {
+                        results.put("fr", new ArrayList<>());
+                        results.get("fr").addAll(item.getSujets_rameau().stream()
+                                .map(e->e.getLibelle())
+                                .collect(Collectors.toList()));
+                    }
+                }
+
+                // Sujets libre
+                if (item.getSujets() != null) {
+                    for (String lang: item.getSujets().keySet()) {
+                        if (results.containsKey(lang)) {
+                            results.get(lang).addAll(item.getSujets().get(lang));
+                        } else {
+                            results.put(lang, new ArrayList<>());
+                            results.get(lang).addAll(item.getSujets().get(lang));
+                        }
+                    }
+
+                }
+
+            }
+
+            // On ordonne chaque liste de mots-clés
+            for (String lang: results.keySet()) {
+                results.put(lang, sortArrayElementsByFrequency(results.get(lang)));
+            }
+        }
+        return results;
+    }
+
+    /**
      * Ordonne une liste de chaîne de caractère selon le nombre d'occurrences
      * Les doublons comptabilités puis supprimés de la liste
      * @param inputArray Liste de chaînes de caractères
