@@ -4,8 +4,7 @@ import fr.abes.thesesapirecherche.personnes.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Convertisseur de format pour les objets Thèses
@@ -14,6 +13,8 @@ public class TheseMapper {
 
     EtablissementMapper etablissementMapper = new EtablissementMapper();
     ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
+
+    SujetRameauMapper sujetRameauMapper = new SujetRameauMapper();
 
     /**
      * Transforme une thèse en web dto
@@ -31,6 +32,8 @@ public class TheseMapper {
                 .date_soutenance(these.getDate_soutenance())
                 .auteurs(personneMapper.personnesLiteToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
+                .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
+                .sujets(these.getSujets())
                 .build();
     }
 
@@ -39,12 +42,23 @@ public class TheseMapper {
      * @param theses
      * @return
      */
-    public List<TheseResponseDto> thesesToDto(List<ThesePersonne> theses) {
-        List<TheseResponseDto> results = new ArrayList<>();
+    public Map<String,List<TheseResponseDto>> thesesToDto(List<ThesePersonne> theses) {
+        Map<String,List<TheseResponseDto>> results = new HashMap<>();
         if (theses != null) {
             for (ThesePersonne item : theses) {
-                results.add(theseToDto(item));
+                if (results.containsKey(item.getRole())) {
+                    results.get(item.getRole()).add(theseToDto(item));
+                } else {
+                    List<TheseResponseDto> list = new ArrayList<>();
+                    list.add(theseToDto(item));
+                    results.put(item.getRole(),list);
+                }
             }
+        }
+
+        //On tri les thèses par date
+        for (String role : results.keySet()) {
+            Collections.sort(results.get(role), Comparator.comparing(TheseResponseDto::getDate_soutenance).reversed());
         }
         return results;
     }

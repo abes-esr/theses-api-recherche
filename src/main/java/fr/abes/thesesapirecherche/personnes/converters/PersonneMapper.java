@@ -75,6 +75,7 @@ public class PersonneMapper {
 
         // On remplit les champs calculés
         item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getTheses()));
+        item.setMotsCles(PersonneComputedFields.calculerMotsCles(personne.source().getTheses()));
 
         return item;
     }

@@ -38,7 +38,7 @@ public class TheseResponseDto {
     @Getter
     @Setter
     @JsonProperty("sujets_rameau")
-    List<String> sujets_rameau = new ArrayList<>();
+    List<SujetRameauResponseDto> sujets_rameau = new ArrayList<>();
 
     @Getter
     @Setter
