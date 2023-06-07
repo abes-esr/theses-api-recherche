@@ -46,6 +46,11 @@ public class PersonneLiteResponseDto {
 
     @Getter
     @Setter
+    @JsonProperty("theses")
+    List<TheseLiteResponseDto> theses;
+
+    @Getter
+    @Setter
     @JsonProperty("disciplines")
     List<String> disciplines;
 
