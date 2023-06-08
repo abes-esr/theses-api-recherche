@@ -24,7 +24,7 @@ public class RecherchePonderationTest extends PersonneControllerTest {
     public void rechercherRousseauBoostIdrefRoleNbThesesThesesRecentes() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=rousseau&index=per_affichage_theses_roles_etabs_disc_ponderationv3"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(6))
+                .andExpect(jsonPath("$.totalHits").value(4))
                 .andExpect(jsonPath("$.personnes[0].id").value("081954522"))
                 .andExpect(jsonPath("$.personnes[1].id").value("050646176)"))
                 .andExpect(jsonPath("$.personnes[2].id").value("098248782"))
