@@ -43,4 +43,9 @@ public class PersonneResponseDto {
     @Setter
     @JsonProperty("theses")
     Map<String,List<TheseResponseDto>> theses;
+
+    @Getter
+    @Setter
+    @JsonProperty("mots_cles")
+    Map<String,List<String>> motsCles;
 }
