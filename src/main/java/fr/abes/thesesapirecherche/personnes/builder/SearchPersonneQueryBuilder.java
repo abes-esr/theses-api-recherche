@@ -1,6 +1,8 @@
 package fr.abes.thesesapirecherche.personnes.builder;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.InlineScript;
+import co.elastic.clients.elasticsearch._types.Script;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
@@ -8,6 +10,7 @@ import co.elastic.clients.elasticsearch.core.CountResponse;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.*;
+import co.elastic.clients.json.JsonData;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
@@ -121,9 +124,17 @@ public class SearchPersonneQueryBuilder {
         TermQuery roleRapporteurQuery = QueryBuilders.term().field("roles").value("rapporteur").build();
         FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(100.0).build();
 
+        // Boost nombre de thèses
+        Script script = new Script.Builder().inline(new InlineScript.Builder().source("doc['theses_id'].length").build()).build();
+        ScriptScoreFunction functionScoreNbTheses = new ScriptScoreFunction.Builder().script(script).build();
+
+        // Boost Thèses récentes
+        RangeQuery thesesRecentesQuery = QueryBuilders.range().field("theses_date").gte(JsonData.of("now-1y")).lte(JsonData.of("now")).build();
+        FunctionScore functionScorethesesRecentes = new FunctionScore.Builder().filter(thesesRecentesQuery._toQuery()).weight(100.0).build();
+
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(thematiqueQueryString)
-                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur))
+                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur,functionScoreNbTheses._toFunctionScore(),functionScorethesesRecentes))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
                 .build();
