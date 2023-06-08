@@ -5,10 +5,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 /**
  * DTO web retournée par l'API pour une thèse en lien avec une personne
@@ -89,4 +88,13 @@ public class TheseResponseDto {
     @Setter
     @JsonProperty("directeurs")
     List<ThesePersonneLiteResponseDto> directeurs = new ArrayList<>();
+
+    public String getDate_soutenanceTri() {
+        if (date_soutenance != null) {
+            return date_soutenance;
+        } else {
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return dateFormat.format(LocalDateTime.now());
+        }
+    }
 }

@@ -58,7 +58,7 @@ public class TheseMapper {
 
         //On tri les thèses par date
         for (String role : results.keySet()) {
-            Collections.sort(results.get(role), Comparator.comparing(TheseResponseDto::getDate_soutenance).reversed());
+            Collections.sort(results.get(role), Comparator.comparing(TheseResponseDto::getDate_soutenanceTri).reversed());
         }
         return results;
     }
