@@ -33,7 +33,7 @@ public class ThesePersonne {
 
     @Getter
     @Setter
-    List<String> sujets_rameau = new ArrayList<>();
+    List<SujetsRameau> sujets_rameau = new ArrayList<>();
 
     @Getter
     @Setter

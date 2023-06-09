@@ -104,8 +104,8 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("Erwann", results.getPrenom());
         Assertions.assertEquals(true, results.getHasIdref());
         Assertions.assertEquals(1, results.getTheses().size());
-        Assertions.assertEquals("auteur", results.getTheses().get(0).getRole());
-        Assertions.assertEquals("2007PA066375", results.getTheses().get(0).getNnt());
+        Assertions.assertEquals(true, results.getTheses().containsKey("auteur"));
+        Assertions.assertEquals("2007PA066375", results.getTheses().get("auteur").get(0).getNnt());
 
     }
 
