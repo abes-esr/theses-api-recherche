@@ -67,6 +67,7 @@ public class PersonneComputedFields {
 
     /**
      * Calcule les mots-clés selon leurs langues et leurs nombre d'occurence parmi un lot de thèses
+     * On réalise un premier dédoublonnage des mots-clés au sein d’une même thèse
      * @param items Liste des thèses
      * @return Une map avec les codes langues en clé et la liste des mots-clés en valeur
      */
@@ -76,21 +77,7 @@ public class PersonneComputedFields {
         if (items != null) {
             for (ThesePersonne item : items) {
 
-                // Sujets Rameau
-                if (item.getSujets_rameau() != null) {
-                    if (results.containsKey("fr")) {
-                        results.get("fr").addAll(item.getSujets_rameau().stream()
-                                .map(e->e.getLibelle())
-                                .collect(Collectors.toList()));
-                    } else {
-                        results.put("fr", new ArrayList<>());
-                        results.get("fr").addAll(item.getSujets_rameau().stream()
-                                .map(e->e.getLibelle())
-                                .collect(Collectors.toList()));
-                    }
-                }
-
-                // Sujets libre
+                // Sujets libres
                 if (item.getSujets() != null) {
                     for (String lang: item.getSujets().keySet()) {
                         if (results.containsKey(lang)) {
@@ -103,6 +90,28 @@ public class PersonneComputedFields {
 
                 }
 
+                // On enlève les doublons entre les sujets libres et les sujets Rameau
+                LinkedHashSet<String> set = new LinkedHashSet<>();
+
+                if (results.containsKey("fr")) {
+                    // On ajoute les sujets libres
+                    set.addAll(results.get("fr"));
+                }
+
+                // Sujets Rameau
+                if (item.getSujets_rameau() != null) {
+                    set.addAll(item.getSujets_rameau().stream()
+                            .map(e->e.getLibelle())
+                            .collect(Collectors.toList()));
+                }
+
+                if (results.containsKey("fr")) {
+                    results.get("fr").clear();
+                    results.get("fr").addAll(set);
+                } else {
+                    results.put("fr", new ArrayList<>());
+                    results.get("fr").addAll(set);
+                }
             }
 
             // On ordonne chaque liste de mots-clés
