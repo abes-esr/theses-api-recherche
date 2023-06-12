@@ -268,17 +268,17 @@ public class SearchPersonneQueryBuilder {
                         cs.skipDuplicates(true)
                                 .size(10)
                                 .fuzzy(SuggestFuzziness.of(sf -> sf.fuzziness("0").transpositions(true).minLength(2).prefixLength(3)))
-                                .field("completion_thematique")
+                                .field("suggestion")
                 )
         );
 
         Suggester suggester = Suggester.of(s -> s
-                .suggesters("thematique-suggestion", fieldSuggester)
+                .suggesters("thematiques-suggestion", fieldSuggester)
                 .text(q)
         );
 
         SearchResponse<Void> response = this.getElasticsearchClient().search(s -> s
-                        .index(index)
+                        .index("thematiques")
                         .suggest(suggester)
                 , Void.class);
 
