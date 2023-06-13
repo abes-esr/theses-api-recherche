@@ -418,4 +418,73 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                         "Transterritoriality",
                         "Postmodernity")));
     }
+
+    @Test
+    @DisplayName("Mot-clés d'une personne")
+    @EnableOnIntegrationTest
+    public void motsCles() throws Exception {
+        mockMvc.perform(get("/api/v1/tests/personnes/personne/070688222/?index=per_mots_cles_classement"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("070688222"))
+                .andExpect(jsonPath("$.mots_cles.fr").exists())
+                .andExpect(jsonPath("$.mots_cles.fr[*]", Matchers.containsInRelativeOrder(
+                        "Aquitaine",
+                        "Aurignacien",
+                        "Châtelperronien",
+                        "Industrie lithique",
+                        "Préhistoire",
+                        "Aurignacien ancien",
+                        "Archéologie",
+                        "Archéozoologie",
+                        "Comportement symbolique",
+                        "Crimée",
+                        "Europe de l'Est",
+                        "Europe de l'Est -- Antiquités préhistoriques",
+                        "France",
+                        "Industries lithiques",
+                        "Middle Stone Age",
+                        "Modernité comportementale",
+                        "Moustérien",
+                        "Néandertal",
+                        "Neandertal ",
+                        "Néanderthaliens",
+                        "Ocre",
+                        "Ocre (couleur)",
+                        "Paléolithique",
+                        "Paléolithique moyen",
+                        "Première expression graphique",
+                        "Protoaurignacien",
+                        "Sud-ouest de la France",
+                        "Symbolisme",
+                        "Taphonomie lithique",
+                        "Technologie lithique")))
+                .andExpect(jsonPath("$.mots_cles.en").exists())
+                .andExpect(jsonPath("$.mots_cles.en[*]", Matchers.containsInRelativeOrder(
+                        "Aquitaine",
+                        "Chatelperronian",
+                        "Prehistory",
+                        "Archaeology",
+                        "Behavioural modernity",
+                        "Crimea",
+                        "Early aurignacian",
+                        "Early graphic expression",
+                        "Eastern Europe",
+                        "France",
+                        "Lithic taphonomy",
+                        "Lithic technology",
+                        "Lithics industries",
+                        "Middle Paleolithic",
+                        "Middle Stone Age",
+                        "Mousterian",
+                        "Neandertal",
+                        "Neanderthals",
+                        "Ochre",
+                        "Palaeolithic",
+                        "Protoaurignacian",
+                        "Recent Aurignacian",
+                        "Southwester France",
+                        "Symbolic behavior",
+                        "Symbolism",
+                        "Zooarcheology")));
+    }
 }
