@@ -23,13 +23,14 @@ public class TheseMapper {
      */
     public TheseResponseDto theseToDto(ThesePersonne these) {
         return TheseResponseDto.builder()
-                .nnt(these.getNnt())
+                .id(these.getId())
                 .titre(these.getTitre())
                 .role(these.getRole())
                 .discipline(these.getDiscipline())
                 .status(these.getStatus())
                 .etablissement_soutenance(etablissementMapper.etablissementToDto(these.getEtablissement_soutenance()))
                 .date_soutenance(these.getDate_soutenance())
+                .date_inscription(these.getDate_inscription())
                 .auteurs(personneMapper.personnesLiteToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
                 .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
@@ -70,7 +71,7 @@ public class TheseMapper {
      */
     public TheseLiteResponseDto theseLiteToDto(ThesePersonne these) {
         return TheseLiteResponseDto.builder()
-                .nnt(these.getNnt())
+                .id(these.getId())
                 .role(these.getRole())
                 .discipline(these.getDiscipline())
                 .build();

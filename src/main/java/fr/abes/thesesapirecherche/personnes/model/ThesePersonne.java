@@ -17,7 +17,7 @@ public class ThesePersonne {
 
     @Getter
     @Setter
-    String nnt;
+    String id;
 
     @Getter
     @Setter
@@ -50,6 +50,10 @@ public class ThesePersonne {
     @Getter
     @Setter
     String date_soutenance;
+
+    @Getter
+    @Setter
+    String date_inscription;
 
     @Getter
     @Setter
