@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,8 +17,8 @@ import java.util.*;
 public class TheseResponseDto {
     @Getter
     @Setter
-    @JsonProperty("nnt")
-    String nnt;
+    @JsonProperty("id")
+    String id;
 
     @Getter
     @Setter
@@ -61,6 +62,11 @@ public class TheseResponseDto {
 
     @Getter
     @Setter
+    @JsonProperty("date_inscription")
+    String date_inscription;
+
+    @Getter
+    @Setter
     @JsonProperty("etablissement_soutenance")
     EtablissementResponseDto etablissement_soutenance;
 
@@ -89,6 +95,7 @@ public class TheseResponseDto {
     @JsonProperty("directeurs")
     List<ThesePersonneLiteResponseDto> directeurs = new ArrayList<>();
 
+    @JsonIgnore
     public String getDate_soutenanceTri() {
         if (date_soutenance != null) {
             return date_soutenance;
