@@ -26,3 +26,9 @@ facets:
     - libelle: Role
       champ: roles
       searchBar: true
+    - libelle: Établissements
+      champ: etablissements
+      searchBar: true
+    - libelle: Domaines thématiques
+      champ: domaines
+      searchBar: true

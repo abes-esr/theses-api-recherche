@@ -17,7 +17,7 @@ public class ThesePersonne {
 
     @Getter
     @Setter
-    String nnt;
+    String id;
 
     @Getter
     @Setter
@@ -53,6 +53,10 @@ public class ThesePersonne {
 
     @Getter
     @Setter
+    String date_inscription;
+
+    @Getter
+    @Setter
     Etablissement etablissement_soutenance = new Etablissement();
 
     @Getter
@@ -74,5 +78,9 @@ public class ThesePersonne {
     @Getter
     @Setter
     List<PersonneLite> directeurs = new ArrayList<>();
+
+    @Getter
+    @Setter
+    List<String> oaiSetNames = new ArrayList<>();
 
 }
