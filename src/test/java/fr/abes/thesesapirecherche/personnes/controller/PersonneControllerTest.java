@@ -6,6 +6,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -427,64 +428,69 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("070688222"))
                 .andExpect(jsonPath("$.mots_cles.fr").exists())
+                .andExpect(jsonPath("$.mots_cles.fr[*]", hasSize(32)))
                 .andExpect(jsonPath("$.mots_cles.fr[*]", Matchers.containsInRelativeOrder(
+                        "Préhistoire",
                         "Aquitaine",
                         "Aurignacien",
-                        "Châtelperronien",
                         "Industrie lithique",
-                        "Préhistoire",
-                        "Aurignacien ancien",
-                        "Archéologie",
-                        "Archéozoologie",
-                        "Comportement symbolique",
-                        "Crimée",
+                        "Châtelperronien",
                         "Europe de l'Est",
+                        "Paléolithique Moyen",
+                        "Moustérien",
+                        "Crimée",
+                        "Neandertal",
+                        "Comportement symbolique",
+                        "Première expressions graphique",
+                        "Paléolithique moyen",
                         "Europe de l'Est -- Antiquités préhistoriques",
                         "France",
-                        "Industries lithiques",
-                        "Middle Stone Age",
-                        "Modernité comportementale",
-                        "Moustérien",
-                        "Néandertal",
-                        "Neandertal ",
-                        "Néanderthaliens",
-                        "Ocre",
-                        "Ocre (couleur)",
-                        "Paléolithique",
-                        "Paléolithique moyen",
-                        "Première expression graphique",
+                        "Aurignacien récent",
+                        "Technologie lithique",
+                        "Taphonomie litihique",
+                        "Archéozoologie",
                         "Protoaurignacien",
+                        "Aurignacien ancien",
                         "Sud-ouest de la France",
+                        "Industries lithiques",
+                        "Néandertal",
+                        "Néandertaliens",
+                        "Ocre",
+                        "Paléolithique",
+                        "Middle Stone Age",
+                        "Archéologie",
+                        "Modernité comportementale",
                         "Symbolisme",
-                        "Taphonomie lithique",
-                        "Technologie lithique")))
+                        "Ocre (couleur)")))
                 .andExpect(jsonPath("$.mots_cles.en").exists())
+                .andExpect(jsonPath("$.mots_cles.en[*]", hasSize(27)))
                 .andExpect(jsonPath("$.mots_cles.en[*]", Matchers.containsInRelativeOrder(
                         "Aquitaine",
                         "Chatelperronian",
-                        "Prehistory",
-                        "Archaeology",
-                        "Behavioural modernity",
-                        "Crimea",
-                        "Early aurignacian",
-                        "Early graphic expression",
                         "Eastern Europe",
-                        "France",
-                        "Lithic taphonomy",
-                        "Lithic technology",
-                        "Lithics industries",
                         "Middle Paleolithic",
-                        "Middle Stone Age",
                         "Mousterian",
-                        "Neandertal",
+                        "Crimea",
                         "Neanderthals",
+                        "Symbolic behavior",
+                        "Early graphic expression",
+                        "Prehistory",
+                        "France",
+                        "Recent Aurignacian",
+                        "Lithic technology",
+                        "Lithic taphonomy",
+                        "Zooarcheology",
+                        "Protoaurignacian",
+                        "Early aurignacian",
+                        "Southwester France",
+                        "Préhistory",
+                        "Lithics industries",
+                        "Neandertal",
                         "Ochre",
                         "Palaeolithic",
-                        "Protoaurignacian",
-                        "Recent Aurignacian",
-                        "Southwester France",
-                        "Symbolic behavior",
-                        "Symbolism",
-                        "Zooarcheology")));
+                        "Middle Stone Age",
+                        "Archaeology",
+                        "Behavioural modernity",
+                        "Symbolism")));
     }
 }

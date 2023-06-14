@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @SpringBootTest(classes = {ThesesApiRechercheApplication.class, HandlerMappingIntrospector.class, SpringSecurityConfig.class}
 // La suite suivante est à décommenter pour exécuter les tests d'intégrations
-        ,properties = { "spring.profiles.active=test-es" }
+//        ,properties = { "spring.profiles.active=test-es" }
 )
 public class ThesesApiRechercheApplicationTests {
 
