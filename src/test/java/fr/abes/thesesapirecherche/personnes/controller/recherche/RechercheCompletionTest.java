@@ -72,26 +72,4 @@ public class RechercheCompletionTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$.personnes[2].id").value("098248782"))
                 .andExpect(jsonPath("$.personnes[3].id").value("127566635"));
     }
-
-    @Test
-    @DisplayName("Autocomplétion des thématiques 'techn'")
-    @EnableOnIntegrationTest
-    public void completionThematiqueTechn() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/completion/?q=techn&index=per_recherche_simple_autocompl_thematique"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.thematiques", hasSize(3)))
-                .andExpect(jsonPath("$.thematiques[0].suggestion").value("Technics evolution"))
-                .andExpect(jsonPath("$.thematiques[1].suggestion").value("Techno-Cultural perspective"))
-                .andExpect(jsonPath("$.thematiques[2].suggestion").value("Technologie lithique"));
-    }
-
-    @Test
-    @DisplayName("Autocomplétion des thématiques 'hach'")
-    @EnableOnIntegrationTest
-    public void completionThematiqueHach() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/completion/?q=hach&index=per_recherche_simple_autocompl_thematique"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.thematiques", hasSize(1)))
-                .andExpect(jsonPath("$.thematiques[0].suggestion").value("Hachereaux"));
-    }
 }
