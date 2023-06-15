@@ -114,23 +114,23 @@ public class SearchPersonneQueryBuilder {
 
         // Boost IdRef
         TermQuery idrefQuery = QueryBuilders.term().field("has_idref").value(true).build();
-        FunctionScore functionScoreIdref = new FunctionScore.Builder().filter(idrefQuery._toQuery()).weight(150.0).build();
+        FunctionScore functionScoreIdref = new FunctionScore.Builder().filter(idrefQuery._toQuery()).weight(10.0).build();
 
         // Boost Role Directeur de thèse
         TermQuery roleDirecteurQuery = QueryBuilders.term().field("roles").value("directeur de thèse").build();
-        FunctionScore functionScoreRoleDirecteur = new FunctionScore.Builder().filter(roleDirecteurQuery._toQuery()).weight(100.0).build();
+        FunctionScore functionScoreRoleDirecteur = new FunctionScore.Builder().filter(roleDirecteurQuery._toQuery()).weight(1.0).build();
 
         // Boost Role Rapporteur
         TermQuery roleRapporteurQuery = QueryBuilders.term().field("roles").value("rapporteur").build();
-        FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(100.0).build();
+        FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(1.0).build();
 
         // Boost nombre de thèses
         Script script = new Script.Builder().inline(new InlineScript.Builder().source("doc['theses_id'].length").build()).build();
         ScriptScoreFunction functionScoreNbTheses = new ScriptScoreFunction.Builder().script(script).build();
 
         // Boost Thèses récentes
-        RangeQuery thesesRecentesQuery = QueryBuilders.range().field("theses_date").gte(JsonData.of("now-1y")).lte(JsonData.of("now")).build();
-        FunctionScore functionScorethesesRecentes = new FunctionScore.Builder().filter(thesesRecentesQuery._toQuery()).weight(100.0).build();
+        RangeQuery thesesRecentesQuery = QueryBuilders.range().field("theses_date").gte(JsonData.of("now-5y")).lte(JsonData.of("now")).build();
+        FunctionScore functionScorethesesRecentes = new FunctionScore.Builder().filter(thesesRecentesQuery._toQuery()).weight(0.1).build();
 
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(thematiqueQueryString)
@@ -220,13 +220,13 @@ public class SearchPersonneQueryBuilder {
 
         // Définition du contexte pour booster les personnes avec Idref
         Context catAvecIdref = new Context.Builder().category("true").build();
-        CompletionContext contextAvecIdref = new CompletionContext.Builder().context(catAvecIdref).boost(150.0).build();
+        CompletionContext contextAvecIdref = new CompletionContext.Builder().context(catAvecIdref).boost(10.0).build();
 
         // Définition du contexte pour booster les personnes avec le rôle
         Context catDirecteur = new Context.Builder().category("directeur de thèse").build();
         Context catRapporteur = new Context.Builder().category("rapporteur").build();
-        CompletionContext contextDirecteur = new CompletionContext.Builder().context(catDirecteur).boost(100.0).build();
-        CompletionContext contextRapporteur = new CompletionContext.Builder().context(catRapporteur).boost(100.0).build();
+        CompletionContext contextDirecteur = new CompletionContext.Builder().context(catDirecteur).boost(1.0).build();
+        CompletionContext contextRapporteur = new CompletionContext.Builder().context(catRapporteur).boost(1.0).build();
 
         FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
                 .completion(cs ->
