@@ -20,7 +20,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @DisplayName("Rechercher des personnes avec le booléen OU : OR")
     @EnableOnIntegrationTest
     public void rechercherBooleenOuOr() throws Exception {
-        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20OR%20Rousseau&index=per_recherche_simple_rousseau"))
+        mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20OR%20Rousseau&index=per_recherche_simple_rousseau&debut=0&nombre=1000"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.totalHits").value(19))
                 .andExpect(jsonPath("$..theses[?(@.id=='2004BRES2040')]").exists())
@@ -28,6 +28,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
                 .andExpect(jsonPath("$..theses[?(@.id=='2017GREAM026')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.id=='2020AIXM0184')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.id=='2007PA066375')]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.id=='178429708')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.id=='2020REN1B015')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.id=='1999ROUES082')]").exists())
                 .andExpect(jsonPath("$..theses[?(@.id=='2011ANGE0040')]").exists())
