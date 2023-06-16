@@ -29,7 +29,8 @@ public class These {
     List<String> oaiSets;
 
     List<String> oaiSetNames;
-    Map<String, String> sujets;
+    List<Sujet> sujets;
+    List<String> sujetsLibelle;
     String discipline;
     Map<String, String> titres;
     Map<String, String> resumes;
