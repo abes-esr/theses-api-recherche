@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -99,7 +100,14 @@ public class TheseResponseDto {
     public String getDate_soutenanceTri() {
         if (date_soutenance != null) {
             return date_soutenance;
+        } else if (date_inscription != null) {
+            // On ajoute 20 ans à la date pour mettre les thèses en préparation
+            // avant les thèses soutenues
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate date = LocalDate.parse(date_inscription);
+            return date.plusYears(20).format(dateFormat);
         } else {
+            // Au cas où, on met la date du jour
             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             return dateFormat.format(LocalDateTime.now());
         }
