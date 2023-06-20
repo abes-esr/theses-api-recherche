@@ -100,8 +100,9 @@ public class PersonneController {
             @ApiResponse(code = 400, message = "Mauvaise requête"),
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
-    public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
-        return searchQueryBuilder.facets(q, esIndexName);
+    public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
+                              @RequestParam @ApiParam(name = "filtres", value = "filtres",  example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres) throws Exception {
+        return searchQueryBuilder.facets(q, esIndexName,filtres.orElse(""));
     }
 
     /**
