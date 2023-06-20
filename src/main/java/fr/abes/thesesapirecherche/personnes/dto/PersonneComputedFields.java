@@ -77,40 +77,37 @@ public class PersonneComputedFields {
         if (items != null) {
             for (ThesePersonne item : items) {
 
+                // On enlève les doublons entre les sujets libres et les sujets Rameau
+                Map<String,LinkedHashSet<String>> set = new HashMap<>();
+
                 // Sujets libres
                 if (item.getSujets() != null) {
                     for (String lang: item.getSujets().keySet()) {
-                        if (results.containsKey(lang)) {
-                            results.get(lang).addAll(item.getSujets().get(lang));
+                        if (set.containsKey(lang)) {
+                            set.get(lang).addAll(item.getSujets().get(lang));
                         } else {
-                            results.put(lang, new ArrayList<>());
-                            results.get(lang).addAll(item.getSujets().get(lang));
+                            set.put(lang, new LinkedHashSet<>());
+                            set.get(lang).addAll(item.getSujets().get(lang));
                         }
                     }
-
-                }
-
-                // On enlève les doublons entre les sujets libres et les sujets Rameau
-                LinkedHashSet<String> set = new LinkedHashSet<>();
-
-                if (results.containsKey("fr")) {
-                    // On ajoute les sujets libres
-                    set.addAll(results.get("fr"));
                 }
 
                 // Sujets Rameau
                 if (item.getSujets_rameau() != null) {
-                    set.addAll(item.getSujets_rameau().stream()
+                    if (!set.containsKey("fr")) {
+                        set.put("fr", new LinkedHashSet<>());
+                    }
+
+                    set.get("fr").addAll(item.getSujets_rameau().stream()
                             .map(e->e.getLibelle())
                             .collect(Collectors.toList()));
                 }
 
-                if (results.containsKey("fr")) {
-                    results.get("fr").clear();
-                    results.get("fr").addAll(set);
-                } else {
-                    results.put("fr", new ArrayList<>());
-                    results.get("fr").addAll(set);
+                for (String lang: set.keySet()) {
+                    if (!results.containsKey(lang)) {
+                        results.put(lang, new ArrayList<>());
+                    }
+                    results.get(lang).addAll(set.get(lang));
                 }
             }
 
