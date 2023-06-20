@@ -6,6 +6,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -417,5 +418,79 @@ public class PersonneControllerTest extends ThesesApiRechercheApplicationTests {
                         "Photography",
                         "Transterritoriality",
                         "Postmodernity")));
+    }
+
+    @Test
+    @DisplayName("Mot-clés d'une personne")
+    @EnableOnIntegrationTest
+    public void motsCles() throws Exception {
+        mockMvc.perform(get("/api/v1/tests/personnes/personne/070688222/?index=per_mots_cles_classement"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("070688222"))
+                .andExpect(jsonPath("$.mots_cles.fr").exists())
+                .andExpect(jsonPath("$.mots_cles.fr[*]", hasSize(32)))
+                .andExpect(jsonPath("$.mots_cles.fr[*]", Matchers.containsInRelativeOrder(
+                        "Préhistoire",
+                        "Aquitaine",
+                        "Aurignacien",
+                        "Industrie lithique",
+                        "Châtelperronien",
+                        "Europe de l'Est",
+                        "Paléolithique Moyen",
+                        "Moustérien",
+                        "Crimée",
+                        "Neandertal",
+                        "Comportement symbolique",
+                        "Première expressions graphique",
+                        "Paléolithique moyen",
+                        "Europe de l'Est -- Antiquités préhistoriques",
+                        "France",
+                        "Aurignacien récent",
+                        "Technologie lithique",
+                        "Taphonomie litihique",
+                        "Archéozoologie",
+                        "Protoaurignacien",
+                        "Aurignacien ancien",
+                        "Sud-ouest de la France",
+                        "Industries lithiques",
+                        "Néandertal",
+                        "Néandertaliens",
+                        "Ocre",
+                        "Paléolithique",
+                        "Middle Stone Age",
+                        "Archéologie",
+                        "Modernité comportementale",
+                        "Symbolisme",
+                        "Ocre (couleur)")))
+                .andExpect(jsonPath("$.mots_cles.en").exists())
+                .andExpect(jsonPath("$.mots_cles.en[*]", hasSize(27)))
+                .andExpect(jsonPath("$.mots_cles.en[*]", Matchers.containsInRelativeOrder(
+                        "Aquitaine",
+                        "Chatelperronian",
+                        "Eastern Europe",
+                        "Middle Paleolithic",
+                        "Mousterian",
+                        "Crimea",
+                        "Neanderthals",
+                        "Symbolic behavior",
+                        "Early graphic expression",
+                        "Prehistory",
+                        "France",
+                        "Recent Aurignacian",
+                        "Lithic technology",
+                        "Lithic taphonomy",
+                        "Zooarcheology",
+                        "Protoaurignacian",
+                        "Early aurignacian",
+                        "Southwester France",
+                        "Préhistory",
+                        "Lithics industries",
+                        "Neandertal",
+                        "Ochre",
+                        "Palaeolithic",
+                        "Middle Stone Age",
+                        "Archaeology",
+                        "Behavioural modernity",
+                        "Symbolism")));
     }
 }
