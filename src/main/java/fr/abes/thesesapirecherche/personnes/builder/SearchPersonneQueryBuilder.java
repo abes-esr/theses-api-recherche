@@ -290,11 +290,12 @@ public class SearchPersonneQueryBuilder {
      *
      * @param chaine Chaîne de caractère à rechercher
      * @param index  Nom de l'index ES à requêter
+     * @param filtres Filtres à appliquer
      * @return Retourne la liste des facettes au format Dto
      * @throws Exception
      */
-    public List<Facet> facets(String chaine, String index) throws Exception {
-        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, "");
+    public List<Facet> facets(String chaine, String index,  String filtres) throws Exception {
+        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, filtres);
     }
 
     /**
