@@ -20,7 +20,16 @@ public class InitClientES {
 
         log.info("Load elastic client");
         try {
-            ElasticClient.chargeClient(elasticConfig.getHostname(), elasticConfig.getPort(), elasticConfig.getScheme(), elasticConfig.getUserName(), elasticConfig.getPassword(), elasticConfig.getProtocol());
+            ElasticClient.chargeClient(
+                    elasticConfig.getHostname(),
+                    elasticConfig.getHostname2(),
+                    elasticConfig.getHostname3(),
+                    elasticConfig.getHostname4(),
+                    elasticConfig.getPort(),
+                    elasticConfig.getScheme(),
+                    elasticConfig.getUserName(),
+                    elasticConfig.getPassword(),
+                    elasticConfig.getProtocol());
         } catch (Exception e) {
             log.error("pb lors du chargement du client ES : " + e.toString());
             throw new RuntimeException(e);

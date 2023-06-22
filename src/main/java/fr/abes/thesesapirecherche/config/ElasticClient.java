@@ -30,7 +30,15 @@ public class ElasticClient {
         return client;
     }
 
-    public static void chargeClient(String hostname, int port, String scheme, String userName, String password, String protocol) throws Exception {
+    public static void chargeClient(String hostname,
+                                    String hostname2,
+                                    String hostname3,
+                                    String hostname4,
+                                    int port,
+                                    String scheme,
+                                    String userName,
+                                    String password,
+                                    String protocol) throws Exception {
         try {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
@@ -39,11 +47,17 @@ public class ElasticClient {
                     .loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
                     .build();
 
-            RestClient cc = RestClient.builder(new HttpHost(hostname, port,scheme)).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
-                    .setDefaultCredentialsProvider(credentialsProvider)
-                    .setSSLContext(sslContext)
-                    .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-            ).build();
+            RestClient cc = RestClient.builder(
+                    new HttpHost(hostname, port, scheme),
+                    new HttpHost(hostname2, port, scheme),
+                            new HttpHost(hostname3, port, scheme),
+                            new HttpHost(hostname4, port, scheme)
+                    )
+                    .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                            .setDefaultCredentialsProvider(credentialsProvider)
+                            .setSSLContext(sslContext)
+                            .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                    ).build();
 
             ElasticsearchTransport transport = new RestClientTransport(
                     cc, new JacksonJsonpMapper());
