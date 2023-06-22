@@ -18,7 +18,10 @@ import fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
-import fr.abes.thesesapirecherche.personnes.dto.*;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -134,7 +137,7 @@ public class SearchPersonneQueryBuilder {
 
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(thematiqueQueryString)
-                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur,functionScoreNbTheses._toFunctionScore(),functionScorethesesRecentes))
+                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur, functionScoreNbTheses._toFunctionScore(), functionScorethesesRecentes))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
                 .build();
@@ -147,7 +150,7 @@ public class SearchPersonneQueryBuilder {
      *
      * @return Liste d'options de tri Elastic Search
      */
-    private List<SortOptions> buildSort(String tri ) {
+    private List<SortOptions> buildSort(String tri) {
         List<SortOptions> list = new ArrayList<>();
 
         if (tri.equals("PersonnesAsc")) {
@@ -288,13 +291,13 @@ public class SearchPersonneQueryBuilder {
     /**
      * Retourne une liste de facettes en fonction du critère de recherche
      *
-     * @param chaine Chaîne de caractère à rechercher
-     * @param index  Nom de l'index ES à requêter
+     * @param chaine  Chaîne de caractère à rechercher
+     * @param index   Nom de l'index ES à requêter
      * @param filtres Filtres à appliquer
      * @return Retourne la liste des facettes au format Dto
      * @throws Exception
      */
-    public List<Facet> facets(String chaine, String index,  String filtres) throws Exception {
+    public List<Facet> facets(String chaine, String index, String filtres) throws Exception {
         return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, filtres);
     }
 

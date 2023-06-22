@@ -57,6 +57,12 @@ public class SearchQueryBuilder {
     private final TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
     @Value("${es.hostname}")
     private String esHostname;
+    @Value("${es.hostname2}")
+    private String esHostname2;
+    @Value("${es.hostname3}")
+    private String esHostname3;
+    @Value("${es.hostname4}")
+    private String esHostname4;
     @Value("${es.port}")
     private String esPort;
     @Value("${es.protocol}")
@@ -85,7 +91,7 @@ public class SearchQueryBuilder {
                         .loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
                         .build();
 
-                RestClient client = RestClient.builder(new HttpHost(esHostname, Integer.parseInt(esPort), esScheme)).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                RestClient client = RestClient.builder(new HttpHost(esHostname, Integer.parseInt(esPort), esScheme), new HttpHost(esHostname2, Integer.parseInt(esPort), esScheme), new HttpHost(esHostname3, Integer.parseInt(esPort), esScheme), new HttpHost(esHostname4, Integer.parseInt(esPort), esScheme)).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                         .setDefaultCredentialsProvider(credentialsProvider)
                         .setSSLContext(sslContext)
                         .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
@@ -128,7 +134,7 @@ public class SearchQueryBuilder {
                         .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
                 These.class
         );
-
+        
         ResponseTheseLiteDto res = new ResponseTheseLiteDto();
         List<TheseLiteResponseDto> liste = new ArrayList<>();
         Iterator<Hit<These>> iterator = response.hits().hits().iterator();
