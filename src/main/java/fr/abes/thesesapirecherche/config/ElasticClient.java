@@ -34,7 +34,7 @@ public class ElasticClient {
                                     String hostname2,
                                     String hostname3,
                                     String hostname4,
-                                    int port,
+                                    String port,
                                     String scheme,
                                     String userName,
                                     String password,
@@ -48,10 +48,10 @@ public class ElasticClient {
                     .build();
 
             RestClient cc = RestClient.builder(
-                    new HttpHost(hostname, port, scheme),
-                    new HttpHost(hostname2, port, scheme),
-                            new HttpHost(hostname3, port, scheme),
-                            new HttpHost(hostname4, port, scheme)
+                    new HttpHost(hostname, Integer.parseInt(port), scheme),
+                    new HttpHost(hostname2, Integer.parseInt(port), scheme),
+                            new HttpHost(hostname3, Integer.parseInt(port), scheme),
+                            new HttpHost(hostname4, Integer.parseInt(port), scheme)
                     )
                     .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                             .setDefaultCredentialsProvider(credentialsProvider)

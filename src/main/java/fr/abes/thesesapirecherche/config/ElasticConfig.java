@@ -16,7 +16,7 @@ public class ElasticConfig {
     private String hostname2;
     private String hostname3;
     private String hostname4;
-    private int port;
+    private String port;
     private String scheme;
     private String userName;
     private String password;
