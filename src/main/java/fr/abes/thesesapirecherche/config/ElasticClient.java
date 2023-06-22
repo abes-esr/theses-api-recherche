@@ -35,10 +35,9 @@ public class ElasticClient {
                                     String hostname3,
                                     String hostname4,
                                     String port,
-                                    String scheme,
+                                    String protocol,
                                     String userName,
-                                    String password,
-                                    String protocol) throws Exception {
+                                    String password) throws Exception {
         try {
             CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
@@ -48,10 +47,10 @@ public class ElasticClient {
                     .build();
 
             RestClient cc = RestClient.builder(
-                    new HttpHost(hostname, Integer.parseInt(port), scheme),
-                    new HttpHost(hostname2, Integer.parseInt(port), scheme),
-                            new HttpHost(hostname3, Integer.parseInt(port), scheme),
-                            new HttpHost(hostname4, Integer.parseInt(port), scheme)
+                    new HttpHost(hostname, Integer.parseInt(port), protocol),
+                    new HttpHost(hostname2, Integer.parseInt(port), protocol),
+                            new HttpHost(hostname3, Integer.parseInt(port), protocol),
+                            new HttpHost(hostname4, Integer.parseInt(port), protocol)
                     )
                     .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                             .setDefaultCredentialsProvider(credentialsProvider)

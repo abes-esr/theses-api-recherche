@@ -11,10 +11,8 @@ import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.*;
 import co.elastic.clients.json.JsonData;
-import co.elastic.clients.json.jackson.JacksonJsonpMapper;
-import co.elastic.clients.transport.ElasticsearchTransport;
-import co.elastic.clients.transport.rest_client.RestClientTransport;
 import fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder;
+import fr.abes.thesesapirecherche.config.ElasticClient;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
@@ -24,20 +22,10 @@ import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.ssl.SSLContexts;
-import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.net.ssl.SSLContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,51 +36,11 @@ import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFi
 public class SearchPersonneQueryBuilder {
 
     PersonneMapper personneMapper = new PersonneMapper();
-    @Value("${es.hostname}")
-    private String esHostname;
-    @Value("${es.port}")
-    private String esPort;
-    @Value("${es.protocol}")
-    private String esHttpProtocol;
-    @Value("${es.username}")
-    private String esUserName;
-    @Value("${es.password}")
-    private String esPassword;
-
-    private ElasticsearchClient client;
     @Autowired
     private FacetProps facetProps;
 
     @Value("${maxfacetsvalues}")
     private int maxFacetsValues;
-
-    private ElasticsearchClient getElasticsearchClient() throws Exception {
-        if (this.client == null) {
-            try {
-                CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(esUserName, esPassword));
-
-                final SSLContext sslContext = SSLContexts.custom()
-                        .loadTrustMaterial(null, TrustAllStrategy.INSTANCE)
-                        .build();
-
-                RestClient client = RestClient.builder(new HttpHost(esHostname, Integer.parseInt(esPort), esHttpProtocol)).setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
-                        .setDefaultCredentialsProvider(credentialsProvider)
-                        .setSSLContext(sslContext)
-                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                ).build();
-
-                ElasticsearchTransport transport = new RestClientTransport(
-                        client, new JacksonJsonpMapper());
-
-                this.client = new ElasticsearchClient(transport);
-            } catch (Exception e) {
-                log.error(e.toString());
-                throw e;
-            }
-        }
-        return this.client;
-    }
 
     public Query buildQuery(String chaine) {
 
@@ -200,7 +148,7 @@ public class SearchPersonneQueryBuilder {
                 .trackTotalHits(t -> t.enabled(Boolean.TRUE))
                 .build();
 
-        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest, Personne.class);
+        SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
 
         return RechercheResponseDto.builder().personnes(personneMapper.personnesListToDto(response.hits().hits())).totalHits(response.hits().total().value()).build();
     }
@@ -247,7 +195,7 @@ public class SearchPersonneQueryBuilder {
                 .text(q)
         );
 
-        SearchResponse<Void> response = this.getElasticsearchClient().search(s -> s
+        SearchResponse<Void> response = ElasticClient.getElasticsearchClient().search(s -> s
                         .index(index)
                         .suggest(suggester)
                 , Void.class);
@@ -280,7 +228,7 @@ public class SearchPersonneQueryBuilder {
                 .text(q)
         );
 
-        SearchResponse<Void> response = this.getElasticsearchClient().search(s -> s
+        SearchResponse<Void> response = ElasticClient.getElasticsearchClient().search(s -> s
                         .index("thematiques")
                         .suggest(suggester)
                 , Void.class);
@@ -298,7 +246,7 @@ public class SearchPersonneQueryBuilder {
      * @throws Exception
      */
     public List<Facet> facets(String chaine, String index, String filtres) throws Exception {
-        return FacetQueryBuilder.facets(this.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, filtres);
+        return FacetQueryBuilder.facets(ElasticClient.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, filtres);
     }
 
     /**
@@ -320,7 +268,7 @@ public class SearchPersonneQueryBuilder {
                 .query(query)
                 .build();
 
-        SearchResponse<Personne> response = this.getElasticsearchClient().search(searchRequest, Personne.class);
+        SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
 
         if (response.hits().hits().size() != 1) {
             throw new Exception("Person not found");
@@ -331,7 +279,7 @@ public class SearchPersonneQueryBuilder {
 
     //Retourne le nb total de personnes dans l'index
     public long getStatsPersonnes(String index) throws Exception {
-        CountResponse countResponse = this.getElasticsearchClient().count(s -> s.index(index));
+        CountResponse countResponse = ElasticClient.getElasticsearchClient().count(s -> s.index(index));
         return countResponse.count();
     }
 }
