@@ -86,6 +86,7 @@ public class SearchQueryBuilder {
             liste.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
         res.setTheses(liste);
+        res.setTook(response.took());
         res.setTotalHits(response.hits().total().value());
         return res;
     }

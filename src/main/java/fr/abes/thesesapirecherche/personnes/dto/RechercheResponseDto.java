@@ -1,7 +1,6 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +18,11 @@ public class RechercheResponseDto {
     @Setter
     @JsonProperty("totalHits")
     long totalHits;
+
+    @Getter
+    @Setter
+    @JsonProperty("took")
+    long took;
 
     @Getter
     @Setter

@@ -1,6 +1,5 @@
 package fr.abes.thesesapirecherche.personnes.builder;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.InlineScript;
 import co.elastic.clients.elasticsearch._types.Script;
 import co.elastic.clients.elasticsearch._types.SortOptions;
@@ -150,7 +149,7 @@ public class SearchPersonneQueryBuilder {
 
         SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
 
-        return RechercheResponseDto.builder().personnes(personneMapper.personnesListToDto(response.hits().hits())).totalHits(response.hits().total().value()).build();
+        return RechercheResponseDto.builder().personnes(personneMapper.personnesListToDto(response.hits().hits())).totalHits(response.hits().total().value()).took(response.took()).build();
     }
 
     public SuggestionResponseDto completion(String q, String index) throws Exception {
