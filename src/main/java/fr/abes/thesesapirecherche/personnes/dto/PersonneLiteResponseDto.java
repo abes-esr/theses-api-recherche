@@ -43,14 +43,14 @@ public class PersonneLiteResponseDto {
     @Getter
     @Setter
     @JsonProperty("these")
-    TheseLiteResponseDto these;
+    String these;
 
     @Getter
     @Setter
     @JsonProperty("theses")
     @JsonInclude(value = JsonInclude.Include.CUSTOM,
             valueFilter = ThesesFilter.class)
-    List<TheseLiteResponseDto> theses;
+    List<String> theses;
 
     @Getter
     @Setter

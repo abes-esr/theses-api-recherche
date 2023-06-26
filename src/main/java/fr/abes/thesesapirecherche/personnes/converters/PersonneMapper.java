@@ -8,6 +8,7 @@ import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneComputedFields;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
+import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,20 +28,20 @@ public class PersonneMapper {
      * @param personne Hit<Personne>
      * @return
      */
-    public PersonneLiteResponseDto personnesToDto(Hit<Personne> personne) {
+    public PersonneLiteResponseDto personnesToDto(Hit<RecherchePersonne> personne) {
         PersonneLiteResponseDto item = PersonneLiteResponseDto.builder()
                 .id(personne.id())
                 .nom(personne.source().getNom())
                 .prenom(personne.source().getPrenom())
                 .hasIdref(personne.source().getHasIdref())
-                .these(theseMapper.theseLiteToDto(personne.source().getTheses().get(0)))
-                .theses(theseMapper.thesesLiteToDto(personne.source().getTheses()))
+                .these(personne.source().getTheses_id().get(0))
+                .theses(personne.source().getTheses_id())
                 .build();
 
         // On remplit les champs calculés
-        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getTheses()));
-        item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.source().getTheses()));
-        item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.source().getTheses()));
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRechercheRoles(personne.source().getRoles()));
+        item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.source().getDisciplines()));
+        item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.source().getEtablissements()));
 
         return item;
     }
@@ -50,9 +51,9 @@ public class PersonneMapper {
      * @param personnes
      * @return
      */
-    public List<PersonneLiteResponseDto> personnesListToDto(List<Hit<Personne>> personnes) {
+    public List<PersonneLiteResponseDto> personnesListToDto(List<Hit<RecherchePersonne>> personnes) {
         List<PersonneLiteResponseDto> results = new ArrayList<>();
-        for (Hit<Personne> item : personnes) {
+        for (Hit<RecherchePersonne> item : personnes) {
             results.add(personnesToDto(item));
         }
         return results;

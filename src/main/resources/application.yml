@@ -24,11 +24,11 @@ facets:
       parentName: soutenue
   mainPersonnes:
     - libelle: Rôle
-      champ: roles
+      champ: facette_roles
       searchBar: true
     - libelle: Établissements
-      champ: etablissements
+      champ: facette_etablissements
       searchBar: true
     - libelle: Domaines thématiques
-      champ: domaines
+      champ: facette_domaines
       searchBar: true
