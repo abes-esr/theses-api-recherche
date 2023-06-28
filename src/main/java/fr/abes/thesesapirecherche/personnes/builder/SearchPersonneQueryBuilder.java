@@ -75,8 +75,8 @@ public class SearchPersonneQueryBuilder {
         FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(1.0).build();
 
         // Boost nombre de thèses
-        RankFeatureQuery nbThesesQuery = new RankFeatureQuery.Builder().field("nb_theses").build();
-        FunctionScore functionScoreNbTheses = new FunctionScore.Builder().filter(nbThesesQuery._toQuery()).weight(0.1).build();
+        FieldValueFactorScoreFunction nbThesesQuery = new FieldValueFactorScoreFunction.Builder().field("nb_theses").modifier(FieldValueFactorModifier.None).build();
+        FunctionScore functionScoreNbTheses = new FunctionScore.Builder().fieldValueFactor(nbThesesQuery).build();
 
         // Boost Thèses récentes
         RangeQuery thesesRecentesQuery = QueryBuilders.range().field("theses_date").gte(JsonData.of("now-5y")).lte(JsonData.of("now")).build();
@@ -263,7 +263,7 @@ public class SearchPersonneQueryBuilder {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(index)
-                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses")))))
+                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses", "roles")))))
                 .query(query)
                 .build();
 

@@ -9,30 +9,10 @@ public class PersonneComputedFields {
 
     /**
      * Calcule le nombre de fois que les rôles ont été tenus
-     * @param items Liste des thèses
-     * @return Une map avec les rôles comme clé et le nombre d'occurrences en valeur
-     */
-    public static Map<String, Integer> calculerStatistiquesRoles(List<ThesePersonne> items) {
-        Map<String, Integer> elementCountMap = new LinkedHashMap<>();
-
-        if (items != null) {
-            for (ThesePersonne item : items) {
-                if (elementCountMap.containsKey(item.getRole())) {
-                    elementCountMap.put(item.getRole(), elementCountMap.get(item.getRole()) + 1);
-                } else {
-                    elementCountMap.put(item.getRole(), 1);
-                }
-            }
-        }
-        return elementCountMap;
-    }
-
-    /**
-     * Calcule le nombre de fois que les rôles ont été tenus
      * @param items Liste des roles
      * @return Une map avec les rôles comme clé et le nombre d'occurrences en valeur
      */
-    public static Map<String, Integer> calculerStatistiquesRechercheRoles(List<String> items) {
+    public static Map<String, Integer> calculerStatistiquesRoles(List<String> items) {
         Map<String, Integer> elementCountMap = new LinkedHashMap<>();
 
         if (items != null) {

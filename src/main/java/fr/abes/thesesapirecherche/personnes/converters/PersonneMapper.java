@@ -39,7 +39,7 @@ public class PersonneMapper {
                 .build();
 
         // On remplit les champs calculés
-        item.setRoles(PersonneComputedFields.calculerStatistiquesRechercheRoles(personne.source().getRoles()));
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getRoles()));
         item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.source().getDisciplines()));
         item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.source().getEtablissements()));
 
@@ -75,7 +75,7 @@ public class PersonneMapper {
                 .build();
 
         // On remplit les champs calculés
-        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getTheses()));
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getRoles()));
         item.setMotsCles(PersonneComputedFields.calculerMotsCles(personne.source().getTheses()));
 
         return item;

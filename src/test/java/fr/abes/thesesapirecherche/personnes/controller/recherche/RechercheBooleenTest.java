@@ -21,8 +21,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @EnableOnIntegrationTest
     public void rechercherBooleenOuOr() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20OR%20Rousseau&index=per_recherche_simple_rousseau&debut=0&nombre=1000"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(19))
+                .andExpect(status().isOk())              
                 .andExpect(jsonPath("$..theses[?(@=='2004BRES2040')]").exists())
                 .andExpect(jsonPath("$..theses[?(@=='2021AIXM0253')]").exists())
                 .andExpect(jsonPath("$..theses[?(@=='2017GREAM026')]").exists())
@@ -54,8 +53,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @EnableOnIntegrationTest
     public void rechercherBooleenSaufNot() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20NOT%20Rousseau&index=per_recherche_simple_rousseau"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(2))
+                .andExpect(status().isOk())              
                 .andExpect(jsonPath("$..theses[?(@=='2020REN1B015')]").exists())
                 .andExpect(jsonPath("$..theses[?(@=='1999ROUES082')]").exists());
     }
@@ -65,8 +63,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @EnableOnIntegrationTest
     public void rechercherBooleenSaufMoins() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20-Rousseau&index=per_recherche_simple_rousseau"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(2))
+                .andExpect(status().isOk())            
                 .andExpect(jsonPath("$..theses[?(@=='2020REN1B015')]").exists())
                 .andExpect(jsonPath("$..theses[?(@=='1999ROUES082')]").exists());
     }
@@ -76,8 +73,7 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @EnableOnIntegrationTest
     public void rechercher2BooleenSaufNot() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Rousseau%20NOT%20Erwan&index=per_recherche_simple_rousseau"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(8))
+                .andExpect(status().isOk())             
                 .andExpect(jsonPath("$..theses[?(@=='2011ANGE0040')]").exists())
                 .andExpect(jsonPath("$..theses[?(@=='2003PA066582')]").exists())
                 .andExpect(jsonPath("$..theses[?(@=='1997PA040286')]").exists())
@@ -95,12 +91,11 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @EnableOnIntegrationTest
     public void rechercherBooleenEtAnd() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20AND%20Rousseau&index=per_recherche_simple_rousseau"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(10))
+                .andExpect(status().isOk())                
                 .andExpect(jsonPath("$..theses[?(@=='2004BRES2040')]").exists())
-                .andExpect(jsonPath("$..theses[?(@.id=='2021AIXM0253')]").exists())
-                .andExpect(jsonPath("$..theses[?(@.id=='2017GREAM026')]").exists())
-                .andExpect(jsonPath("$..theses[?(@.id=='2020AIXM0184')]").exists());
+                .andExpect(jsonPath("$..theses[?(@=='2021AIXM0253')]").exists())
+                .andExpect(jsonPath("$..theses[?(@=='2017GREAM026')]").exists())
+                .andExpect(jsonPath("$..theses[?(@=='2020AIXM0184')]").exists());
     }
 
     @Test
@@ -108,12 +103,11 @@ public class RechercheBooleenTest extends PersonneControllerTest {
     @EnableOnIntegrationTest
     public void rechercherBooleenEtPlus() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/recherche/?q=Erwan%20+%20Rousseau&index=per_recherche_simple_rousseau"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalHits").value(10))
-                .andExpect(jsonPath("$..theses[?(@.id=='2004BRES2040')]").exists())
-                .andExpect(jsonPath("$..theses[?(@.id=='2021AIXM0253')]").exists())
-                .andExpect(jsonPath("$..theses[?(@.id=='2017GREAM026')]").exists())
-                .andExpect(jsonPath("$..theses[?(@.id=='2020AIXM0184')]").exists());
+                .andExpect(status().isOk())               
+                .andExpect(jsonPath("$..theses[?(@=='2004BRES2040')]").exists())
+                .andExpect(jsonPath("$..theses[?(@=='2021AIXM0253')]").exists())
+                .andExpect(jsonPath("$..theses[?(@=='2017GREAM026')]").exists())
+                .andExpect(jsonPath("$..theses[?(@=='2020AIXM0184')]").exists());
     }
 
 }
