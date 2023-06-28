@@ -20,6 +20,7 @@ import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
+import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,12 +56,11 @@ public class SearchPersonneQueryBuilder {
         QueryStringQuery.Builder thematiqueBuilderQuery = new QueryStringQuery.Builder();
         thematiqueBuilderQuery.query(chaine);
         thematiqueBuilderQuery.defaultOperator(Operator.And);
-        thematiqueBuilderQuery.fields(List.of("theses.sujets.*", "theses.sujets_rameau", "theses.resumes.*", "theses.discipline"));
-        thematiqueBuilderQuery.quoteFieldSuffix(".exact");
-        Query nestedThematiqueQuery = new NestedQuery.Builder().query(thematiqueBuilderQuery.build()._toQuery()).path("theses").build()._toQuery();
+        thematiqueBuilderQuery.fields(List.of("thematiques.*"));
+        Query thematiqueQuery = thematiqueBuilderQuery.build()._toQuery();
 
         // Recherche par nom et prénom ou par thématique
-        Query thematiqueQueryString = QueryBuilders.bool().should(nomPrenomQueryString, nestedThematiqueQuery).build()._toQuery();
+        Query thematiqueQueryString = QueryBuilders.bool().should(nomPrenomQueryString, thematiqueQuery).build()._toQuery();
 
         // Boost IdRef
         TermQuery idrefQuery = QueryBuilders.term().field("has_idref").value(true).build();
@@ -75,8 +75,8 @@ public class SearchPersonneQueryBuilder {
         FunctionScore functionScoreRoleRapporteur = new FunctionScore.Builder().filter(roleRapporteurQuery._toQuery()).weight(1.0).build();
 
         // Boost nombre de thèses
-        Script script = new Script.Builder().inline(new InlineScript.Builder().source("doc['theses_id'].length").build()).build();
-        ScriptScoreFunction functionScoreNbTheses = new ScriptScoreFunction.Builder().script(script).build();
+        FieldValueFactorScoreFunction nbThesesQuery = new FieldValueFactorScoreFunction.Builder().field("nb_theses").modifier(FieldValueFactorModifier.None).build();
+        FunctionScore functionScoreNbTheses = new FunctionScore.Builder().fieldValueFactor(nbThesesQuery).build();
 
         // Boost Thèses récentes
         RangeQuery thesesRecentesQuery = QueryBuilders.range().field("theses_date").gte(JsonData.of("now-5y")).lte(JsonData.of("now")).build();
@@ -84,7 +84,7 @@ public class SearchPersonneQueryBuilder {
 
         FunctionScoreQuery functionScoreQuery = new FunctionScoreQuery.Builder()
                 .query(thematiqueQueryString)
-                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur, functionScoreNbTheses._toFunctionScore(), functionScorethesesRecentes))
+                .functions(List.of(functionScoreIdref, functionScoreRoleDirecteur, functionScoreRoleRapporteur, functionScoreNbTheses, functionScorethesesRecentes))
                 .boostMode(FunctionBoostMode.Multiply)
                 .scoreMode(FunctionScoreMode.Sum)
                 .build();
@@ -135,7 +135,7 @@ public class SearchPersonneQueryBuilder {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(index)
-                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses")))))
+                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("ppn","nom", "prenom", "has_idref", "theses_id","roles", "etablissements", "disciplines")))))
                 .query(q -> q
                         .bool(t -> t
                                 .must(buildQuery(chaine))
@@ -147,7 +147,7 @@ public class SearchPersonneQueryBuilder {
                 .trackTotalHits(t -> t.enabled(Boolean.TRUE))
                 .build();
 
-        SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
+        SearchResponse<RecherchePersonne> response = ElasticClient.getElasticsearchClient().search(searchRequest, RecherchePersonne.class);
 
         return RechercheResponseDto.builder().personnes(personneMapper.personnesListToDto(response.hits().hits())).totalHits(response.hits().total().value()).took(response.took()).build();
     }
@@ -263,7 +263,7 @@ public class SearchPersonneQueryBuilder {
 
         SearchRequest searchRequest = new SearchRequest.Builder()
                 .index(index)
-                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses")))))
+                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses", "roles")))))
                 .query(query)
                 .build();
 

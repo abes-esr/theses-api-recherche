@@ -9,18 +9,18 @@ public class PersonneComputedFields {
 
     /**
      * Calcule le nombre de fois que les rôles ont été tenus
-     * @param items Liste des thèses
+     * @param items Liste des roles
      * @return Une map avec les rôles comme clé et le nombre d'occurrences en valeur
      */
-    public static Map<String, Integer> calculerStatistiquesRoles(List<ThesePersonne> items) {
+    public static Map<String, Integer> calculerStatistiquesRoles(List<String> items) {
         Map<String, Integer> elementCountMap = new LinkedHashMap<>();
 
         if (items != null) {
-            for (ThesePersonne item : items) {
-                if (elementCountMap.containsKey(item.getRole())) {
-                    elementCountMap.put(item.getRole(), elementCountMap.get(item.getRole()) + 1);
+            for (String role : items) {
+                if (elementCountMap.containsKey(role)) {
+                    elementCountMap.put(role, elementCountMap.get(role) + 1);
                 } else {
-                    elementCountMap.put(item.getRole(), 1);
+                    elementCountMap.put(role, 1);
                 }
             }
         }
@@ -32,16 +32,11 @@ public class PersonneComputedFields {
      * @param items Liste des thèses
      * @return Une liste de 3 éléments ordonnés selon le nombre d'occurrences
      */
-    public static List<String> calculerDisciplines(List<ThesePersonne> items) {
+    public static List<String> calculerDisciplines(List<String> items) {
         List<String> results = new ArrayList<>();
 
         if (items != null) {
-            for (ThesePersonne item : items) {
-                if (item.getDiscipline() != null) {
-                    results.add(item.getDiscipline());
-                }
-            }
-            return sortArrayElementsByFrequency(results).stream().limit(3).collect(Collectors.toList());
+            return sortArrayElementsByFrequency(items).stream().limit(3).collect(Collectors.toList());
         }
         return results;
     }
@@ -51,16 +46,11 @@ public class PersonneComputedFields {
      * @param items Liste des thèses
      * @return Une liste de 3 éléments ordonnés selon le nombre d'occurrences
      */
-    public static List<String> calculerEtablissements(List<ThesePersonne> items) {
+    public static List<String> calculerEtablissements(List<String> items) {
         List<String> results = new ArrayList<>();
 
         if (items != null) {
-            for (ThesePersonne item : items) {
-                if (item.getEtablissement_soutenance() != null) {
-                    results.add(item.getEtablissement_soutenance().getNom());
-                }
-            }
-            return sortArrayElementsByFrequency(results).stream().limit(3).collect(Collectors.toList());
+            return sortArrayElementsByFrequency(items).stream().limit(3).collect(Collectors.toList());
         }
         return results;
     }

@@ -29,6 +29,9 @@ public class PersonneController {
     @Value("${es.personnes.indexname}")
     private String esIndexName;
 
+    @Value("${es.personnes.recherche.indexname}")
+    private String esRechercheIndexName;
+
     /**
      * Rechercher une personne avec un mot
      *
@@ -58,7 +61,7 @@ public class PersonneController {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName, decodedFilters,debut.orElse(0), nombre.orElse(10),tri.orElse(""));
+        return searchQueryBuilder.rechercher(decodedQuery, esRechercheIndexName, decodedFilters,debut.orElse(0), nombre.orElse(10),tri.orElse(""));
     }
 
     /**
@@ -81,7 +84,7 @@ public class PersonneController {
             @RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(decodedQuery, esIndexName);
+        return searchQueryBuilder.completion(decodedQuery, esRechercheIndexName);
     }
 
     /**
@@ -102,7 +105,7 @@ public class PersonneController {
     })
     public List<Facet> facets(@RequestParam @ApiParam(name = "q", value = "début de la chaine à rechercher", example = "rousseau") final String q,
                               @RequestParam @ApiParam(name = "filtres", value = "filtres",  example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres) throws Exception {
-        return searchQueryBuilder.facets(q, esIndexName,filtres.orElse(""));
+        return searchQueryBuilder.facets(q, esRechercheIndexName,filtres.orElse(""));
     }
 
     /**
@@ -144,7 +147,7 @@ public class PersonneController {
             @ApiResponse(code = 503, message = "Service indisponible"),
     })
     public long getStatsPersonnes() throws Exception {
-        return searchQueryBuilder.getStatsPersonnes(esIndexName);
+        return searchQueryBuilder.getStatsPersonnes(esRechercheIndexName);
     }
 
 }
