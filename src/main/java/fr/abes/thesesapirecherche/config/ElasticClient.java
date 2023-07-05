@@ -31,9 +31,6 @@ public class ElasticClient {
     }
 
     public static void chargeClient(String hostname,
-                                    String hostname2,
-                                    String hostname3,
-                                    String hostname4,
                                     String port,
                                     String protocol,
                                     String userName,
@@ -47,10 +44,7 @@ public class ElasticClient {
                     .build();
 
             RestClient cc = RestClient.builder(
-                            new HttpHost(hostname, Integer.parseInt(port), protocol),
-                            new HttpHost(hostname2, Integer.parseInt(port), protocol),
-                            new HttpHost(hostname3, Integer.parseInt(port), protocol),
-                            new HttpHost(hostname4, Integer.parseInt(port), protocol)
+                            new HttpHost(hostname, Integer.parseInt(port), protocol)
                     )
                     .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                             .setDefaultCredentialsProvider(credentialsProvider)
