@@ -1,14 +1,17 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.*;
+import co.elastic.clients.elasticsearch.core.search.CompletionSuggestOption;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.SuggestionBuilders;
+import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation;
 import fr.abes.thesesapirecherche.ThesesApiRechercheApplicationTests;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
+import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
-import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,17 +28,18 @@ import java.util.List;
 public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
 
     PersonneMapper personneMapper = new PersonneMapper();
+
     /**
      * Génération d'un retour de recherche ElasticSearch contenant 2 personnes
      */
-    private static final SearchResponse<Personne> searchResponse = SearchResponse.of(b -> b
+    private static final SearchResponse<RecherchePersonne> searchPersonnesResponse = SearchResponse.of(b -> b
             .aggregations(new HashMap<>())
             .took(0)
             .timedOut(false)
             .hits(h -> h
                     .total(t -> t.value(0).relation(TotalHitsRelation.Eq))
-                    .hits(Hit.of(z -> z.index("personnes").id("127566635").source(Personne.builder().nom("Rousseau").prenom("Erwann").hasIdref(true).theses(List.of(ThesePersonne.builder().role("auteur").nnt("2007PA066375").build())).build())),
-                            Hit.of(z -> z.index("personnes").id("D_Cs1oMBVl5--j0CzKFo").source(Personne.builder().nom("Rousseau").prenom("Erwan").hasIdref(false).theses(List.of(ThesePersonne.builder().role("directeur de thèse").nnt("s347820").build())).build())))
+                    .hits(Hit.of(z -> z.index("recherche_personnes").id("127566635").source(RecherchePersonne.builder().nom("Rousseau").prenom("Erwann").hasIdref(true).theses_id(List.of("2007PA066375")).roles(List.of("auteur")).build())),
+                            Hit.of(z -> z.index("recherche_personnes").id("D_Cs1oMBVl5--j0CzKFo").source(RecherchePersonne.builder().nom("Rousseau").prenom("Erwan").hasIdref(false).theses_id(List.of("s347820")).roles(List.of("directeur de thèse")).build())))
             )
             .shards(s -> s
                     .total(1)
@@ -43,6 +47,25 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
                     .successful(1)
             )
     );
+
+    /**
+     * Génération d'un retour de recherche d'une personne dans ElasticSearch
+     */
+    private static final SearchResponse<Personne> searchResponse = SearchResponse.of(b -> b
+            .aggregations(new HashMap<>())
+            .took(0)
+            .timedOut(false)
+            .hits(h -> h
+                    .total(t -> t.value(0).relation(TotalHitsRelation.Eq))
+                    .hits(Hit.of(z -> z.index("personnes").id("127566635").source(Personne.builder().nom("Rousseau").prenom("Erwann").hasIdref(true).theses(List.of(ThesePersonne.builder().role("auteur").id("2007PA066375").build())).build())))
+            )
+            .shards(s -> s
+                    .total(1)
+                    .failed(0)
+                    .successful(1)
+            )
+    );
+
 
     /**
      * Génération d'un retour de suggestion ElasticSearch contenant 2 personnes
@@ -71,7 +94,7 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
     @DisplayName("Conversion d'une liste de personnes au format ES vers DTO")
     void testConversionESversDto() {
 
-        List<PersonneLiteResponseDto> results = personneMapper.personnesListToDto(searchResponse.hits().hits());
+        List<PersonneLiteResponseDto> results = personneMapper.personnesListToDto(searchPersonnesResponse.hits().hits());
 
         Assertions.assertEquals(2, results.size());
         // 1ère personne
@@ -79,18 +102,18 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("Rousseau", results.get(0).getNom());
         Assertions.assertEquals("Erwann", results.get(0).getPrenom());
         Assertions.assertEquals(true, results.get(0).getHasIdref());
-        Assertions.assertEquals(1, results.get(0).getTheses().size());
-        Assertions.assertEquals("auteur", results.get(0).getTheses().get(0).getRole());
-        Assertions.assertEquals("2007PA066375", results.get(0).getTheses().get(0).getNnt());
+        Assertions.assertEquals(true, results.get(0).getRoles().containsKey("auteur"));
+        Assertions.assertEquals(1, results.get(0).getRoles().get("auteur"));
+        Assertions.assertEquals("2007PA066375", results.get(0).getTheses().get(0));
 
         // 2ème personne
         Assertions.assertEquals("D_Cs1oMBVl5--j0CzKFo", results.get(1).getId());
         Assertions.assertEquals("Rousseau", results.get(1).getNom());
         Assertions.assertEquals("Erwan", results.get(1).getPrenom());
         Assertions.assertEquals(false, results.get(1).getHasIdref());
-        Assertions.assertEquals(1, results.get(1).getTheses().size());
-        Assertions.assertEquals("directeur de thèse", results.get(1).getTheses().get(0).getRole());
-        Assertions.assertEquals("s347820", results.get(1).getTheses().get(0).getNnt());
+        Assertions.assertEquals(true, results.get(1).getRoles().containsKey("directeur de thèse"));
+        Assertions.assertEquals(1, results.get(1).getRoles().get("directeur de thèse"));
+        Assertions.assertEquals("s347820", results.get(1).getTheses().get(0));
 
     }
 
@@ -106,8 +129,8 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("Erwann", results.getPrenom());
         Assertions.assertEquals(true, results.getHasIdref());
         Assertions.assertEquals(1, results.getTheses().size());
-        Assertions.assertEquals("auteur", results.getTheses().get(0).getRole());
-        Assertions.assertEquals("2007PA066375", results.getTheses().get(0).getNnt());
+        Assertions.assertEquals(true, results.getTheses().containsKey("auteur"));
+        Assertions.assertEquals("2007PA066375", results.getTheses().get("auteur").get(0).getId());
 
     }
 

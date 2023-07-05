@@ -37,9 +37,9 @@ public class RechercheCompletionTest extends PersonneControllerTest {
     public void completion() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/completion?q=d&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(10)))
-                .andExpect(jsonPath("$[?(@.id)]").exists())
-                .andExpect(jsonPath("$[?(@.suggestion)]").exists());
+                .andExpect(jsonPath("$.personnes", hasSize(10)))
+                .andExpect(jsonPath("$.personnes[?(@.id)]").exists())
+                .andExpect(jsonPath("$.personnes[?(@.suggestion)]").exists());
     }
 
     /* ------------------------------- */
@@ -53,11 +53,11 @@ public class RechercheCompletionTest extends PersonneControllerTest {
     public void completionRousseauBoostIdrefRole() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/completion/?q=rousseau&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)))
-                .andExpect(jsonPath("$[0].id").value("098248782"))
-                .andExpect(jsonPath("$[1].id").value("127566635"))
-                .andExpect(jsonPath("$[2].id").value("081954522"))
-                .andExpect(jsonPath("$[3].id").value("081810652"));
+                .andExpect(jsonPath("$.personnes", hasSize(4)))
+                .andExpect(jsonPath("$.personnes[0].id").value("098248782"))
+                .andExpect(jsonPath("$.personnes[1].id").value("127566635"))
+                .andExpect(jsonPath("$.personnes[2].id").value("081954522"))
+                .andExpect(jsonPath("$.personnes[3].id").value("081810652"));
     }
 
     @Test
@@ -66,10 +66,10 @@ public class RechercheCompletionTest extends PersonneControllerTest {
     public void completionErwanBoostIdrefRole() throws Exception {
         mockMvc.perform(get("/api/v1/tests/personnes/completion/?q=erwan&index=per_recherche_simple_rousseau"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)))
-                .andExpect(jsonPath("$[0].id").value("182866122"))
-                .andExpect(jsonPath("$[1].id").value("178429708"))
-                .andExpect(jsonPath("$[2].id").value("098248782"))
-                .andExpect(jsonPath("$[3].id").value("127566635"));
+                .andExpect(jsonPath("$.personnes", hasSize(4)))
+                .andExpect(jsonPath("$.personnes[0].id").value("182866122"))
+                .andExpect(jsonPath("$.personnes[1].id").value("178429708"))
+                .andExpect(jsonPath("$.personnes[2].id").value("098248782"))
+                .andExpect(jsonPath("$.personnes[3].id").value("127566635"));
     }
 }

@@ -23,6 +23,12 @@ facets:
       champ: accessible
       parentName: soutenue
   mainPersonnes:
-    - libelle: Role
-      champ: roles
+    - libelle: Rôle
+      champ: facette_roles
+      searchBar: true
+    - libelle: Établissements
+      champ: facette_etablissements
+      searchBar: true
+    - libelle: Domaines thématiques
+      champ: facette_domaines
       searchBar: true

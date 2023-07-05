@@ -11,5 +11,7 @@ import java.util.List;
 public class ResponseTheseLiteDto {
 
     long totalHits;
+
+    long took;
     List<TheseLiteResponseDto> theses = new ArrayList<>();
 }

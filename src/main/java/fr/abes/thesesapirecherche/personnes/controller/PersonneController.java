@@ -3,9 +3,9 @@ package fr.abes.thesesapirecherche.personnes.controller;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.exception.ApiException;
 import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,12 +30,17 @@ public class PersonneController {
     @Value("${es.personnes.indexname}")
     private String esIndexName;
 
+    @Value("${es.personnes.recherche.indexname}")
+    private String esRechercheIndexName;
+
     /**
      * Rechercher une personne avec un mot
      *
      * @param q       Chaîne de caractère à rechercher
      * @param filtres Filtres des résultats
-     * @return Une liste de personnes correspondant à la recherche
+     * @param debut   Numéro de la page courante
+     * @param nombre  Nombre de résultats à retourner
+     * @return Une réponse de recherche
      * @throws ApiException
      */
     @GetMapping(value = "/recherche")
@@ -45,14 +50,18 @@ public class PersonneController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public List<PersonneLiteResponseDto> recherche(
+
+    public RechercheResponseDto recherche(
             @RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "rousseau") final String q,
-            @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[role=\"auteurs\"&role=\"raporteurs\"]") Optional<String> filtres
+            @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres,
+            @RequestParam @Parameter(name = "debut", description = "indice de la première personne du lot", example = "10") Optional<Integer> debut,
+            @RequestParam @Parameter(name = "nombre", description = "nombre de personne dans le lot", example = "10") Optional<Integer> nombre,
+            @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "pertinence, PersonneDesc, PersonnesAsc") Optional<String> tri
     ) throws Exception {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esIndexName, decodedFilters);
+        return searchQueryBuilder.rechercher(decodedQuery, esRechercheIndexName, decodedFilters, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
     }
 
     /**
@@ -69,11 +78,11 @@ public class PersonneController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public List<SuggestionPersonneResponseDto> completion(
+    public SuggestionResponseDto completion(
             @RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(decodedQuery, esIndexName);
+        return searchQueryBuilder.completion(decodedQuery, esRechercheIndexName);
     }
 
     /**
@@ -90,8 +99,9 @@ public class PersonneController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public List<Facet> facets(@RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "rousseau") final String q) throws Exception {
-        return searchQueryBuilder.facets(q, esIndexName);
+    public List<Facet> facets(@RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "rousseau") final String q,
+                              @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres) throws Exception {
+        return searchQueryBuilder.facets(q, esRechercheIndexName, filtres.orElse(""));
     }
 
     /**
@@ -108,6 +118,7 @@ public class PersonneController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
+
     public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
@@ -123,13 +134,14 @@ public class PersonneController {
      * Retourne le nombre total de personnes
      */
     @GetMapping(value = "/stats")
-    @Operation(
-            summary = "Retourne le nombre total de personnes")
+    @Operation(summary = "Statistiques sur les personnes",
+            description = "Retourne le nombre total de personnes")
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
+
     public long getStatsPersonnes() throws Exception {
-        return searchQueryBuilder.getStatsPersonnes(esIndexName);
+        return searchQueryBuilder.getStatsPersonnes(esRechercheIndexName);
     }
 
 }
