@@ -22,9 +22,6 @@ public class InitClientES {
         try {
             ElasticClient.chargeClient(
                     elasticConfig.getHostname(),
-                    elasticConfig.getHostname2(),
-                    elasticConfig.getHostname3(),
-                    elasticConfig.getHostname4(),
                     elasticConfig.getPort(),
                     elasticConfig.getProtocol(),
                     elasticConfig.getUserName(),
