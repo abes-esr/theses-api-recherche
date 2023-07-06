@@ -43,7 +43,7 @@ public class PersonneController {
      * @return Une réponse de recherche
      * @throws ApiException
      */
-    @GetMapping(value = "/recherche")
+    @GetMapping(value = "/recherche/")
     @Operation(
             summary = "Rechercher une personne avec un mot",
             description = "Retourne une liste de personnes correspondant à la recherche")
