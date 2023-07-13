@@ -1,7 +1,6 @@
 package fr.abes.thesesapirecherche.theses.dto;
 
-import fr.abes.thesesapirecherche.theses.model.Sujet;
-import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
+import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,8 +22,7 @@ public class TheseResponseDto {
     OrganismeResponseDto etabSoutenance;
     List<OrganismeResponseDto> etabCotutelle;
     List<OrganismeResponseDto> partenairesRecherche;
-    List<SujetsRameau> sujetsRameau;
-    List<Sujet> sujets;
+    Map<String, List<SujetsToMap>> mapSujets;
     List<ThesePersoneResponseDto> membresJury;
     List<ThesePersoneResponseDto> rapporteurs;
     List<ThesePersoneResponseDto> auteurs;
