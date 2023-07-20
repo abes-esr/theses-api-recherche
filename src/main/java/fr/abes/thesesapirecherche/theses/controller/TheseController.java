@@ -12,19 +12,20 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/theses")
 public class TheseController {
-
     final SearchQueryBuilder searchQueryBuilder;
     @Value("${google.recaptcha.key.site}")
     private String recaptchaSite;
@@ -32,14 +33,17 @@ public class TheseController {
     private String recaptchaSecret;
     @Value("${google.recaptcha.key.threshold}")
     private float threshold;
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
+
     @Value("${theses.mail}")
     private String mailTheses;
     @Value("${mail.ws}")
     private String wsMailURL;
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private Environment env;
 
     public TheseController(SearchQueryBuilder searchQueryBuilder) {
         this.searchQueryBuilder = searchQueryBuilder;
@@ -92,7 +96,7 @@ public class TheseController {
          */
         List to;
 
-        if (activeProfile == "prod" || activeProfile == "test") {
+        if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test")) {
             to = getMailAddress(json.getEtabPpn(), json.getAppSource());
         } else {
             to = new ArrayList<>() {{
