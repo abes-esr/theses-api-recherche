@@ -75,6 +75,10 @@ public class ExceptionControllerHandler {
         return buildResponseEntity(new ApiExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
+    @ExceptionHandler(RecaptchaInvalidException.class)
+    protected ResponseEntity<Object> handleCaptchaException(RecaptchaInvalidException ex) {
+        return buildResponseEntity(new ApiExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
 
     /**
      * Retourne l'erreur au format de l'API lorsqu'il y a une erreur interne
