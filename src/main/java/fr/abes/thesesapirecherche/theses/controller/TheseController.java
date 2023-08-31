@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 @Slf4j
 @RestController
@@ -107,6 +108,8 @@ public class TheseController {
     }
 
     private List getMailAddress(String ppnEtab, String source) {
+        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
+        TimeZone.setDefault(timeZone);
         return jdbcTemplate.queryForList("SELECT EMAIL FROM COMPTE WHERE PPN = ? AND LOWER(SOURCE) = ?", ppnEtab, source.toLowerCase());
     }
 
