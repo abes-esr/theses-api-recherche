@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -97,7 +94,7 @@ public class TheseController {
          */
         List to;
 
-        if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test")) {
+        if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
             to = getMailAddress(json.getEtabPpn(), json.getAppSource());
         } else {
             to = new ArrayList<>() {{
@@ -110,7 +107,12 @@ public class TheseController {
     private List getMailAddress(String ppnEtab, String source) {
         TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
         TimeZone.setDefault(timeZone);
-        return jdbcTemplate.queryForList("SELECT EMAIL FROM COMPTE WHERE PPN = ? AND LOWER(SOURCE) = ?", ppnEtab, source.toLowerCase());
+        List<Map<String, Object>> res = jdbcTemplate.queryForList("SELECT EMAIL FROM COMPTE WHERE PPN = ? AND LOWER(SOURCE) = ?", ppnEtab, source.toLowerCase());
+        List<String> to = new ArrayList<>();
+        for (Map<String, Object> m : res
+        ) {
+            to.add(m.get("EMAIL").toString());
+        }
+        return to;
     }
-
 }
