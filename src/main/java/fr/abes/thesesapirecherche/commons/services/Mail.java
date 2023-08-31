@@ -27,15 +27,22 @@ public class Mail {
                 add(mailTheses);
             }}, subject, MailTemplates.mailSignalerErreur(domaine, url, nom, prenom, mail, objet, question, appSource));
         }
-        // Sinon on envoi un mail d'erreur à l'adresse theses
+        // Sinon on envoi un mail d'erreur à l'adresse theses en plus du mail de base
         else {
+            //mail de base
+            String subject = "[thesesFr] -- " + objet + " -- Message de " + nom + " " + prenom;
+            mailJSON = new MailJSON(new ArrayList<>() {{
+                add(mailTheses);
+            }}, new ArrayList<>() {{
+                add(mail);
+            }}, new ArrayList<>() {
+            }, subject, MailTemplates.mailSignalerErreur(domaine, url, nom, prenom, mail, objet, question, appSource));
+
+            //mail d'erreur
             String subject = "[thesesFr] -- Erreur d’adressage de l’assistance déportée theses.fr";
             mailJSON = new MailJSON(new ArrayList<>() {{
                 add(mailTheses);
             }}, new ArrayList<>() {
-                {
-                    add(mail);
-                }
             }, new ArrayList<>() {
             }, subject, MailTemplates.mailSignalerErreurNoRecipient(domaine, url, nom, prenom, mail, objet, question, appSource));
         }
