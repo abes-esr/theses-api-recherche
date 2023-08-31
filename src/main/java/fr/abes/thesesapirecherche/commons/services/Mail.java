@@ -39,12 +39,12 @@ public class Mail {
             }, subject, MailTemplates.mailSignalerErreur(domaine, url, nom, prenom, mail, objet, question, appSource));
 
             //mail d'erreur
-            String subject = "[thesesFr] -- Erreur d’adressage de l’assistance déportée theses.fr";
+            String subjectErr = "[thesesFr] -- Erreur d’adressage de l’assistance déportée theses.fr";
             mailJSON = new MailJSON(new ArrayList<>() {{
                 add(mailTheses);
             }}, new ArrayList<>() {
             }, new ArrayList<>() {
-            }, subject, MailTemplates.mailSignalerErreurNoRecipient(domaine, url, nom, prenom, mail, objet, question, appSource));
+            }, subjectErr, MailTemplates.mailSignalerErreurNoRecipient(domaine, url, nom, prenom, mail, objet, question, appSource));
         }
 
 
