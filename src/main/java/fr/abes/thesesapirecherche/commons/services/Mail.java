@@ -33,6 +33,9 @@ public class Mail {
             mailJSON = new MailJSON(new ArrayList<>() {{
                 add(mailTheses);
             }}, new ArrayList<>() {
+                {
+                    add(mail);
+                }
             }, new ArrayList<>() {
             }, subject, MailTemplates.mailSignalerErreurNoRecipient(domaine, url, nom, prenom, mail, objet, question, appSource));
         }
