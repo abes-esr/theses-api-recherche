@@ -6,6 +6,9 @@ facets:
     - libelle: Établissements
       champ: etabSoutenanceN.exact
       searchBar: true
+    - libelle: Écoles doctorales
+      champ: ecolesDoctoralesN.exact
+      searchBar: true
     - libelle: Domaines thématiques
       champ: oaiSetNames
       searchBar: true
@@ -14,9 +17,6 @@ facets:
       searchBar: true
     - libelle: Langues
       champ: langues
-      searchBar: true
-    - libelle: Écoles doctorales
-      champ: ecolesDoctoralesN.exact
       searchBar: true
   subsTheses:
     - libelle: Accessibles en ligne
