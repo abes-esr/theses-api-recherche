@@ -38,6 +38,7 @@ public class TheseMapper {
                 .titrePrincipal(these.getTitrePrincipal())
                 .nnt(these.getNnt())
                 .dateSoutenance(these.getDateSoutenance())
+                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())

@@ -16,6 +16,7 @@ public class TheseResponseDto {
     String titrePrincipal;
     String nnt;
     String dateSoutenance;
+    String datePremiereInscriptionDoctorat;
     String discipline;
     Map<String, String> titres;
     Map<String, String> resumes;
