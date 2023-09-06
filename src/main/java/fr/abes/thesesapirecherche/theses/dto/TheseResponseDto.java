@@ -33,5 +33,6 @@ public class TheseResponseDto {
     ThesePersoneResponseDto presidentJury;
     String source;
     String status;
+    Boolean isSoutenue;
 
 }

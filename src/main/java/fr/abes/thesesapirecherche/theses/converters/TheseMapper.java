@@ -55,6 +55,7 @@ public class TheseMapper {
                 .presidentJury(personneMapper.personneToDto(these.getPresidentJury()))
                 .source(these.getSource())
                 .status(these.getStatus())
+                .isSoutenue(these.getIsSoutenue())
                 .build();
     }
 

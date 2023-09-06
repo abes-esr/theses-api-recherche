@@ -19,6 +19,7 @@ public class These {
     String nnt;
     String accessible;
     String status;
+    Boolean isSoutenue;
     String source;
     String codeEtab;
     Date dateSoutenance;
