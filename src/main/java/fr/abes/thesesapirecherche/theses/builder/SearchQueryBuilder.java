@@ -20,6 +20,7 @@ import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +90,65 @@ public class SearchQueryBuilder {
         res.setTook(response.took());
         res.setTotalHits(response.hits().total().value());
         return res;
+    }
+
+    public ThesesByOrganismeResponseDto searchByOrganisme(String ppn) throws Exception {
+        List<TheseLiteResponseDto> liste = new ArrayList<>();
+        ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
+
+        SearchResponse<These> responseEtabSoutenance = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .match(t -> t
+                                        .query(ppn)
+                                        .field("etabSoutenancePPN"))),
+                These.class
+        );
+
+        Iterator<Hit<These>> iterator = responseEtabSoutenance.hits().hits().iterator();
+        while (iterator.hasNext()) {
+            Hit<These> theseHit = iterator.next();
+            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
+        thesesByOrganismeResponse.setEtabSoutenance(liste);
+
+
+        SearchResponse<These> responseEtabCotutelle = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .match(t -> t
+                                        .query(ppn)
+                                        .field("etabCotutellePPN"))),
+                These.class
+        );
+        liste.clear();
+        iterator = responseEtabCotutelle.hits().hits().iterator();
+        while (iterator.hasNext()) {
+            Hit<These> theseHit = iterator.next();
+            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
+        thesesByOrganismeResponse.setEtabCotutelle(liste);
+
+        SearchResponse<These> responsePartenaire = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .match(t -> t
+                                        .query(ppn)
+                                        .field("partenaireRecherchePPN"))),
+                These.class
+        );
+        liste.clear();
+        iterator = responsePartenaire.hits().hits().iterator();
+        while (iterator.hasNext()) {
+            Hit<These> theseHit = iterator.next();
+            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
+        thesesByOrganismeResponse.setPartenaireRecherche(liste);
+
+        return thesesByOrganismeResponse;
     }
 
     public long getStatsTheses(String statusFilter) throws Exception {

@@ -3,6 +3,7 @@ package fr.abes.thesesapirecherche.theses.controller;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,6 +42,24 @@ public class SearchThesesController {
         log.info("debut de rechercheSurLeTitre...");
         try {
             return searchQueryBuilder.simple(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw e;
+        }
+    }
+
+    @GetMapping(value = "/rechercheOrganisme/")
+    @Operation(
+            summary = "Rechercher toutes les thèses liées à un établissement/organisme",
+            description = "Retourne une liste de thèses correspondant liées à un établissement, groupées par rôle de l'établissement")
+    @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
+    @ApiResponse(responseCode = "400", description = "Mauvaise requête")
+    @ApiResponse(responseCode = "503", description = "Service indisponible")
+    public ThesesByOrganismeResponseDto rechercheParOrganisme(
+            @RequestParam @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
+    ) throws Exception {
+        try {
+            return searchQueryBuilder.searchByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
