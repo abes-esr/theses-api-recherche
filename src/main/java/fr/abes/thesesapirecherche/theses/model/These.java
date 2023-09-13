@@ -37,8 +37,10 @@ public class These {
     Map<String, String> resumes;
     Organisme etabSoutenance;
     String etabSoutenanceN;
+    String etabSoutenancePpn;
     List<Organisme> partenairesRecherche;
     List<String> partenairesRechercheN;
+    List<String> partenairesRecherchePpn;
     List<String> sujetsRameauLibelle;
     List<String> sujetsRameauPpn;
     List<SujetsRameau> sujetsRameau;
@@ -52,8 +54,10 @@ public class These {
     List<String> directeursNP;
 
     List<Organisme> ecolesDoctorales;
+    List<String> ecolesDoctoralesPpn;
     List<String> ecolesDoctoralesN;
     List<Organisme> etabsCotutelle;
+    List<String> etabsCotutellePpn;
     List<String> etabsCotutelleN;
     PersonneThese presidentJury;
     String presidentJuryNP;

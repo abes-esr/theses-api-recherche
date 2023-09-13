@@ -21,6 +21,7 @@ import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,8 +93,31 @@ public class SearchQueryBuilder {
         return res;
     }
 
+    public String getOrganismeName(String ppn) throws Exception {
+        QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
+        builderQuery.query('"' + ppn + '"');
+        builderQuery.defaultOperator(Operator.And);
+        builderQuery.fields("etabSoutenancePpn", "etabsCotutellePpn", "partenairesRecherchePpn", "ecolesDoctoralesPpn");
+        builderQuery.quoteFieldSuffix(".exact");
+
+        SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .bool(t -> t
+                                        .must(builderQuery.build()._toQuery())
+                                ))
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+                These.class
+        );
+
+        if ((int) response.hits().total().value() > 0)
+            return getEtabNameFromSourceAndPPN(response.hits().hits().get(0).source(), ppn);
+        else return "";
+        //Si on retourne "" alors ce n'est pas un organisme mais une personne
+    }
+
     public ThesesByOrganismeResponseDto searchByOrganisme(String ppn) throws Exception {
-        List<TheseLiteResponseDto> liste = new ArrayList<>();
         ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
 
         SearchResponse<These> responseEtabSoutenance = ElasticClient.getElasticsearchClient().search(
@@ -102,17 +126,22 @@ public class SearchQueryBuilder {
                         .query(q -> q
                                 .match(t -> t
                                         .query(ppn)
-                                        .field("etabSoutenancePPN"))),
+                                        .field("etabSoutenancePpn"))),
                 These.class
         );
 
         Iterator<Hit<These>> iterator = responseEtabSoutenance.hits().hits().iterator();
+        List<TheseLiteResponseDto> listeEtabSoutenance = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEtabSoutenanceEnCours = new ArrayList<>();
         while (iterator.hasNext()) {
             Hit<These> theseHit = iterator.next();
-            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
+            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
+            if (theseListeDto.getStatus().equals("enCours"))
+                listeEtabSoutenanceEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+            else listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
-        thesesByOrganismeResponse.setEtabSoutenance(liste);
-
+        thesesByOrganismeResponse.setEtabSoutenance(listeEtabSoutenance);
+        thesesByOrganismeResponse.setEtabSoutenanceEnCours(listeEtabSoutenanceEnCours);
 
         SearchResponse<These> responseEtabCotutelle = ElasticClient.getElasticsearchClient().search(
                 s -> s
@@ -120,16 +149,21 @@ public class SearchQueryBuilder {
                         .query(q -> q
                                 .match(t -> t
                                         .query(ppn)
-                                        .field("etabCotutellePPN"))),
+                                        .field("etabsCotutellePpn"))),
                 These.class
         );
-        liste.clear();
+        List<TheseLiteResponseDto> listeEtabCotutelle = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEtabCotutelleEnCours = new ArrayList<>();
         iterator = responseEtabCotutelle.hits().hits().iterator();
         while (iterator.hasNext()) {
             Hit<These> theseHit = iterator.next();
-            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
+            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
+            if (theseListeDto.getStatus().equals("enCours"))
+                listeEtabCotutelleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+            else listeEtabCotutelle.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
-        thesesByOrganismeResponse.setEtabCotutelle(liste);
+        thesesByOrganismeResponse.setEtabCotutelle(listeEtabCotutelle);
+        thesesByOrganismeResponse.setEtabCotutelleEnCours(listeEtabCotutelleEnCours);
 
         SearchResponse<These> responsePartenaire = ElasticClient.getElasticsearchClient().search(
                 s -> s
@@ -137,16 +171,43 @@ public class SearchQueryBuilder {
                         .query(q -> q
                                 .match(t -> t
                                         .query(ppn)
-                                        .field("partenaireRecherchePPN"))),
+                                        .field("partenairesRecherchePpn"))),
                 These.class
         );
-        liste.clear();
+        List<TheseLiteResponseDto> listePartenaire = new ArrayList<>();
+        List<TheseLiteResponseDto> listePartenaireEnCours = new ArrayList<>();
         iterator = responsePartenaire.hits().hits().iterator();
         while (iterator.hasNext()) {
             Hit<These> theseHit = iterator.next();
-            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
+            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
+            if (theseListeDto.getStatus().equals("enCours"))
+                listePartenaireEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+            else listePartenaire.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
-        thesesByOrganismeResponse.setPartenaireRecherche(liste);
+        thesesByOrganismeResponse.setPartenaireRecherche(listePartenaire);
+        thesesByOrganismeResponse.setPartenaireRechercheEnCours(listePartenaireEnCours);
+
+        SearchResponse<These> responseEcole = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .match(t -> t
+                                        .query(ppn)
+                                        .field("ecolesDoctoralesPpn"))),
+                These.class
+        );
+        List<TheseLiteResponseDto> listeEcoleDoctorale = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
+        iterator = responseEcole.hits().hits().iterator();
+        while (iterator.hasNext()) {
+            Hit<These> theseHit = iterator.next();
+            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
+            if (theseListeDto.getStatus().equals("enCours"))
+                listeEcoleDoctoraleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+            else listeEcoleDoctorale.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
+        thesesByOrganismeResponse.setEcoleDoctorale(listeEcoleDoctorale);
+        thesesByOrganismeResponse.setEcoleDoctoraleEnCours(listeEcoleDoctoraleEnCours);
 
         return thesesByOrganismeResponse;
     }
@@ -208,6 +269,25 @@ public class SearchQueryBuilder {
         return listeSuggestions;
     }
 
+    private String getEtabNameFromSourceAndPPN(These source, String ppn) {
+        //Si on est l'établissement de soutenance, on récupère le nom directement
+        if (source.getEtabSoutenancePpn().equals(ppn)) return source.getEtabSoutenanceN();
+
+        //sinon on cherche le PPN dans les etabs de cotutelle, etc.
+        for (Organisme e : source.getEtabsCotutelle()) {
+            if (e.getPpn().equals(ppn)) return e.getNom();
+        }
+
+        for (Organisme e : source.getPartenairesRecherche()) {
+            if (e.getPpn().equals(ppn)) return e.getNom();
+        }
+
+        for (Organisme e : source.getEcolesDoctorales()) {
+            if (e.getPpn().equals(ppn)) return e.getNom();
+        }
+
+        return "";
+    }
 
     //TODO : Sortir les fields dans un fichier properties
     private List<SortOptions> addTri(String tri) {

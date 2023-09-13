@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +45,25 @@ public class SearchThesesController {
         }
     }
 
-    @GetMapping(value = "/rechercheOrganisme/")
+    @GetMapping(value = "/getorganismename/{ppn}")
+    @Operation(
+            summary = "Obtenir le nom d'un organisme",
+            description = "Retourne le nom d'un organisme. Si ce nom est vide, alors ce PPN ne correspond pas à un organisme, mais à une personne.")
+    @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
+    @ApiResponse(responseCode = "400", description = "Mauvaise requête")
+    @ApiResponse(responseCode = "503", description = "Service indisponible")
+    public String isOrganisme(
+            @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
+    ) throws Exception {
+        try {
+            return searchQueryBuilder.getOrganismeName(ppn);
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw e;
+        }
+    }
+
+    @GetMapping(value = "/organisme/{ppn}")
     @Operation(
             summary = "Rechercher toutes les thèses liées à un établissement/organisme",
             description = "Retourne une liste de thèses correspondant liées à un établissement, groupées par rôle de l'établissement")
@@ -56,7 +71,7 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public ThesesByOrganismeResponseDto rechercheParOrganisme(
-            @RequestParam @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
+            @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {
             return searchQueryBuilder.searchByOrganisme(ppn);
