@@ -275,15 +275,15 @@ public class SearchQueryBuilder {
 
         //sinon on cherche le PPN dans les etabs de cotutelle, etc.
         for (Organisme e : source.getEtabsCotutelle()) {
-            if (e.getPpn().equals(ppn)) return e.getNom();
+            if (e.getPpn() != null && e.getPpn().equals(ppn)) return e.getNom();
         }
 
         for (Organisme e : source.getPartenairesRecherche()) {
-            if (e.getPpn().equals(ppn)) return e.getNom();
+            if (e.getPpn() != null && e.getPpn().equals(ppn)) return e.getNom();
         }
 
         for (Organisme e : source.getEcolesDoctorales()) {
-            if (e.getPpn().equals(ppn)) return e.getNom();
+            if (e.getPpn() != null  && e.getPpn().equals(ppn)) return e.getNom();
         }
 
         return "";
