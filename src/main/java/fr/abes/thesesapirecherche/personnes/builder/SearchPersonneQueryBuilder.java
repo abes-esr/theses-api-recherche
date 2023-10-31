@@ -50,6 +50,14 @@ public class SearchPersonneQueryBuilder {
         nomPrenomBuilderQuery.quoteFieldSuffix(".exact");
         Query nomPrenomQueryString = nomPrenomBuilderQuery.build()._toQuery();
 
+        // Recherche par nom et prénom
+        QueryStringQuery.Builder ppnQuery = new QueryStringQuery.Builder();
+        ppnQuery.query(chaine);
+        ppnQuery.defaultOperator(Operator.And);
+        ppnQuery.fields(List.of("_id"));
+        ppnQuery.quoteFieldSuffix(".exact");
+        Query ppnQueryString = ppnQuery.build()._toQuery();
+
         // Recherche par thématique
         QueryStringQuery.Builder thematiqueBuilderQuery = new QueryStringQuery.Builder();
         thematiqueBuilderQuery.query(chaine);
@@ -58,7 +66,7 @@ public class SearchPersonneQueryBuilder {
         Query thematiqueQuery = thematiqueBuilderQuery.build()._toQuery();
 
         // Recherche par nom et prénom ou par thématique
-        Query thematiqueQueryString = QueryBuilders.bool().should(nomPrenomQueryString, thematiqueQuery).build()._toQuery();
+        Query thematiqueQueryString = QueryBuilders.bool().should(nomPrenomQueryString, thematiqueQuery, ppnQueryString).build()._toQuery();
 
         // Boost IdRef
         TermQuery idrefQuery = QueryBuilders.term().field("has_idref").value(true).build();

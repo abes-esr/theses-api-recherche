@@ -117,97 +117,184 @@ public class SearchQueryBuilder {
         //Si on retourne "" alors ce n'est pas un organisme mais une personne
     }
 
+    // TODO : Simplifier cette fonction / éviter duplication
     public ThesesByOrganismeResponseDto searchByOrganisme(String ppn) throws Exception {
         ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
 
-        SearchResponse<These> responseEtabSoutenance = ElasticClient.getElasticsearchClient().search(
+        // Theses soutenues/en cours dans cet étab
+
+        SearchResponse<These> responseEtabSoutenanceEnEcours = ElasticClient.getElasticsearchClient().search(
                 s -> s
                         .index(esIndexName)
                         .query(q -> q
-                                .match(t -> t
-                                        .query(ppn)
-                                        .field("etabSoutenancePpn"))),
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("etabSoutenancePpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("enCours")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
                 These.class
         );
 
-        Iterator<Hit<These>> iterator = responseEtabSoutenance.hits().hits().iterator();
+        SearchResponse<These> responseEtabSoutenanceSoutenue = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("etabSoutenancePpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("soutenue")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+                These.class
+        );
+
+        Iterator<Hit<These>> iterator = responseEtabSoutenanceEnEcours.hits().hits().iterator();
+        Iterator<Hit<These>> iteratorSoutenue = responseEtabSoutenanceSoutenue.hits().hits().iterator();
         List<TheseLiteResponseDto> listeEtabSoutenance = new ArrayList<>();
         List<TheseLiteResponseDto> listeEtabSoutenanceEnCours = new ArrayList<>();
         while (iterator.hasNext()) {
             Hit<These> theseHit = iterator.next();
-            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
-            if (theseListeDto.getStatus().equals("enCours"))
-                listeEtabSoutenanceEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-            else listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
+            listeEtabSoutenanceEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
+        while (iteratorSoutenue.hasNext()) {
+            Hit<These> theseHit = iteratorSoutenue.next();
+            listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
         thesesByOrganismeResponse.setEtabSoutenance(listeEtabSoutenance);
         thesesByOrganismeResponse.setEtabSoutenanceEnCours(listeEtabSoutenanceEnCours);
+        thesesByOrganismeResponse.setTotalHitsetabSoutenanceEnCours(responseEtabSoutenanceEnEcours.hits().total().value());
+        thesesByOrganismeResponse.setTotalHitsetabSoutenance(responseEtabSoutenanceSoutenue.hits().total().value());
 
+
+        // Theses en cotutelle dans cet étab
         SearchResponse<These> responseEtabCotutelle = ElasticClient.getElasticsearchClient().search(
                 s -> s
                         .index(esIndexName)
                         .query(q -> q
-                                .match(t -> t
-                                        .query(ppn)
-                                        .field("etabsCotutellePpn"))),
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("etabsCotutellePpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("soutenue")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
                 These.class
         );
+
+        SearchResponse<These> responseEtabCotutelleEnCours = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("etabsCotutellePpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("enCours")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+                These.class
+        );
+
         List<TheseLiteResponseDto> listeEtabCotutelle = new ArrayList<>();
         List<TheseLiteResponseDto> listeEtabCotutelleEnCours = new ArrayList<>();
-        iterator = responseEtabCotutelle.hits().hits().iterator();
+        iteratorSoutenue = responseEtabCotutelle.hits().hits().iterator();
+        iterator = responseEtabCotutelleEnCours.hits().hits().iterator();
+        while (iteratorSoutenue.hasNext()) {
+            Hit<These> theseHit = iteratorSoutenue.next(); listeEtabCotutelle.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
         while (iterator.hasNext()) {
-            Hit<These> theseHit = iterator.next();
-            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
-            if (theseListeDto.getStatus().equals("enCours"))
-                listeEtabCotutelleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-            else listeEtabCotutelle.add(theseLiteMapper.theseLiteToDto(theseHit));
+            Hit<These> theseHit = iterator.next(); listeEtabCotutelleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
         thesesByOrganismeResponse.setEtabCotutelle(listeEtabCotutelle);
         thesesByOrganismeResponse.setEtabCotutelleEnCours(listeEtabCotutelleEnCours);
+        thesesByOrganismeResponse.setTotalHitsetabCotutelleEnCours(responseEtabCotutelleEnCours.hits().total().value());
+        thesesByOrganismeResponse.setTotalHitsetabCotutelle(responseEtabCotutelle.hits().total().value());
 
+
+        // Theses en partenariat
         SearchResponse<These> responsePartenaire = ElasticClient.getElasticsearchClient().search(
                 s -> s
                         .index(esIndexName)
                         .query(q -> q
-                                .match(t -> t
-                                        .query(ppn)
-                                        .field("partenairesRecherchePpn"))),
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("partenairesRecherchePpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("soutenue")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
                 These.class
         );
+
+        SearchResponse<These> responsePartenaireEnCours = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("partenairesRecherchePpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("enCours")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+                These.class
+        );
+
         List<TheseLiteResponseDto> listePartenaire = new ArrayList<>();
         List<TheseLiteResponseDto> listePartenaireEnCours = new ArrayList<>();
-        iterator = responsePartenaire.hits().hits().iterator();
+        iterator = responsePartenaireEnCours.hits().hits().iterator();
+        iteratorSoutenue = responsePartenaire.hits().hits().iterator();
         while (iterator.hasNext()) {
-            Hit<These> theseHit = iterator.next();
-            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
-            if (theseListeDto.getStatus().equals("enCours"))
-                listePartenaireEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-            else listePartenaire.add(theseLiteMapper.theseLiteToDto(theseHit));
+            Hit<These> theseHit = iterator.next();listePartenaireEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
+        while (iteratorSoutenue.hasNext()) {
+            Hit<These> theseHit = iteratorSoutenue.next();listePartenaire.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
         thesesByOrganismeResponse.setPartenaireRecherche(listePartenaire);
         thesesByOrganismeResponse.setPartenaireRechercheEnCours(listePartenaireEnCours);
+        thesesByOrganismeResponse.setTotalHitspartenaireRechercheEnCours(responsePartenaireEnCours.hits().total().value());
+        thesesByOrganismeResponse.setTotalHitspartenaireRecherche(responsePartenaire.hits().total().value());
 
+        // Ecoles doctorale
         SearchResponse<These> responseEcole = ElasticClient.getElasticsearchClient().search(
                 s -> s
                         .index(esIndexName)
                         .query(q -> q
-                                .match(t -> t
-                                        .query(ppn)
-                                        .field("ecolesDoctoralesPpn"))),
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("ecolesDoctoralesPpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("soutenue")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
                 These.class
         );
+
+        SearchResponse<These> responseEcoleEnCours = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .bool(t -> t
+                                        .must(n -> n.match(m -> m.query(ppn).field("ecolesDoctoralesPpn")))
+                                        .filter(f -> f.term(x -> x.field("status").value("enCours")))
+                                ))
+                        .size(100)
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+                These.class
+        );
+
         List<TheseLiteResponseDto> listeEcoleDoctorale = new ArrayList<>();
         List<TheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
-        iterator = responseEcole.hits().hits().iterator();
+        iterator = responseEcoleEnCours.hits().hits().iterator();
+        iteratorSoutenue = responseEcole.hits().hits().iterator();
         while (iterator.hasNext()) {
             Hit<These> theseHit = iterator.next();
-            TheseLiteResponseDto theseListeDto = theseLiteMapper.theseLiteToDto(theseHit);
-            if (theseListeDto.getStatus().equals("enCours"))
-                listeEcoleDoctoraleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-            else listeEcoleDoctorale.add(theseLiteMapper.theseLiteToDto(theseHit));
+            listeEcoleDoctoraleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        }
+        while (iteratorSoutenue.hasNext()) {
+            Hit<These> theseHit = iteratorSoutenue.next();
+            listeEcoleDoctorale.add(theseLiteMapper.theseLiteToDto(theseHit));
         }
         thesesByOrganismeResponse.setEcoleDoctorale(listeEcoleDoctorale);
         thesesByOrganismeResponse.setEcoleDoctoraleEnCours(listeEcoleDoctoraleEnCours);
+        thesesByOrganismeResponse.setTotalHitsecoleDoctoraleEnCours(responseEcoleEnCours.hits().total().value());
+        thesesByOrganismeResponse.setTotalHitsecoleDoctorale(responseEcole.hits().total().value());
 
         return thesesByOrganismeResponse;
     }
