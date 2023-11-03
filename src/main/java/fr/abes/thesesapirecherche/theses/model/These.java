@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +47,16 @@ public class These {
     List<SujetsRameau> sujetsRameau;
     List<PersonneThese> membresJury;
     List<String> membresJuryNP;
+    List<String> membresJuryPpn = new ArrayList<>();
     List<PersonneThese> rapporteurs;
     List<String> rapporteursNP;
+    List<String> rapporteursPpn = new ArrayList<>();
     List<PersonneThese> auteurs;
     List<String> auteursNP;
+    List<String> auteursPpn = new ArrayList<>();
     List<PersonneThese> directeurs;
     List<String> directeursNP;
-
+    List<String> directeursPpn = new ArrayList<>();
     List<Organisme> ecolesDoctorales;
     List<String> ecolesDoctoralesPpn;
     List<String> ecolesDoctoralesN;
@@ -61,6 +65,7 @@ public class These {
     List<String> etabsCotutelleN;
     PersonneThese presidentJury;
     String presidentJuryNP;
+    String presidentJuryPpn;
     String theseTravaux;
 
     public String getDateSoutenance() {
