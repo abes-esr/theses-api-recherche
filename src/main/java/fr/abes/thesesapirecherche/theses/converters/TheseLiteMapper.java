@@ -14,6 +14,7 @@ public class TheseLiteMapper {
                 .id(theseHit.id())
                 .titrePrincipal(theseHit.source().getTitrePrincipal())
                 .etabSoutenanceN(theseHit.source().getEtabSoutenanceN())
+                .etabSoutenancePpn(theseHit.source().getEtabSoutenancePpn())
                 .dateSoutenance(theseHit.source().getDateSoutenance())
                 .datePremiereInscriptionDoctorat(theseHit.source().getDatePremiereInscriptionDoctorat())
                 .auteurs(theseHit.source().getAuteurs())

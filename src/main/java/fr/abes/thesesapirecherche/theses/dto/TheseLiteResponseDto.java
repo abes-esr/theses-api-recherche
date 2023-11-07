@@ -14,6 +14,7 @@ public class TheseLiteResponseDto {
     String id;
     String titrePrincipal;
     String etabSoutenanceN;
+    String etabSoutenancePpn;
     String dateSoutenance;
     String datePremiereInscriptionDoctorat;
     List<PersonneThese> auteurs;
