@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import fr.abes.thesesapirecherche.commons.services.Mail;
 import fr.abes.thesesapirecherche.exception.RecaptchaInvalidException;
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
+import fr.abes.thesesapirecherche.theses.data.DbRequests;
 import fr.abes.thesesapirecherche.theses.dto.CaptchaResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.SignalerErreurDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
@@ -13,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -38,7 +38,7 @@ public class TheseController {
     private String wsMailURL;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DbRequests dbRequests;
 
     @Autowired
     private Environment env;
@@ -59,6 +59,22 @@ public class TheseController {
         try {
             return searchQueryBuilder.rechercheSurId(id);
 
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw e;
+        }
+    }
+
+    @GetMapping(value = "/checkNNT/{numSujet}")
+    @Operation(
+            summary = "Renvoyer le NNT d'une thèse à partir de son numSujet",
+            description = "Si le numSujet (idStep) correspond également à une thèse soutenue et validée dans STAR, renvoi le NNT correspondant")
+    @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
+    @ApiResponse(responseCode = "400", description = "Mauvaise requête")
+    @ApiResponse(responseCode = "503", description = "Service indisponible")
+    public String getNntIfExist(@PathVariable final String numSujet) throws Exception {
+        try {
+            return dbRequests.checkIfNNT(numSujet);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
@@ -95,24 +111,12 @@ public class TheseController {
         List to;
 
         if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
-            to = getMailAddress(json.getEtabPpn(), json.getAppSource());
+            to = dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource());
         } else {
             to = new ArrayList<>() {{
                 add(mailTheses);
             }};
         }
         return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
-    }
-
-    private List getMailAddress(String ppnEtab, String source) {
-        TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
-        TimeZone.setDefault(timeZone);
-        List<Map<String, Object>> res = jdbcTemplate.queryForList("SELECT EMAIL FROM COMPTE WHERE PPN = ? AND LOWER(SOURCE) = ?", ppnEtab, source.toLowerCase());
-        List<String> to = new ArrayList<>();
-        for (Map<String, Object> m : res
-        ) {
-            to.add(m.get("EMAIL").toString());
-        }
-        return to;
     }
 }
