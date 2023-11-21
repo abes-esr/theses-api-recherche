@@ -23,7 +23,7 @@ facets:
       champ: accessible
       parentName: soutenue
   mainPersonnes:
-    - libelle: Rôle
+    - libelle: Rôles
       champ: facette_roles
       searchBar: true
     - libelle: Établissements
