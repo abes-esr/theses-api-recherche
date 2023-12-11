@@ -113,7 +113,7 @@ public class FacetQueryBuilder {
         if (firstBracketIndex != -1 && lastBracketIndex != -1)
             f = f.substring(firstBracketIndex + 1, lastBracketIndex - 1);
 
-        String[] filtres = f.split("\"\\&");
+        String[] filtres = f.split("\"\\~");
 
         //Création d'une map : NomFiltre (key) / liste valeurs (values)
         Map<String, List<String>> mapFiltres = new HashMap<>();
