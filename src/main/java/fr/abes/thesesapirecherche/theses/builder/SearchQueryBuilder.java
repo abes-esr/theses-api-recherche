@@ -385,7 +385,7 @@ public class SearchQueryBuilder {
 
     private String getEtabNameFromSourceAndPPN(These source, String ppn) {
         //Si on est l'établissement de soutenance, on récupère le nom directement
-        if (source.getEtabSoutenancePpn().equals(ppn)) return source.getEtabSoutenanceN();
+        if (source.getEtabSoutenancePpn() != null && source.getEtabSoutenancePpn().equals(ppn)) return source.getEtabSoutenanceN();
 
         //sinon on cherche le PPN dans les etabs de cotutelle, etc.
         for (Organisme e : source.getEtabsCotutelle()) {
