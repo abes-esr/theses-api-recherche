@@ -58,9 +58,11 @@ public class SearchQueryBuilder {
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
+        builderQuery.analyzeWildcard(true);
+        builderQuery.allowLeadingWildcard(true);
         builderQuery.fields("resumes.*^30",
                 "titres.*^30",
-                "_id^15",
+                "nnt^15",
                 "etabSoutenancePpn^15",
                 "etabsCotutellePpn^15",
                 "partenairesRecherchePpn^15",
