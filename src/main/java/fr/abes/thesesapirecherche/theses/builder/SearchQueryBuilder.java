@@ -63,6 +63,8 @@ public class SearchQueryBuilder {
         builderQuery.fields("resumes.*^30",
                 "titres.*^30",
                 "nnt^15",
+                "numSujet^15",
+                "numSujetSansS^15",
                 "etabSoutenancePpn^15",
                 "etabsCotutellePpn^15",
                 "partenairesRecherchePpn^15",

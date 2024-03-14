@@ -18,6 +18,8 @@ public class These {
     String cas;
     String titrePrincipal;
     String nnt;
+    String numSujet;
+    String numSujetSansS;
     String accessible;
     String status;
     Boolean isSoutenue;
