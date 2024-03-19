@@ -4,12 +4,14 @@ import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.rss.RssFeedView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +23,9 @@ public class SearchThesesController {
 
     @Autowired
     SearchQueryBuilder searchQueryBuilder;
+
+    @Autowired
+    private RssFeedView view;
 
     @GetMapping(value = "/recherche/")
     @Operation(
@@ -124,5 +129,10 @@ public class SearchThesesController {
             summary = "Retourne le nombre de theses en préparation")
     public long statsSujets() throws Exception {
         return searchQueryBuilder.getStatsTheses("enCours");
+    }
+
+    @GetMapping(value = "/rss")
+    public View rss() {
+        return view;
     }
 }
