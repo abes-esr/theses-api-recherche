@@ -73,7 +73,7 @@ public class SearchQueryBuilder {
                 "discipline^15",
                 "sujetsRameauPpn^15",
                 "sujetsRameauLibelle^15",
-                "sujets^15",
+                "sujetsLibelle^15",
                 "auteursNP^12",
                 "auteursPN^12",
                 "auteursPpn^12",
