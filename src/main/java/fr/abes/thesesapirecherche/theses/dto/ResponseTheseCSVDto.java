@@ -16,7 +16,7 @@ public class ResponseTheseCSVDto {
     public String toCSV() {
         StringBuilder s = new StringBuilder();
         //en tête
-        s.append("\"NNT\",\"Auteurs\",\"Titre FR\",\"Titre EN\",\"Directeurs\",\"Discipline\",\"Date de soutenance\",\"Date de première inscription\",\"Etablissement de soutenance\",\"Code etablissement\",\"Etablissement de cotutelle\",\"Ecoles doctorales\",\"Partenaires de recherche\",\"Président du jury\",\"Rapporteurs\",\"Examinateurs\",\"Mots clés FR\",\"Mots clés EN\",\"Langue\",\"Source\",\"Statut\",\"Accessible\"");
+        s.append("\"NNT\",\"NumSujet\",\"Auteurs\",\"Titre FR\",\"Titre EN\",\"Directeurs\",\"Discipline\",\"Date de soutenance\",\"Date de première inscription\",\"Etablissement de soutenance\",\"Code etablissement\",\"Etablissement de cotutelle\",\"Ecoles doctorales\",\"Partenaires de recherche\",\"Président du jury\",\"Rapporteurs\",\"Examinateurs\",\"Mots clés FR\",\"Mots clés EN\",\"Langue\",\"Source\",\"Statut\",\"Accessible\"");
         s.append("\n");
 
         //permet de déterminer quand on est dans le 1er tour de boucle (pour ajouter les sépérateurs ;)
@@ -29,7 +29,10 @@ public class ResponseTheseCSVDto {
             String datePremiereInscriptionDoctorat = t.getDatePremiereInscriptionDoctorat() == null ? "" : t.getDatePremiereInscriptionDoctorat();
 
             //NNT
-            s.append("\"").append(t.getNnt() == null ? t.getNumSujet() : t.getNnt()).append("\",");
+            s.append("\"").append(t.getNnt() != null ? t.getNnt() : "").append("\",");
+
+            //NumSujet
+            s.append("\"").append(t.getNumSujet() != null ? t.getNumSujet() : "").append("\",");
 
             // Auteurs
             firstRound = true;
@@ -87,6 +90,9 @@ public class ResponseTheseCSVDto {
             for(OrganismeResponseDto cotutelle : t.getEtabCotutelle()) {
                 if(!firstRound) s.append(" || ");
                 s.append(cotutelle.getNom().replace("\"", "").replace("||", ""));
+                if(cotutelle.getPpn() != null) {
+                    s.append(" (").append(cotutelle.getPpn()).append(")");
+                }
                 firstRound = false;
             }
             s.append("\",");
@@ -97,6 +103,9 @@ public class ResponseTheseCSVDto {
             for(OrganismeResponseDto doctorale : t.getEcolesDoctorales()) {
                 if(!firstRound) s.append(" || ");
                 s.append(doctorale.getNom().replace("\"", "").replace("||", " "));
+                if(doctorale.getPpn() != null) {
+                    s.append(" (").append(doctorale.getPpn()).append(")");
+                }
                 firstRound = false;
             }
             s.append("\",");
@@ -107,7 +116,10 @@ public class ResponseTheseCSVDto {
             s.append("\"");
             for(OrganismeResponseDto partenaire : t.getPartenairesRecherche()) {
                 if(!firstRound) s.append("; ");
-                s.append(partenaire.getNom().replace("\"", "").replace(";", " "));
+                s.append(partenaire.getNom().replace("\"", ""));
+                if(partenaire.getPpn() != null) {
+                    s.append(" (").append(partenaire.getPpn()).append(")");
+                }
                 firstRound = false;
             }
             s.append("\",");
