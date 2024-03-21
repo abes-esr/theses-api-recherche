@@ -17,12 +17,10 @@ import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.*;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.These;
+import jdk.jshell.spi.ExecutionControlProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,6 +124,33 @@ public class SearchQueryBuilder {
         res.setTheses(liste);
         res.setTook(response.took());
         res.setTotalHits(response.hits().total().value());
+        return res;
+    }
+
+    public ResponseTheseCSVDto simpleToFullThese(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+        SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(
+                s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .bool(t -> t
+                                        .must(buildQuery(chaine))
+                                        .filter(addFilters(filtres, facetProps.getMainTheses(), facetProps.getSubsTheses()))
+                                ))
+                        .from(debut)
+                        .size(nombre)
+                        .sort(addTri(tri))
+                        .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+                These.class
+        );
+
+        ResponseTheseCSVDto res = new ResponseTheseCSVDto();
+        List<TheseResponseDto> liste = new ArrayList<>();
+
+        for (Hit<These> theseHit : response.hits().hits()) {
+            liste.add(theseMapper.theseToDto(theseHit.source()));
+        }
+
+        res.setTheses(liste);
         return res;
     }
 
