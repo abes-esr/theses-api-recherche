@@ -16,7 +16,7 @@ public class ResponseTheseCSVDto {
     public String toCSV() {
         StringBuilder s = new StringBuilder();
         //en tête
-        s.append("\"NNT\",\"NumSujet\",\"Auteurs\",\"Titre FR\",\"Titre EN\",\"Directeurs\",\"Discipline\",\"Date de soutenance\",\"Date de première inscription\",\"Etablissement de soutenance\",\"Code etablissement\",\"Etablissement de cotutelle\",\"Ecoles doctorales\",\"Partenaires de recherche\",\"Président du jury\",\"Rapporteurs\",\"Examinateurs\",\"Mots clés FR\",\"Mots clés EN\",\"Langue\",\"Source\",\"Statut\",\"Accessible\"");
+        s.append("\"NNT\";\"NumSujet\";\"Auteurs\";\"Titre FR\";\"Titre EN\";\"Directeurs\";\"Discipline\";\"Date de soutenance\";\"Date de première inscription\";\"Etablissement de soutenance\";\"Code etablissement\";\"Etablissement de cotutelle\";\"Ecoles doctorales\";\"Partenaires de recherche\";\"Président du jury\";\"Rapporteurs\";\"Examinateurs\";\"Mots clés FR\";\"Mots clés EN\";\"Langue\";\"Source\";\"Statut\";\"Accessible\"");
         s.append("\n");
 
         //permet de déterminer quand on est dans le 1er tour de boucle (pour ajouter les sépérateurs ;)
@@ -29,10 +29,10 @@ public class ResponseTheseCSVDto {
             String datePremiereInscriptionDoctorat = t.getDatePremiereInscriptionDoctorat() == null ? "" : t.getDatePremiereInscriptionDoctorat();
 
             //NNT
-            s.append("\"").append(t.getNnt() != null ? t.getNnt() : "").append("\",");
+            s.append("\"").append(t.getNnt() != null ? t.getNnt() : "").append("\";");
 
             //NumSujet
-            s.append("\"").append(t.getNumSujet() != null ? t.getNumSujet() : "").append("\",");
+            s.append("\"").append(t.getNumSujet() != null ? t.getNumSujet() : "").append("\";");
 
             // Auteurs
             firstRound = true;
@@ -45,15 +45,15 @@ public class ResponseTheseCSVDto {
                 }
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
             //Titre FR
-            s.append("\"").append(t.getTitrePrincipal().replace("\"", "")).append("\",");
+            s.append("\"").append(t.getTitrePrincipal().replace("\"", "")).append("\";");
 
             //Titre EN
             s.append("\"");
             s.append(t.getTitres().containsKey("en") ? t.getTitres().get("en").replace("\"", "") : "");
-            s.append("\",");
+            s.append("\";");
 
             //Directeurs
             firstRound = true;
@@ -66,23 +66,23 @@ public class ResponseTheseCSVDto {
                 }
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
             //Discipline
-            s.append("\"").append(t.getDiscipline().replace("\"", "")).append("\",");
+            s.append("\"").append(t.getDiscipline().replace("\"", "")).append("\";");
 
             //Date de soutenance
-            s.append("\"").append(dateSoutenance).append("\",");
+            s.append("\"").append(dateSoutenance).append("\";");
 
             //Date d'inscription
-            s.append("\"").append(datePremiereInscriptionDoctorat).append("\",");
+            s.append("\"").append(datePremiereInscriptionDoctorat).append("\";");
 
 
             //Etablissement soutenance
-            s.append("\"").append(t.getEtabSoutenance().getNom().replace("\"", "")).append(t.getEtabSoutenance().getPpn() != null ? " (" + t.getEtabSoutenance().getPpn() + ")" : "").append("\",");
+            s.append("\"").append(t.getEtabSoutenance().getNom().replace("\"", "")).append(t.getEtabSoutenance().getPpn() != null ? " (" + t.getEtabSoutenance().getPpn() + ")" : "").append("\";");
 
             //Code Etab
-            s.append("\"").append(t.getCodeEtab() != null ? t.getCodeEtab().replace("\"", "") : "").append("\",");
+            s.append("\"").append(t.getCodeEtab() != null ? t.getCodeEtab().replace("\"", "") : "").append("\";");
 
             //Etablissements de cotutelle
             firstRound = true;
@@ -95,7 +95,7 @@ public class ResponseTheseCSVDto {
                 }
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
             //Ecoles doctorale
             firstRound = true;
@@ -108,25 +108,25 @@ public class ResponseTheseCSVDto {
                 }
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
 
             //Partenaires de recherche
             firstRound = true;
             s.append("\"");
             for(OrganismeResponseDto partenaire : t.getPartenairesRecherche()) {
-                if(!firstRound) s.append("; ");
+                if(!firstRound) s.append(", ");
                 s.append(partenaire.getNom().replace("\"", ""));
                 if(partenaire.getPpn() != null) {
                     s.append(" (").append(partenaire.getPpn()).append(")");
                 }
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
 
             //Président du jury
-            s.append("\"").append(t.getPresidentJury().getPrenom()  == null ? "" : t.getPresidentJury().getNom().replace("\"", "")).append(", ").append(t.getPresidentJury().getPrenom()   == null ? "" : t.getPresidentJury().getNom().replace("\"", "")).append("\",");
+            s.append("\"").append(t.getPresidentJury().getPrenom()  == null ? "" : t.getPresidentJury().getNom().replace("\"", "")).append(", ").append(t.getPresidentJury().getPrenom()   == null ? "" : t.getPresidentJury().getNom().replace("\"", "")).append("\";");
 
             //Rapporteurs
             firstRound = true;
@@ -139,7 +139,7 @@ public class ResponseTheseCSVDto {
                 }
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
             //Membres du jury
             firstRound = true;
@@ -152,7 +152,7 @@ public class ResponseTheseCSVDto {
                 }
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
             //Mots clés FR
             firstRound = true;
@@ -163,7 +163,7 @@ public class ResponseTheseCSVDto {
                 s.append(map.getKeyword().replace("\"", "").replace("||", " "));
                 firstRound = false;
             }}
-            s.append("\",");
+            s.append("\";");
 
             //Mots clés EN
             firstRound = true;
@@ -174,7 +174,7 @@ public class ResponseTheseCSVDto {
                     s.append(map.getKeyword().replace("\"", "").replace("||", " "));
                     firstRound = false;
                 }}
-            s.append("\",");
+            s.append("\";");
 
             //Langue
             firstRound = true;
@@ -184,13 +184,13 @@ public class ResponseTheseCSVDto {
                 s.append(l);
                 firstRound = false;
             }
-            s.append("\",");
+            s.append("\";");
 
             //Source
-            s.append("\"").append(t.getSource()).append("\",");
+            s.append("\"").append(t.getSource()).append("\";");
 
             //Statut
-            s.append("\"").append(t.getStatus().equals("soutenue") ? "soutenue" : "en cours").append("\",");
+            s.append("\"").append(t.getStatus().equals("soutenue") ? "soutenue" : "en cours").append("\";");
 
             //Accessible
             s.append("\"").append(t.getAccessible()).append("\"");
