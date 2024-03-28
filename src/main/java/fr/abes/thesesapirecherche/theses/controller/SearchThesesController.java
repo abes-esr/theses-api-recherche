@@ -4,13 +4,20 @@ import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.rss.RssFeedView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.View;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +28,9 @@ public class SearchThesesController {
 
     @Autowired
     SearchQueryBuilder searchQueryBuilder;
+
+    @Autowired
+    private RssFeedView view;
 
     @GetMapping(value = "/recherche/")
     @Operation(
@@ -39,6 +49,39 @@ public class SearchThesesController {
         log.info("debut de rechercheSurLeTitre...");
         try {
             return searchQueryBuilder.simple(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw e;
+        }
+    }
+
+    @GetMapping(value = "/rechercheCSV")
+    @Operation(
+            summary = "Rechercher une thèse via le titre et exporter le résultat dans un fichier CSV",
+            description = "Retourne une liste de thèses correspondant à la recherche au format CSV")
+    @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
+    @ApiResponse(responseCode = "400", description = "Mauvaise requête")
+    @ApiResponse(responseCode = "503", description = "Service indisponible")
+    public ResponseEntity<ByteArrayResource> simpleToCSV(
+            @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
+            @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
+            @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
+    ) throws Exception {
+        try {
+            String csvContent = "\uFEFF" + searchQueryBuilder.simpleToFullThese(q, 0, 10000, tri.orElse(""), filtres.orElse("")).toCSV();
+
+            byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
+            ByteArrayResource resource = new ByteArrayResource(csvBytes);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=export theses.csv");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.parseMediaType("text/csv"))
+                    .body(resource);
+
+
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
@@ -124,5 +167,10 @@ public class SearchThesesController {
             summary = "Retourne le nombre de theses en préparation")
     public long statsSujets() throws Exception {
         return searchQueryBuilder.getStatsTheses("enCours");
+    }
+
+    @GetMapping(value = "/rss")
+    public View rss() {
+        return view;
     }
 }

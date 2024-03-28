@@ -20,13 +20,13 @@ public class TheseMapper {
         for (Sujet s : these.getSujets()) {
             List<SujetsToMap> l = new ArrayList<>();
             if (mapSujets.get(s.getLangue()) != null) l = mapSujets.get(s.getLangue());
-            l.add(new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujet, "sujetsLibelle:\"" + s.getLibelle() + "\" OU sujetsRameauLibelle:\"" + s.getLibelle() + "\"" ));
+            l.add(new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujet, s.getLibelle()));
             mapSujets.put(s.getLangue(), l);
         }
         for (SujetsRameau s : these.getSujetsRameau()) {
             List<SujetsToMap> l = new ArrayList<>();
             if (mapSujets.get("fr") != null) l = mapSujets.get("fr");
-            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, "sujetsRameauLibelle:" + s.getLibelle() + " ET sujetsRameauPpn:" + s.getPpn()));
+            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, s.getLibelle() + " ET " + s.getPpn()));
             mapSujets.put("fr", l);
         }
 
@@ -37,12 +37,14 @@ public class TheseMapper {
         return TheseResponseDto.builder()
                 .titrePrincipal(these.getTitrePrincipal())
                 .nnt(these.getNnt())
+                .numSujet(these.getNumSujet())
                 .dateSoutenance(these.getDateSoutenance())
                 .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
                 .etabSoutenance(organismeMapper.organismeToDto(these.getEtabSoutenance()))
+                .codeEtab(these.getCodeEtab())
                 .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
                 .mapSujets(formatKeywords(these))
@@ -51,6 +53,8 @@ public class TheseMapper {
                 .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesToDto(these.getDirecteurs()))
                 .cas(these.getCas())
+                .langues(these.getLangues())
+                .accessible(these.getAccessible())
                 .ecolesDoctorales(organismeMapper.organismesToDto(these.getEcolesDoctorales()))
                 .presidentJury(personneMapper.personneToDto(these.getPresidentJury()))
                 .source(these.getSource())
