@@ -69,7 +69,7 @@ public class ResponseTheseCSVDto {
             s.append("\";");
 
             //Discipline
-            s.append("\"").append(t.getDiscipline().replace("\"", "")).append("\";");
+            s.append("\"").append(t.getDiscipline() != null ? t.getDiscipline().replace("\"", "") : "").append("\";");
 
             //Date de soutenance
             s.append("\"").append(dateSoutenance).append("\";");
