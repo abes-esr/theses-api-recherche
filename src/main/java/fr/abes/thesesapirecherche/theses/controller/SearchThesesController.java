@@ -47,7 +47,7 @@ public class SearchThesesController {
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
-
+            if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
             return searchQueryBuilder.simple(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());

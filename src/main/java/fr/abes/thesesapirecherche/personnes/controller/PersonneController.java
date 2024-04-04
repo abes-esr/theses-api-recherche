@@ -58,6 +58,7 @@ public class PersonneController {
             @RequestParam @Parameter(name = "nombre", description = "nombre de personne dans le lot", example = "10") Optional<Integer> nombre,
             @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "pertinence, PersonneDesc, PersonnesAsc") Optional<String> tri
     ) throws Exception {
+        if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
