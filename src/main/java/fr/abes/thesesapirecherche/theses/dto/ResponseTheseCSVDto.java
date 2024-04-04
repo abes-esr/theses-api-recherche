@@ -79,7 +79,7 @@ public class ResponseTheseCSVDto {
 
 
             //Etablissement soutenance
-            s.append("\"").append(t.getEtabSoutenance().getNom().replace("\"", "")).append(t.getEtabSoutenance().getPpn() != null ? " (" + t.getEtabSoutenance().getPpn() + ")" : "").append("\";");
+            s.append("\"").append(t.getEtabSoutenance().getNom() != null ? t.getEtabSoutenance().getNom().replace("\"", "") : "").append(t.getEtabSoutenance().getPpn() != null ? " (" + t.getEtabSoutenance().getPpn() + ")" : "").append("\";");
 
             //Code Etab
             s.append("\"").append(t.getCodeEtab() != null ? t.getCodeEtab().replace("\"", "") : "").append("\";");
