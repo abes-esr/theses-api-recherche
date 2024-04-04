@@ -79,7 +79,7 @@ public class ResponseTheseCSVDto {
 
 
             //Etablissement soutenance
-            s.append("\"").append(t.getEtabSoutenance().getNom().replace("\"", "")).append(t.getEtabSoutenance().getPpn() != null ? " (" + t.getEtabSoutenance().getPpn() + ")" : "").append("\";");
+            s.append("\"").append(t.getEtabSoutenance().getNom() != null ? t.getEtabSoutenance().getNom().replace("\"", "") : "").append(t.getEtabSoutenance().getPpn() != null ? " (" + t.getEtabSoutenance().getPpn() + ")" : "").append("\";");
 
             //Code Etab
             s.append("\"").append(t.getCodeEtab() != null ? t.getCodeEtab().replace("\"", "") : "").append("\";");
@@ -126,7 +126,7 @@ public class ResponseTheseCSVDto {
 
 
             //Président du jury
-            s.append("\"").append(t.getPresidentJury().getPrenom()  == null ? "" : t.getPresidentJury().getNom().replace("\"", "")).append(", ").append(t.getPresidentJury().getPrenom()   == null ? "" : t.getPresidentJury().getNom().replace("\"", "")).append("\";");
+            s.append("\"").append(t.getPresidentJury().getNom()  == null ? "" : (t.getPresidentJury().getNom() + ", ").replace("\"", "")).append(t.getPresidentJury().getPrenom()   == null ? "" : t.getPresidentJury().getPrenom().replace("\"", "")).append(t.getPresidentJury().getPpn() == null ? "" : (", " + t.getPresidentJury().getPpn()).replace("\"", "")).append("\";");
 
             //Rapporteurs
             firstRound = true;
