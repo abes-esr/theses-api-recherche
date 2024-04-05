@@ -126,7 +126,7 @@ public class ResponseTheseCSVDto {
 
 
             //Président du jury
-            s.append("\"").append(t.getPresidentJury().getNom()  == null ? "" : (t.getPresidentJury().getNom() + ", ").replace("\"", "")).append(t.getPresidentJury().getPrenom()   == null ? "" : t.getPresidentJury().getPrenom().replace("\"", "")).append(t.getPresidentJury().getPpn() == null ? "" : (", " + t.getPresidentJury().getPpn()).replace("\"", "")).append("\";");
+            s.append("\"").append(t.getPresidentJury().getNom()  == null ? "" : (t.getPresidentJury().getNom() + ", ").replace("\"", "")).append(t.getPresidentJury().getPrenom()   == null ? "" : t.getPresidentJury().getPrenom().replace("\"", "")).append(t.getPresidentJury().getPpn() == null ? "" : (" (" + t.getPresidentJury().getPpn()).replace("\"", "") + ")").append("\";");
 
             //Rapporteurs
             firstRound = true;
