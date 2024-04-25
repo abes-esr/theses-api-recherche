@@ -39,3 +39,21 @@ Il y a 3 API pour Theses.fr :
 L'API présente est écrite en Java 17, à l'aide du framework Spring Boot 3.
 
 Elle est déployée automatiquement dans le SI de l'Abes sous forme d'un container docker, à l'aide de la chaine CI/CD Github.
+
+## Mode maintenance
+
+L'API est dotée d'un mode maintenance, qui met en place une réponse avec le code d'erreur 503 et un message personnalisé pour toutes les requêtes.
+
+Le message affiché est modifiable dans le .env ```THESES_MAINTENANCE_MESSAGE```. Un redémarrage du container est nécessaire lors de la mise à jour du message de maintenance.
+
+
+Pour passer l'application en mode maintenance, il suffit de passer la valeur de ```THESES_MAINTENANCE``` dans le .env à ```true```, puis de relancer le container : ```sudo docker compose up -d```
+
+Une fois la maintenance terminée, effectuer la manipulation inverse, remettre ```THESES_MAINTENANCE``` dans le .env à ```false```, puis de relancer le container : ```sudo docker compose up -d```
+
+
+
+> [!NOTE]  
+> L'erreur 503 sera retourné sur l'intégralité des requêtes de l'API.
+>
+> Cela rend l'interface Theses.fr (le front vueJS) inopérant, il est donc conseillé de mettre également ce dernier en mode maintenance si cette API est passée en mode maintenance.
