@@ -1,7 +1,6 @@
 package fr.abes.thesesapirecherche.filters;
 
 import jakarta.servlet.*;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
