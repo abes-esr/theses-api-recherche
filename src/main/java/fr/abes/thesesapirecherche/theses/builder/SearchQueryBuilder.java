@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.buildFilter;
@@ -53,6 +55,9 @@ public class SearchQueryBuilder {
     private FacetProps facetProps;
 
     private Query buildQuery(String chaine) {
+        chaine = replaceAndOutsideQuotes(chaine);
+        chaine = replaceSpacesOutsideQuotes(chaine);
+
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
         builderQuery.defaultOperator(Operator.And);
@@ -96,6 +101,49 @@ public class SearchQueryBuilder {
         builderQuery.quoteFieldSuffix(".exact");
 
         return builderQuery.build()._toQuery();
+    }
+
+    private String replaceSpacesOutsideQuotes(String input) {
+        StringBuilder result = new StringBuilder();
+        boolean insideQuotes = false;
+
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+
+            if (c == '"') {
+                insideQuotes = !insideQuotes;
+                result.append(c);
+            } else if (c == ' ' && !insideQuotes) {
+                result.append(" AND ");
+            } else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
+    }
+    public static String replaceAndOutsideQuotes(String input) {
+        StringBuilder result = new StringBuilder();
+        boolean insideQuotes = false;
+        int i = 0;
+
+        while (i < input.length()) {
+            char currentChar = input.charAt(i);
+
+            if (currentChar == '\"') {
+                insideQuotes = !insideQuotes;
+                result.append(currentChar);
+                i++;
+            } else if (!insideQuotes && i + 2 < input.length() && input.startsWith(" AND ", i)) {
+                result.append(" ");
+                i += 5;  // Skip past the "AND"
+            } else {
+                result.append(currentChar);
+                i++;
+            }
+        }
+
+        return result.toString();
     }
 
     public ResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
