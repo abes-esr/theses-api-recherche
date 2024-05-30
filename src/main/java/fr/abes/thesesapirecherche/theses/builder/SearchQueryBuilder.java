@@ -106,6 +106,7 @@ public class SearchQueryBuilder {
     private String replaceSpacesOutsideQuotes(String input) {
         StringBuilder result = new StringBuilder();
         boolean insideQuotes = false;
+        boolean insideBrackets = false;
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -113,7 +114,13 @@ public class SearchQueryBuilder {
             if (c == '"') {
                 insideQuotes = !insideQuotes;
                 result.append(c);
-            } else if (c == ' ' && !insideQuotes) {
+            } else if (c == '[') {
+                insideBrackets = true;
+                result.append(c);
+            } else if (c == ']') {
+                insideBrackets = false;
+                result.append(c);
+            } else if (c == ' ' && !insideQuotes && !insideBrackets) {
                 result.append(" AND ");
             } else {
                 result.append(c);
