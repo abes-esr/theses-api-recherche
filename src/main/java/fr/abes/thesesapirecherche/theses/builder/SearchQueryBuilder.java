@@ -55,6 +55,7 @@ public class SearchQueryBuilder {
     private FacetProps facetProps;
 
     private Query buildQuery(String chaine) {
+        chaine = chaine.trim();
         chaine = replaceAndOutsideQuotes(chaine);
         chaine = replaceSpacesOutsideQuotes(chaine);
 
@@ -127,6 +128,10 @@ public class SearchQueryBuilder {
 
                     result.append(" OR ");
                     i+= 3;
+                } else if (i + 3 < input.length() && input.charAt(i + 1) == 'N' && input.charAt(i + 2) == 'O' && input.charAt(i + 3) == 'T') {
+
+                    result.append(" NOT ");
+                    i+= 4;
                 } else if (!insideQuotes && !insideBrackets) {
                     result.append(" AND ");
                 } else {
