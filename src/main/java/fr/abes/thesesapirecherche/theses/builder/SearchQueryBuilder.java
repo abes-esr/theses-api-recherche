@@ -108,6 +108,7 @@ public class SearchQueryBuilder {
         boolean insideQuotes = false;
         boolean insideBrackets = false;
 
+
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
 
@@ -120,11 +121,22 @@ public class SearchQueryBuilder {
             } else if (c == ']') {
                 insideBrackets = false;
                 result.append(c);
-            } else if (c == ' ' && !insideQuotes && !insideBrackets) {
-                result.append(" AND ");
+            }
+            else if (c == ' ') {
+                if (i + 2 < input.length() && input.charAt(i + 1) == 'O'&& input.charAt(i + 2) == 'R') {
+
+                    result.append(" OR ");
+                    i+= 3;
+                } else if (!insideQuotes && !insideBrackets) {
+                    result.append(" AND ");
+                } else {
+                    result.append(c);
+                }
             } else {
                 result.append(c);
+
             }
+
         }
 
         return result.toString();
