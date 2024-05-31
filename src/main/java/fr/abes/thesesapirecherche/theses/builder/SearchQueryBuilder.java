@@ -55,6 +55,7 @@ public class SearchQueryBuilder {
     private FacetProps facetProps;
 
     private Query buildQuery(String chaine) {
+        chaine = chaine.trim();
         chaine = replaceAndOutsideQuotes(chaine);
         chaine = replaceSpacesOutsideQuotes(chaine);
 
@@ -106,6 +107,8 @@ public class SearchQueryBuilder {
     private String replaceSpacesOutsideQuotes(String input) {
         StringBuilder result = new StringBuilder();
         boolean insideQuotes = false;
+        boolean insideBrackets = false;
+
 
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -113,11 +116,32 @@ public class SearchQueryBuilder {
             if (c == '"') {
                 insideQuotes = !insideQuotes;
                 result.append(c);
-            } else if (c == ' ' && !insideQuotes) {
-                result.append(" AND ");
-            } else {
+            } else if (c == '[') {
+                insideBrackets = true;
+                result.append(c);
+            } else if (c == ']') {
+                insideBrackets = false;
                 result.append(c);
             }
+            else if (c == ' ') {
+                if (i + 2 < input.length() && input.charAt(i + 1) == 'O'&& input.charAt(i + 2) == 'R') {
+
+                    result.append(" OR ");
+                    i+= 3;
+                } else if (i + 3 < input.length() && input.charAt(i + 1) == 'N' && input.charAt(i + 2) == 'O' && input.charAt(i + 3) == 'T') {
+
+                    result.append(" NOT ");
+                    i+= 4;
+                } else if (!insideQuotes && !insideBrackets) {
+                    result.append(" AND ");
+                } else {
+                    result.append(c);
+                }
+            } else {
+                result.append(c);
+
+            }
+
         }
 
         return result.toString();
