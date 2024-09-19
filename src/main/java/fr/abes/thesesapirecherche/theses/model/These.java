@@ -14,6 +14,7 @@ import java.util.Map;
 @Setter
 public class These {
 
+    String idDoc;
     String dateInsertionDansES;
     String cas;
     String titrePrincipal;
