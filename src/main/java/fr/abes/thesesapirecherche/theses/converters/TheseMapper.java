@@ -26,7 +26,7 @@ public class TheseMapper {
         for (SujetsRameau s : these.getSujetsRameau()) {
             List<SujetsToMap> l = new ArrayList<>();
             if (mapSujets.get("fr") != null) l = mapSujets.get("fr");
-            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, s.getLibelle() + " ET " + s.getPpn()));
+            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, "\"" + s.getLibelle() + "\" ET " + s.getPpn()));
             mapSujets.put("fr", l);
         }
 
