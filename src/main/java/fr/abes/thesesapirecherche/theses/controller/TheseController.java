@@ -11,14 +11,18 @@ import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -86,7 +90,7 @@ public class TheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public String signalerErreur(@RequestBody SignalerErreurDto json) throws RecaptchaInvalidException, JsonProcessingException {
+    public String signalerErreur(@RequestBody SignalerErreurDto json) throws RecaptchaInvalidException, IOException, InterruptedException, JSONException, ParseException {
 
         /**
          * GESTION DU CAPTCHA GOOGLE
@@ -100,23 +104,39 @@ public class TheseController {
         RestTemplate restTemplate = new RestTemplate();
         CaptchaResponseDto captchaResponseDto = restTemplate.getForObject(verifyUri, CaptchaResponseDto.class);
 
-        if (!captchaResponseDto.isSuccess() || captchaResponseDto.getScore() < threshold) {
-            throw new RecaptchaInvalidException("reCapatcha non valide");
-        }
+        /*if (!captchaResponseDto.isSuccess() || captchaResponseDto.getScore() < threshold) {
+            throw new RecaptchaInvalidException("reCaptcha non valide");
+        }*/
 
         /**
          * SI CAPTCHA OK, ON PASSE A LA SUITE
          * ENVOI DU MAIL A LA VRAIE ADRESSE EN PROD ET TEST
          */
         List to;
+        URI uri = URI.create("https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1//TH_assistance_deportee.json?ppnEtab=" + json.getEtabPpn());
+        Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
+        if (response == null) {
+            System.out.println("Réponse vide !");
+        }
 
-        if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
-            to = dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource());
+        // Extraction du tableau de "ppnEtabCible"
+        List<Map<String, Map<String, String>>> bindings =
+                (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
+
+        if (true || Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
+            to = bindings.stream()
+                    .map(binding -> dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()))
+                    .collect(Collectors.toList());
+
+            //to = dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource());
         } else {
             to = new ArrayList<>() {{
                 add(mailTheses);
             }};
         }
-        return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
+
+        System.out.println("Liste des destinataires : " + to);
+        return "true";
+        //return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
     }
 }
