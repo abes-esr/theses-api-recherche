@@ -104,9 +104,9 @@ public class TheseController {
         RestTemplate restTemplate = new RestTemplate();
         CaptchaResponseDto captchaResponseDto = restTemplate.getForObject(verifyUri, CaptchaResponseDto.class);
 
-        /*if (!captchaResponseDto.isSuccess() || captchaResponseDto.getScore() < threshold) {
+        if (!captchaResponseDto.isSuccess() || captchaResponseDto.getScore() < threshold) {
             throw new RecaptchaInvalidException("reCaptcha non valide");
-        }*/
+        }
 
         /**
          * SI CAPTCHA OK, ON PASSE A LA SUITE
@@ -124,19 +124,15 @@ public class TheseController {
                 (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
 
         if (true || Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
-            to = bindings.stream()
-                    .map(binding -> dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()))
+            to = (List) bindings.stream()
+                    .flatMap(binding -> dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream())
                     .collect(Collectors.toList());
-
-            //to = dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource());
         } else {
             to = new ArrayList<>() {{
                 add(mailTheses);
             }};
         }
 
-        System.out.println("Liste des destinataires : " + to);
-        return "true";
-        //return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
+        return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
     }
 }
