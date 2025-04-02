@@ -12,16 +12,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.json.ParseException;
+import org.elasticsearch.client.ResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -90,8 +95,7 @@ public class TheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public String signalerErreur(@RequestBody SignalerErreurDto json) throws RecaptchaInvalidException, IOException, InterruptedException, JSONException, ParseException {
-
+    public String signalerErreur(@RequestBody SignalerErreurDto json) throws RecaptchaInvalidException, IOException {
         /**
          * GESTION DU CAPTCHA GOOGLE
          */
@@ -112,27 +116,36 @@ public class TheseController {
          * SI CAPTCHA OK, ON PASSE A LA SUITE
          * ENVOI DU MAIL A LA VRAIE ADRESSE EN PROD ET TEST
          */
-        List to;
+
+        List<String> to = getMailAdressesFromMovies(json, restTemplate);
+
+        return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
+    }
+
+    private List<String> getMailAdressesFromMovies(SignalerErreurDto json, RestTemplate restTemplate) {
         URI uri = URI.create("https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1//TH_assistance_deportee.json?ppnEtab=" + json.getEtabPpn());
         Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
         if (response == null) {
-            System.out.println("Réponse vide !");
+            log.error("Movies a mal répondu ! ");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur interne est survenue");
         }
 
         // Extraction du tableau de "ppnEtabCible"
-        List<Map<String, Map<String, String>>> bindings =
-                (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
+        List<Map<String, Map<String, String>>> bindings = (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
 
         if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
-            to = (List) bindings.stream()
+            try {
+            return (List) bindings.stream()
                     .flatMap(binding -> dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream())
                     .collect(Collectors.toList());
+            } catch (Exception e) {
+                log.error(e.toString());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Une erreur interne est survenue");
+            }
         } else {
-            to = new ArrayList<>() {{
+            return new ArrayList<>() {{
                 add(mailTheses);
             }};
         }
-
-        return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
     }
 }
