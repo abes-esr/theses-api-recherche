@@ -30,6 +30,7 @@ public class These {
     Date dateFinEmbargo;
     Date dateFiltre;
     Date datePremiereInscriptionDoctorat;
+    Date dateCines;
     List<String> langues;
     List<String> oaiSets;
 
