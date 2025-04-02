@@ -123,7 +123,7 @@ public class TheseController {
         List<Map<String, Map<String, String>>> bindings =
                 (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
 
-        if (true || Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
+        if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
             to = (List) bindings.stream()
                     .flatMap(binding -> dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream())
                     .collect(Collectors.toList());
