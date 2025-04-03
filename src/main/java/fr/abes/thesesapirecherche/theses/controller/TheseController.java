@@ -135,8 +135,16 @@ public class TheseController {
 
         if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
             try {
+
+
+
             return (List) bindings.stream()
-                    .flatMap(binding -> dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream())
+                    .flatMap(binding -> { if (binding.get("ppnEtabCible") != null) {
+                        return dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream();
+                    } else {
+                        return dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource()).stream();
+                    }
+                        })
                     .collect(Collectors.toList());
             } catch (Exception e) {
                 log.error(e.toString());
