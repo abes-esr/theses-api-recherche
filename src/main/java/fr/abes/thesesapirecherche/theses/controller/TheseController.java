@@ -119,21 +119,23 @@ public class TheseController {
 
         List<String> to = getMailAdressesFromMovies(json, restTemplate);
 
-        System.out.println("Destinataires : " + to);
+        log.info("Destinataires : " + to);
         return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
     }
 
     private List<String> getMailAdressesFromMovies(SignalerErreurDto json, RestTemplate restTemplate) {
-        URI uri = URI.create(env.getProperty("movies.assistance_deportee.url") + json.getEtabPpn());
-        Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
-        if (response == null) {
-            log.error("Movies a mal répondu ! ");
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur interne est survenue");
-        }
-
-        // Extraction du tableau de "ppnEtabCible"
-        List<Map<String, Map<String, String>>> bindings = (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
         if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
+
+            URI uri = URI.create(env.getProperty("movies.assistance_deportee.url") + json.getEtabPpn());
+            Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
+            if (response == null) {
+                log.error("Movies a mal répondu ! ");
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur interne est survenue");
+            }
+
+            List<Map<String, Map<String, String>>> bindings = (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
+
+            // Extraction du tableau de "ppnEtabCible"
             try {
             return (List) bindings.stream()
                     .flatMap(binding -> {
