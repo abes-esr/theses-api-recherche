@@ -119,11 +119,12 @@ public class TheseController {
 
         List<String> to = getMailAdressesFromMovies(json, restTemplate);
 
+        System.out.println("Destinataires : " + to);
         return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
     }
 
     private List<String> getMailAdressesFromMovies(SignalerErreurDto json, RestTemplate restTemplate) {
-        URI uri = URI.create("https://movies.abes.fr/api-git/abes-esr/movies-api/subdir/v1//TH_assistance_deportee.json?ppnEtab=" + json.getEtabPpn());
+        URI uri = URI.create(env.getProperty("movies.assistance_deportee.url") + json.getEtabPpn());
         Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
         if (response == null) {
             log.error("Movies a mal répondu ! ");
@@ -132,19 +133,16 @@ public class TheseController {
 
         // Extraction du tableau de "ppnEtabCible"
         List<Map<String, Map<String, String>>> bindings = (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
-
         if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
             try {
-
-
-
             return (List) bindings.stream()
-                    .flatMap(binding -> { if (binding.get("ppnEtabCible") != null) {
-                        return dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream();
-                    } else {
-                        return dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource()).stream();
-                    }
-                        })
+                    .flatMap(binding -> {
+                        if (binding.get("ppnEtabCible") != null) {
+                            return dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream();
+                        } else {
+                            return dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource()).stream();
+                        }
+                    })
                     .collect(Collectors.toList());
             } catch (Exception e) {
                 log.error(e.toString());
