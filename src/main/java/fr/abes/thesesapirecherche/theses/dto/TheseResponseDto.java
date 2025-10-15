@@ -15,6 +15,7 @@ public class TheseResponseDto {
 
     String titrePrincipal;
     String nnt;
+    String doi;
     String numSujet;
     String dateSoutenance;
     String datePremiereInscriptionDoctorat;

@@ -37,6 +37,7 @@ public class TheseMapper {
         return TheseResponseDto.builder()
                 .titrePrincipal(these.getTitrePrincipal())
                 .nnt(these.getNnt())
+                .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
                 .dateSoutenance(these.getDateSoutenance())
                 .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
