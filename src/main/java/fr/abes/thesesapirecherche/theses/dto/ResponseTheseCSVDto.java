@@ -16,7 +16,7 @@ public class ResponseTheseCSVDto {
     public String toCSV() {
         StringBuilder s = new StringBuilder();
         //en tête
-        s.append("\"NNT\";\"NumSujet\";\"Auteurs\";\"Titre FR\";\"Titre EN\";\"Directeurs\";\"Discipline\";\"Date de soutenance\";\"Date de première inscription\";\"Etablissement de soutenance\";\"Code etablissement\";\"Etablissement de cotutelle\";\"Ecoles doctorales\";\"Partenaires de recherche\";\"Président du jury\";\"Rapporteurs\";\"Examinateurs\";\"Mots clés FR\";\"Mots clés EN\";\"Langue\";\"Source\";\"Statut\";\"Accessible\"");
+        s.append("\"NNT\";\"DOI\";\"NumSujet\";\"Auteurs\";\"Titre FR\";\"Titre EN\";\"Directeurs\";\"Discipline\";\"Date de soutenance\";\"Date de première inscription\";\"Etablissement de soutenance\";\"Code etablissement\";\"Etablissement de cotutelle\";\"Ecoles doctorales\";\"Partenaires de recherche\";\"Président du jury\";\"Rapporteurs\";\"Examinateurs\";\"Mots clés FR\";\"Mots clés EN\";\"Langue\";\"Source\";\"Statut\";\"Accessible\"");
         s.append("\n");
 
         //permet de déterminer quand on est dans le 1er tour de boucle (pour ajouter les sépérateurs ;)
@@ -30,6 +30,9 @@ public class ResponseTheseCSVDto {
 
             //NNT
             s.append("\"").append(t.getNnt() != null ? t.getNnt() : "").append("\";");
+
+            //DOI
+            s.append("\"").append(t.getDoi() != null ? t.getDoi() : "").append("\";");
 
             //NumSujet
             s.append("\"").append(t.getNumSujet() != null ? t.getNumSujet() : "").append("\";");

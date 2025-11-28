@@ -24,6 +24,7 @@ public class TheseLiteMapper {
                 .examinateurs(theseHit.source().getMembresJury())
                 .president(theseHit.source().getPresidentJury())
                 .nnt(theseHit.source().getNnt())
+                .doi(theseHit.source().getDoi())
                 .discipline(theseHit.source().getDiscipline())
                 .status(theseHit.source().getStatus())
                 .ecolesDoctorale(organismeMapper.organismesToDto(theseHit.source().getEcolesDoctorales()))
