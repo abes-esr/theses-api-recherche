@@ -28,6 +28,7 @@ public class TheseLiteResponseDto {
     List<PersonneThese> examinateurs;
     PersonneThese president;
     String nnt;
+    String doi;
     String discipline;
     String status;
     List<OrganismeResponseDto> ecolesDoctorale;

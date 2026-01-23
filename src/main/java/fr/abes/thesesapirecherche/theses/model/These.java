@@ -19,6 +19,7 @@ public class These {
     String cas;
     String titrePrincipal;
     String nnt;
+    String doi;
     String numSujet;
     String numSujetSansS;
     String accessible;
