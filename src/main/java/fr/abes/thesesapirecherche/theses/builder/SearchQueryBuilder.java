@@ -58,6 +58,7 @@ public class SearchQueryBuilder {
         chaine = chaine.trim();
         chaine = replaceAndOutsideQuotes(chaine);
         chaine = replaceSpacesOutsideQuotes(chaine);
+        chaine = cleanDoi(chaine);
 
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query(chaine);
@@ -67,6 +68,7 @@ public class SearchQueryBuilder {
         builderQuery.fields("resumes.*^30",
                 "titres.*^30",
                 "nnt^15",
+                "doi^15",
                 "numSujet^15",
                 "numSujetSansS^15",
                 "etabSoutenancePpn^15",
@@ -146,6 +148,23 @@ public class SearchQueryBuilder {
 
         return result.toString();
     }
+
+    /**
+     * Supprime "https://doi.org/" ou "doi.org/" de la query pour pouvoir matcher avec
+     * le champ doi qui ne contient que le doi simple
+     * @param input
+     * @return
+     */
+    private static String cleanDoi(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replace("https\\:\\/\\/doi.org\\/", "")
+                .replace("http\\:\\/\\/doi.org\\/", "")
+                .replace("doi.org\\/", "");
+    }
+
+
     public static String replaceAndOutsideQuotes(String input) {
         StringBuilder result = new StringBuilder();
         boolean insideQuotes = false;
