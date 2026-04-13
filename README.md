@@ -16,7 +16,7 @@ URL publique : [https://theses.fr/api/v1/recherche/](https://theses.fr/api/v1/re
 
 L'application complète peut être déployée via Docker à l'aide du dépôt https://github.com/abes-esr/theses-docker
 
-## Données exposées par l'API : 
+## Données exposées par l'API
 
 L’API permet de récupérer les données relatives :
 
@@ -57,3 +57,12 @@ Une fois la maintenance terminée, effectuer la manipulation inverse, remettre `
 > L'erreur 503 sera retourné sur l'intégralité des requêtes de l'API.
 >
 > Cela rend l'interface Theses.fr (le front vueJS) inopérant, il est donc conseillé de mettre également ce dernier en mode maintenance si cette API est passée en mode maintenance.
+
+## Documentation utilisateur
+
+La documentation utilisateur est fournie au standard OpenAPI : https://theses.fr/api/v1/recherche/openapi.yaml.
+
+Un formulaire pour visualiser cette documentation est disponible sur https://www.data.gouv.fr/dataservices/api-interroger-les-donnees-de-theses-fr/
+
+
+
