@@ -13,7 +13,7 @@ public class EtablissementResponseDto {
 
     @Getter
     @Setter
-    @JsonProperty("nnt")
+    @JsonProperty("ppn")
     String ppn;
 
     @Getter
