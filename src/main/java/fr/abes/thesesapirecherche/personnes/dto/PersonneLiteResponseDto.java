@@ -1,6 +1,5 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,8 +47,6 @@ public class PersonneLiteResponseDto {
     @Getter
     @Setter
     @JsonProperty("theses")
-    @JsonInclude(value = JsonInclude.Include.CUSTOM,
-            valueFilter = ThesesFilter.class)
     List<String> theses;
 
     @Getter
