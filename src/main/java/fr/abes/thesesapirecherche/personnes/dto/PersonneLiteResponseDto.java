@@ -41,11 +41,6 @@ public class PersonneLiteResponseDto {
 
     @Getter
     @Setter
-    @JsonProperty("these")
-    String these;
-
-    @Getter
-    @Setter
     @JsonProperty("theses")
     List<String> theses;
 
