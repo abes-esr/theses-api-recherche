@@ -34,9 +34,9 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: "Buildx WEB and push"
+      - name: "Buildx api-recherche and push"
         uses: docker/build-push-action@v7
         with:
           push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/')) }}
-          target: web-image
-          tags: ${{ steps.docker_tag_meta.outputs.tags }}-web
+          target: api-recherche-image
+          tags: ${{ steps.docker_tag_meta.outputs.tags }}-api-recherche
