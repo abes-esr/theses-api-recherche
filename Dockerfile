@@ -29,7 +29,7 @@ WORKDIR /app/
 COPY --from=build-image /build/target/*.jar /app/theses-api-recherche.jar
 
 # Copie de l'agent OpenTelemetry depuis l'image de build
-COPY --from=build-image /build/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+COPY --from=build-image /build/opentelemetry-javaagent.jar /app/opentelemetry.jar
 
-ENTRYPOINT ["java", "-javaagent:/app/opentelemetry-javaagent.jar", "-jar", "/app/theses-api-recherche.jar"]
+ENTRYPOINT ["java", "-javaagent:/app/opentelemetry.jar", "-jar", "/app/theses-api-recherche.jar"]
 
