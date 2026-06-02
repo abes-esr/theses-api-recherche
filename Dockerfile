@@ -3,8 +3,6 @@
 FROM maven:3-eclipse-temurin-17 AS build-image
 WORKDIR /build/
 
-# Téléchargement d'une version fixe de l'agent OpenTelemetry pour la reproductibilité
-ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.3.0/opentelemetry-javaagent.jar /build/opentelemetry-javaagent.jar
 
 # On lance la compilation Java
 # On débute par une mise en cache docker des dépendances Java
@@ -28,11 +26,7 @@ WORKDIR /app/
 # Copie de l'application compilée
 COPY --from=build-image /build/target/*.jar /app/theses-api-recherche.jar
 
-# Copie de l'agent OpenTelemetry depuis l'image de build
-COPY --from=build-image /build/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+# Téléchargement d'une version fixe de l'agent OpenTelemetry pour la reproductibilité
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.3.0/opentelemetry-javaagent.jar /app/opentelemetry.jar
 
-# Configuration du point d'entrée pour inclure l'agent via JAVA_TOOL_OPTIONS
-ENV JAVA_TOOL_OPTIONS="-javaagent:/app/opentelemetry-javaagent.jar"
-
-ENTRYPOINT ["java","-jar","/app/theses-api-recherche.jar"]
-
+ENTRYPOINT ["java", "-javaagent:/app/opentelemetry.jar", "-jar", "/app/theses-api-recherche.jar"]
