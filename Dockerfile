@@ -3,14 +3,6 @@
 FROM maven:3-eclipse-temurin-17 AS build-image
 WORKDIR /build/
 
-# Installation et configuration de la locale FR
-RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install locales
-RUN sed -i '/fr_FR.UTF-8/s/^# //g' /etc/locale.gen && \
-    locale-gen
-ENV LANG=fr_FR.UTF-8
-ENV LANGUAGE=fr_FR:fr
-ENV LC_ALL=fr_FR.UTF-8
-
 # Téléchargement d'une version fixe de l'agent OpenTelemetry pour la reproductibilité
 ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.3.0/opentelemetry-javaagent.jar /build/opentelemetry-javaagent.jar
 
