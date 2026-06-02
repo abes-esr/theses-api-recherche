@@ -2,24 +2,22 @@ name: "buildx-test-pubtodockerhub"
 
 env:
   DOCKERHUB_IMAGE_PREFIX: abesesr/theses
+  NAMESPACE: "api-recherche"
 
 on:
   push:
     paths-ignore:
-      - '**.md'
-      - '.github/**'
-      - '.properties'
+      - "**.md"
+      - ".github/**"
+      - ".properties"
   workflow_dispatch:
-
 
 jobs:
   build-test-pubtodockerhub:
     runs-on: ubuntu-latest
     steps:
-
       - name: "Build: checkout source code"
         uses: actions/checkout@v6
-
       - name: "Push: prepare version from git tags/branchs"
         id: docker_tag_meta
         uses: docker/metadata-action@v6
@@ -33,10 +31,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: "Buildx api-recherche and push"
+      - name: "Buildx ${{ env.NAMESPACE }} and push"
         uses: docker/build-push-action@v7
         with:
           push: ${{ github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/test' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/')) }}
-          target: api-recherche-image
-          tags: ${{ steps.docker_tag_meta.outputs.tags }}-api-recherche
+          target: ${{ env.NAMESPACE }}-image
+          tags: ${{ steps.docker_tag_meta.outputs.tags }}-${{ env.NAMESPACE }}
