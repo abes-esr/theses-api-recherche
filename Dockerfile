@@ -1,36 +1,46 @@
 ###
 # Image pour la compilation
-FROM maven:3-eclipse-temurin-17 as build-image
+FROM maven:3-eclipse-temurin-17 AS build-image
 WORKDIR /build/
+
 # Installation et configuration de la locale FR
 RUN apt update && DEBIAN_FRONTEND=noninteractive apt -y install locales
 RUN sed -i '/fr_FR.UTF-8/s/^# //g' /etc/locale.gen && \
     locale-gen
-ENV LANG fr_FR.UTF-8
-ENV LANGUAGE fr_FR:fr
-ENV LC_ALL fr_FR.UTF-8
+ENV LANG=fr_FR.UTF-8
+ENV LANGUAGE=fr_FR:fr
+ENV LC_ALL=fr_FR.UTF-8
 
+# Téléchargement d'une version fixe de l'agent OpenTelemetry pour la reproductibilité
+ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.3.0/opentelemetry-javaagent.jar /build/opentelemetry-javaagent.jar
 
 # On lance la compilation Java
 # On débute par une mise en cache docker des dépendances Java
 # cf https://www.baeldung.com/ops/docker-cache-maven-dependencies
 COPY ./pom.xml /build/pom.xml
 RUN mvn verify --fail-never
-# et la compilation du code Java
+
+# Et la compilation du code Java
 COPY ./src/   /build/src/
 RUN mvn --batch-mode -e \
-        -Dmaven.test.skip=false \
-        -Duser.timezone=Europe/Paris \
-        -Duser.language=fr \
-        package
-
+    -Dmaven.test.skip=false \
+    -Duser.timezone=Europe/Paris \
+    -Duser.language=fr \
+    package
 
 ###
 # Image pour le module API
-#FROM tomcat:9-jdk11 as api-image
-#COPY --from=build-image /build/web/target/*.war /usr/local/tomcat/webapps/ROOT.war
-#CMD [ "catalina.sh", "run" ]
-FROM eclipse-temurin:17-jre as api-recherche-image
+FROM eclipse-temurin:17-jre AS api-recherche-image
 WORKDIR /app/
+
+# Copie de l'application compilée
 COPY --from=build-image /build/target/*.jar /app/theses-api-recherche.jar
+
+# Copie de l'agent OpenTelemetry depuis l'image de build
+COPY --from=build-image /build/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+
+# Configuration du point d'entrée pour inclure l'agent via JAVA_TOOL_OPTIONS
+ENV JAVA_TOOL_OPTIONS="-javaagent:/app/opentelemetry-javaagent.jar"
+
 ENTRYPOINT ["java","-jar","/app/theses-api-recherche.jar"]
+
