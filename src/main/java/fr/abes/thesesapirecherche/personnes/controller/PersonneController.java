@@ -126,7 +126,7 @@ public class PersonneController {
             return searchQueryBuilder.rechercherParIdentifiant(id, esIndexName);
 
         } catch (Exception e) {
-            log.error(e.toString());
+            // log.error(e.toString());
             throw new ApiException(e.getLocalizedMessage());
         }
     }
