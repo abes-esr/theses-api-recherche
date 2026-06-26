@@ -22,6 +22,7 @@ public class Mail {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // Si on a trouvé un destinataire en BDD
+        log.info("les dest = " + to);
         if (!to.isEmpty()) {
             String subject = "[thesesFr] -- " + objet + " -- Message de " + nom + " " + prenom;
             mailJSON = new MailJSON(to, new ArrayList<>() {{
@@ -64,6 +65,7 @@ public class Mail {
         restTemplate.getMessageConverters()
                 .add(0, new StringHttpMessageConverter(StandardCharsets.UTF_8));
         HttpEntity<String> entity = new HttpEntity<String>(json, headers);
+        log.info("envoi du mail...");
         return restTemplate.postForObject(wsMailURL, entity, String.class);
     }
 
