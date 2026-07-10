@@ -12,29 +12,26 @@ import java.util.List;
  * DTO web retournée par l'API ppour un ensemble de thèses en lien avec une personne
  */
 @Builder
+@Getter
+@Setter
 public class TheseLiteResponseDto {
-    @Getter
-    @Setter
+
     @JsonProperty("id")
     String id;
 
-    @Getter
-    @Setter
+
     @JsonProperty("role")
     String role;
 
-    @Getter
-    @Setter
+
     @JsonProperty("discipline")
     String discipline;
 
-    @Getter
-    @Setter
+
     @JsonProperty("etablissement_soutenance")
     Etablissement etablissement_soutenance;
 
-    @Getter
-    @Setter
+
     @JsonProperty("etabliseements_cotutelle")
     List<Etablissement> etablissements_cotutelle;
 

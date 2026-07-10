@@ -11,27 +11,17 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Personne {
 
-    @Getter
-    @Setter
     String nom;
-
-    @Getter
-    @Setter
     String prenom;
 
-    @Getter
-    @Setter
     @JsonProperty("has_idref")
     Boolean hasIdref = false;
 
-    @Getter
-    @Setter
     List<ThesePersonne> theses;
-
-    @Getter
-    @Setter
     List<String> roles;
 
 }

@@ -12,20 +12,19 @@ import java.util.List;
  * DTO web retournée par l'API de recherche de personnes
  */
 @Builder
+@Getter
+@Setter
 public class RechercheResponseDto {
 
-    @Getter
-    @Setter
+
     @JsonProperty("totalHits")
     long totalHits;
 
-    @Getter
-    @Setter
+
     @JsonProperty("took")
     long took;
 
-    @Getter
-    @Setter
+
     @JsonProperty("personnes")
     List<PersonneLiteResponseDto> personnes = new ArrayList<>();
 }

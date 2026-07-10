@@ -9,15 +9,15 @@ import lombok.Setter;
  * DTO web retournée par l'API pour un sujet rameau lié à une thèse
  */
 @Builder
+@Getter
+@Setter
 public class SujetRameauResponseDto {
 
-    @Getter
-    @Setter
+
     @JsonProperty("ppn")
     String ppn;
 
-    @Getter
-    @Setter
+
     @JsonProperty("libelle")
     String libelle;
 }

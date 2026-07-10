@@ -12,45 +12,39 @@ import java.util.Map;
  * DTO web retournée par l'API pour un ensemble de personnes
  */
 @Builder
+@Getter
+@Setter
 public class PersonneLiteResponseDto {
 
-    @Getter
-    @Setter
+
     @JsonProperty("id")
     String id;
 
-    @Getter
-    @Setter
+
     @JsonProperty("nom")
     String nom;
 
-    @Getter
-    @Setter
+
     @JsonProperty("prenom")
     String prenom;
 
-    @Getter
-    @Setter
+
     @JsonProperty("has_idref")
     Boolean hasIdref;
 
-    @Getter
-    @Setter
+
     @JsonProperty("roles")
     Map<String, Integer> roles;
 
-    @Getter
-    @Setter
+
     @JsonProperty("theses")
     List<String> theses;
 
-    @Getter
-    @Setter
+
     @JsonProperty("disciplines")
     List<String> disciplines;
 
-    @Getter
-    @Setter
+
     @JsonProperty("etablissements")
     List<String> etablissements;
 }

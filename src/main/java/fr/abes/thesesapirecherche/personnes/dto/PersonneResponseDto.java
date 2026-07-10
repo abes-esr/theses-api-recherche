@@ -12,40 +12,35 @@ import java.util.Map;
  * DTO web retournée par l'API pour une personne spécifique
  */
 @Builder
+@Getter
+@Setter
 public class PersonneResponseDto {
 
-    @Getter
-    @Setter
+
     @JsonProperty("id")
     String id;
 
-    @Getter
-    @Setter
+
     @JsonProperty("nom")
     String nom;
 
-    @Getter
-    @Setter
+
     @JsonProperty("prenom")
     String prenom;
 
-    @Getter
-    @Setter
+
     @JsonProperty("has_idref")
     Boolean hasIdref;
 
-    @Getter
-    @Setter
+
     @JsonProperty("roles")
     Map<String, Integer> roles;
 
-    @Getter
-    @Setter
+
     @JsonProperty("theses")
     Map<String, List<TheseResponseDto>> theses;
 
-    @Getter
-    @Setter
+
     @JsonProperty("mots_cles")
     Map<String, List<String>> motsCles;
 }
