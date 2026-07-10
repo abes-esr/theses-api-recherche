@@ -9,19 +9,19 @@ import java.util.List;
 @Setter
 public class ThesesByOrganismeResponseDto {
     private long totalHitsetabSoutenance;
-    private List<TheseLiteResponseDto> etabSoutenance;
+    private List<TheseEnhancedResponseDto> etabSoutenance;
     private long totalHitsetabSoutenanceEnCours;
-    private List<TheseLiteResponseDto> etabSoutenanceEnCours;
+    private List<TheseEnhancedResponseDto> etabSoutenanceEnCours;
     private long totalHitspartenaireRecherche;
-    private List<TheseLiteResponseDto> partenaireRecherche;
+    private List<TheseEnhancedResponseDto> partenaireRecherche;
     private long totalHitspartenaireRechercheEnCours;
-    private List<TheseLiteResponseDto> partenaireRechercheEnCours;
+    private List<TheseEnhancedResponseDto> partenaireRechercheEnCours;
     private long totalHitsetabCotutelle;
-    private List<TheseLiteResponseDto> etabCotutelle;
+    private List<TheseEnhancedResponseDto> etabCotutelle;
     private long totalHitsetabCotutelleEnCours;
-    private List<TheseLiteResponseDto> etabCotutelleEnCours;
+    private List<TheseEnhancedResponseDto> etabCotutelleEnCours;
     private long totalHitsecoleDoctorale;
-    private List<TheseLiteResponseDto> ecoleDoctorale;
+    private List<TheseEnhancedResponseDto> ecoleDoctorale;
     private long totalHitsecoleDoctoraleEnCours;
-    private List<TheseLiteResponseDto> ecoleDoctoraleEnCours;
+    private List<TheseEnhancedResponseDto> ecoleDoctoraleEnCours;
 }

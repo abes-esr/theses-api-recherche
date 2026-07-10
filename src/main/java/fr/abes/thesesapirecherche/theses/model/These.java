@@ -87,4 +87,9 @@ public class These {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         return datePremiereInscriptionDoctorat != null ? dateFormat.format(datePremiereInscriptionDoctorat) : null;
     }
+
+    public String getDateCines() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        return dateCines != null ? dateFormat.format(dateCines) : null;
+    }
 }
