@@ -42,6 +42,9 @@ public class TheseMappingHelper {
 
     //mapping organisme
     public static OrganismeResponseDto organismeToDto(Organisme organisme) {
+        if(organisme == null){
+            return null;
+        }
         return OrganismeResponseDto.builder()
                 .ppn(organisme.getPpn())
                 .nom(organisme.getNom())
@@ -65,6 +68,10 @@ public class TheseMappingHelper {
 
     //mapping personnes
     public static ThesePersoneResponseDto personneToDto(PersonneThese personne) {
+        if(personne == null){
+            return null;
+        }
+
         return ThesePersoneResponseDto.builder()
                 .ppn(personne.getPpn())
                 .prenom(personne.getPrenom())
