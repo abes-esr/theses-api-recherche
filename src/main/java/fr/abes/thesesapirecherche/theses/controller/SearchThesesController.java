@@ -61,9 +61,12 @@ public class SearchThesesController {
             // permet de choisir quels champs exposés selon un modèle (soit full, soit lite)
             MappingJacksonValue wrapper = new MappingJacksonValue(response);
 
-            if(viewFull.isPresent() && viewFull.get())      wrapper.setSerializationView(JsonViews.Full.class);
-            else                    wrapper.setSerializationView(JsonViews.Lite.class);
-
+            if(viewFull.isPresent() && viewFull.get()){
+                wrapper.setSerializationView(JsonViews.Full.class);
+            }
+            else{
+                wrapper.setSerializationView(JsonViews.Lite.class);
+            }   
         
             return wrapper;
             
@@ -143,8 +146,12 @@ public class SearchThesesController {
             // permet de choisir quels champs exposés selon un modèle (soit full, soit lite)
             MappingJacksonValue wrapper = new MappingJacksonValue(response);
 
-            if(viewFull.isPresent() && viewFull.get())      wrapper.setSerializationView(JsonViews.Full.class);
-            else                    wrapper.setSerializationView(JsonViews.Lite.class);
+            if(viewFull.isPresent() && viewFull.get()){
+                wrapper.setSerializationView(JsonViews.Full.class);
+            }
+            else{
+                wrapper.setSerializationView(JsonViews.Lite.class);
+            }                    
             
             return wrapper;
 

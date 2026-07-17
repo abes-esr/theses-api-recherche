@@ -5,8 +5,11 @@ import lombok.Setter;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 @Getter
 @Setter
+@JsonView({JsonViews.Full.class, JsonViews.Lite.class})
 public class ThesesByOrganismeResponseDto {
     private long totalHitsetabSoutenance;
     private List<TheseEnhancedResponseDto> etabSoutenance;
