@@ -1,6 +1,8 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import fr.abes.thesesapirecherche.personnes.model.Etablissement;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +16,8 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
+@JsonView({JsonViews.Normal.class, JsonViews.Full.class})
+
 public class TheseLiteResponseDto {
 
     @JsonProperty("id")

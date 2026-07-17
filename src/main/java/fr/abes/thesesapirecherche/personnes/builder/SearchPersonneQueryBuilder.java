@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.personnes.builder;
 
+import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
@@ -19,11 +20,14 @@ import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
+import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
+import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +36,15 @@ import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFi
 @Slf4j
 @Component
 public class SearchPersonneQueryBuilder {
+
+    @Value("${es.personnes.indexname}")
+    private String esPersonneIndexName;
+
+    @Value("${es.theses.indexname}")
+    private String esTheseIndexName;
+
+    @Value("${es.personnes.recherche.indexname}")
+    private String esRechercheIndexName;
 
     PersonneMapper personneMapper = new PersonneMapper();
     @Autowired
@@ -258,11 +271,42 @@ public class SearchPersonneQueryBuilder {
      * Rechercher dans ElasticSearch une personne avec son identifiant.
      *
      * @param id    Chaîne de caractère de l'identifiant de la personne
+     * @param personneIndex Nom de l'index ES à requêter pour obtenir la personne
+     * @param thesesIndex Nom de l'index ES à requêter pour obtenir les thèses
+     * @return Une personne au format Dto web
+     * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
+     */
+    public PersonneResponseDto rechercherParIdentifiant(String id, String personneIndex, String thesesIndex) throws Exception {
+
+        TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
+        Query query = new Query.Builder().term(termQuery).build();
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+                .index(personneIndex)
+                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses", "roles")))))
+                .query(query)
+                .build();
+
+        SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
+
+        if (response.hits().hits().size() != 1) {
+            throw new Exception("Person not found");
+        }
+
+        return personneMapper.personneToDto(response.hits().hits().get(0));
+    }
+
+
+
+    /**
+     * Rechercher dans ElasticSearch une personne avec son identifiant.
+     *
+     * @param id    Chaîne de caractère de l'identifiant de la personne
      * @param index Nom de l'index ES à requêter
      * @return Une personne au format Dto web
      * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
      */
-    public PersonneResponseDto rechercherParIdentifiant(String id, String index) throws Exception {
+    public PersonneResponseDto getThesesOfPersonne(String id, String index) throws Exception {
 
         TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
         Query query = new Query.Builder().term(termQuery).build();
@@ -287,4 +331,67 @@ public class SearchPersonneQueryBuilder {
         CountResponse countResponse = ElasticClient.getElasticsearchClient().count(s -> s.index(index));
         return countResponse.count();
     }
+
+
+
+
+
+        /**
+     * Rechercher dans ElasticSearch une personne avec son identifiant.
+     *
+     * @param id    Chaîne de caractère de l'identifiant de la personne
+     * @param index Nom de l'index ES à requêter
+     * @return Une personne au format Dto web
+     * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
+     */
+    public SearchResponse<Personne> getPersonne(String id) throws Exception {
+
+        TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
+        Query query = new Query.Builder().term(termQuery).build();
+
+        SearchRequest searchRequest = new SearchRequest.Builder()
+                .index(esPersonneIndexName)
+                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses", "roles")))))
+                .query(query)
+                .build();
+
+        SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
+
+        if (response.hits().hits().size() != 1) {
+            throw new Exception("Person not found");
+        }
+
+        return response;
+    }
+
+
+       /**
+     * Rechercher dans ElasticSearch toutes les thèses à partir d'une liste d'id
+     *
+     * @param id    Chaîne de caractère de l'identifiant de la personne
+     * @param index Nom de l'index ES à requêter
+     * @return Une personne au format Dto web
+     * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
+     */
+    public SearchResponse<These> getThesesByIds(List<String> ids) throws IOException {
+
+        Query query = Query.of(q -> q.terms(t -> t
+                .field("_id")
+                .terms(v -> v.value(
+                        ids.stream()
+                                .map(FieldValue::of)
+                                .toList()
+                ))
+        ));
+
+        SearchRequest request = new SearchRequest.Builder()
+                .index(esTheseIndexName)
+                .query(query)
+                .build();
+
+        return ElasticClient.getElasticsearchClient()
+                .search(request, These.class);
+    }
+
+
 }

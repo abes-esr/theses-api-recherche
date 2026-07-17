@@ -1,6 +1,8 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +16,7 @@ import java.util.Map;
 @Builder
 @Getter
 @Setter
+@JsonView({JsonViews.Normal.class, JsonViews.Full.class})
 public class PersonneResponseDto {
 
 
@@ -38,7 +41,7 @@ public class PersonneResponseDto {
 
 
     @JsonProperty("theses")
-    Map<String, List<TheseResponseDto>> theses;
+    Map<String, List<TheseEnhancedResponseDto>> theses;
 
 
     @JsonProperty("mots_cles")
