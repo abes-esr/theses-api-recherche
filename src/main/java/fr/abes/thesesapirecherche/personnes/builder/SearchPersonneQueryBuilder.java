@@ -276,7 +276,7 @@ public class SearchPersonneQueryBuilder {
      * @return Une personne au format Dto web
      * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
      */
-    public PersonneResponseDto rechercherParIdentifiant(String id, String personneIndex, String thesesIndex) throws Exception {
+    public PersonneResponseDto rechercherParIdentifiant(String id, String personneIndex) throws Exception {
 
         TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
         Query query = new Query.Builder().term(termQuery).build();
