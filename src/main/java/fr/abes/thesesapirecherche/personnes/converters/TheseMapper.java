@@ -24,6 +24,7 @@ public class TheseMapper {
                 dto.setRole(these.getRole());
                 dto.setDiscipline(these.getDiscipline());
                 dto.setStatus(these.getStatus());
+                dto.setSource(these.getSource());
                 dto.setEtablissement_soutenance(etablissementMapper.etablissementToDto(these.getEtablissement_soutenance()));
                 dto.setEtablissements_cotutelle(etablissementMapper.etablissementsToDto(these.getEtablissements_cotutelle()));
                 dto.setDate_soutenance(these.getDate_soutenance());
