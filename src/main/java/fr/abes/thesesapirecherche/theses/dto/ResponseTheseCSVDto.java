@@ -207,16 +207,16 @@ public class ResponseTheseCSVDto {
             s.append("\";");
 
             //Source
-            s.append("\"").append(t.getSource()).append("\";");
+            s.append("\"").append(t.getSource() != null ? t.getSource() : "").append("\";");
 
             //Statut
             s.append("\"").append(t.getStatus().equals("soutenue") ? "soutenue" : "en cours").append("\";");
             
             //Cas
-            s.append("\"").append(t.getCas()).append("\";");
+            s.append("\"").append(t.getCas() != null ? t.getCas() : "").append("\";");
 
             //Accessible
-            s.append("\"").append(t.getAccessible()).append("\"");
+            s.append("\"").append(t.getAccessible() != null ? t.getAccessible() : "").append("\";");
 
             s.append("\n");
         }

@@ -103,6 +103,12 @@ public class TheseResponseDto {
     @JsonProperty("directeurs")
     List<ThesePersonneLiteResponseDto> directeurs;
 
+
+    @JsonView({JsonViews.Normal.class})
+    @JsonProperty("oaiSetNames")
+    List<String> oaiSetNames;
+
+
     @JsonIgnore
     public String getDate_soutenanceTri() {
         if (date_soutenance != null) {
