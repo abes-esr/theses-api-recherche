@@ -17,9 +17,11 @@ public class TheseResponseDto {
     String nnt;
     String doi;
     String numSujet;
+    String numSujetSansS;
     String dateSoutenance;
     String datePremiereInscriptionDoctorat;
     String discipline;
+    String dateCines;
     Map<String, String> titres;
     Map<String, String> resumes;
     OrganismeResponseDto etabSoutenance;
@@ -32,6 +34,7 @@ public class TheseResponseDto {
     List<ThesePersoneResponseDto> auteurs;
     List<ThesePersoneResponseDto> directeurs;
     List<String> langues;
+    List<String> oaiSetNames;
     String cas;
     String accessible;
     List<OrganismeResponseDto> ecolesDoctorales;

@@ -1,6 +1,8 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,40 +14,36 @@ import java.util.Map;
  * DTO web retournée par l'API pour une personne spécifique
  */
 @Builder
+@Getter
+@Setter
+@JsonView({JsonViews.Normal.class, JsonViews.Full.class})
 public class PersonneResponseDto {
 
-    @Getter
-    @Setter
+
     @JsonProperty("id")
     String id;
 
-    @Getter
-    @Setter
+
     @JsonProperty("nom")
     String nom;
 
-    @Getter
-    @Setter
+
     @JsonProperty("prenom")
     String prenom;
 
-    @Getter
-    @Setter
+
     @JsonProperty("has_idref")
     Boolean hasIdref;
 
-    @Getter
-    @Setter
+
     @JsonProperty("roles")
     Map<String, Integer> roles;
 
-    @Getter
-    @Setter
-    @JsonProperty("theses")
-    Map<String, List<TheseResponseDto>> theses;
 
-    @Getter
-    @Setter
+    @JsonProperty("theses")
+    Map<String, List<TheseEnhancedResponseDto>> theses;
+
+
     @JsonProperty("mots_cles")
     Map<String, List<String>> motsCles;
 }

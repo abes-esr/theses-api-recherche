@@ -2,9 +2,12 @@ package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,87 +20,88 @@ import java.util.Map;
 /**
  * DTO web retournée par l'API pour une thèse en lien avec une personne
  */
-@Builder
+@SuperBuilder
+@Getter
+@Setter
 public class TheseResponseDto {
-    @Getter
-    @Setter
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("id")
     String id;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("role")
     String role;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("titre")
     String titre;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("titres")
-    Map<String, String> titres = new HashMap<String, String>();
+    Map<String, String> titres;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("sujets_rameau")
-    List<SujetRameauResponseDto> sujets_rameau = new ArrayList<>();
+    List<SujetRameauResponseDto> sujets_rameau;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("sujets")
-    Map<String, List<String>> sujets = new HashMap<>();
+    Map<String, List<String>> sujets;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("discipline")
     String discipline;
 
-    @Getter
-    @Setter
-    @JsonProperty("resumes")
-    Map<String, String> resumes = new HashMap<>();
 
-    @Getter
-    @Setter
+    @JsonView({JsonViews.Normal.class})
+    @JsonProperty("resumes")
+    Map<String, String> resumes;
+
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("date_soutenance")
     String date_soutenance;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("date_inscription")
     String date_inscription;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("etablissement_soutenance")
     EtablissementResponseDto etablissement_soutenance;
 
-    @Getter
-    @Setter
-    @JsonProperty("etablissements_cotutelle")
-    List<EtablissementResponseDto> etablissements_cotutelle = new ArrayList<>();
 
-    @Getter
-    @Setter
+    @JsonView({JsonViews.Normal.class})
+    @JsonProperty("etablissements_cotutelle")
+    List<EtablissementResponseDto> etablissements_cotutelle;
+
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("status")
     String status;
 
-    @Getter
-    @Setter
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("source")
     String source;
 
-    @Getter
-    @Setter
-    @JsonProperty("auteurs")
-    List<ThesePersonneLiteResponseDto> auteurs = new ArrayList<>();
 
-    @Getter
-    @Setter
+    @JsonView({JsonViews.Normal.class})
+    @JsonProperty("auteurs")
+    List<ThesePersonneLiteResponseDto> auteurs;
+
+
+    @JsonView({JsonViews.Normal.class})
     @JsonProperty("directeurs")
-    List<ThesePersonneLiteResponseDto> directeurs = new ArrayList<>();
+    List<ThesePersonneLiteResponseDto> directeurs;
 
     @JsonIgnore
     public String getDate_soutenanceTri() {

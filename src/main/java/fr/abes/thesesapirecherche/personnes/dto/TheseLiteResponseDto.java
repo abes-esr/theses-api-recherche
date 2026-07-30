@@ -1,6 +1,8 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+
 import fr.abes.thesesapirecherche.personnes.model.Etablissement;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,29 +14,28 @@ import java.util.List;
  * DTO web retournée par l'API ppour un ensemble de thèses en lien avec une personne
  */
 @Builder
+@Getter
+@Setter
+@JsonView({JsonViews.Normal.class, JsonViews.Full.class})
+
 public class TheseLiteResponseDto {
-    @Getter
-    @Setter
+
     @JsonProperty("id")
     String id;
 
-    @Getter
-    @Setter
+
     @JsonProperty("role")
     String role;
 
-    @Getter
-    @Setter
+
     @JsonProperty("discipline")
     String discipline;
 
-    @Getter
-    @Setter
+
     @JsonProperty("etablissement_soutenance")
     Etablissement etablissement_soutenance;
 
-    @Getter
-    @Setter
+
     @JsonProperty("etabliseements_cotutelle")
     List<Etablissement> etablissements_cotutelle;
 
