@@ -1,4 +1,4 @@
-package fr.abes.thesesapirecherche.personnes.dto;
+package fr.abes.thesesapirecherche.personnes.dto.batch;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,7 +8,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
+import fr.abes.thesesapirecherche.personnes.dto.EtablissementResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SujetRameauResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.ThesePersonneLiteResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -19,7 +23,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @Setter
-public class TheseResponseDto {
+public class BatchTheseResponseDto {
     @JsonProperty("id")
     String id;
 
@@ -86,6 +90,31 @@ public class TheseResponseDto {
 
     @JsonProperty("oaiSetNames")
     List<String> oaiSetNames;
+
+    // champs ajoutés pour enrichir les APIs
+    
+    String numSujetSansS;
+
+
+    String doi;
+
+
+    String nnt;
+
+
+    String codeEtab;
+
+
+    String dateCines;
+
+
+    List<String> langues;
+
+
+    String accessible;
+
+
+    String cas;
 
 
     @JsonIgnore

@@ -19,7 +19,9 @@ import java.util.Map;
  */
 public class PersonneMapper {
 
-    ThesePersonneEnhancedMapper theseMapper = new ThesePersonneEnhancedMapper();
+    TheseMapper theseMapper = new TheseMapper();
+    BatchTheseMapper batchTheseMapper = new BatchTheseMapper();
+    ClientTheseMapper clientTheseMapper = new ClientTheseMapper();
 
     /**
      * Conversion d'une personne du format ES au format DTO pour une liste de personnes.

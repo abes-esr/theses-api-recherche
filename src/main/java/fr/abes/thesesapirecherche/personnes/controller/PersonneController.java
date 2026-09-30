@@ -3,7 +3,6 @@ package fr.abes.thesesapirecherche.personnes.controller;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.exception.ApiException;
 import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
-import fr.abes.thesesapirecherche.personnes.dto.JsonViews;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
@@ -49,6 +47,7 @@ public class PersonneController {
 
 
 
+    
     /**
      * Rechercher une personne avec un mot
      *
@@ -137,8 +136,7 @@ public class PersonneController {
 
 
 
-
-    /**
+ /**
      * Recherche une personne à partir de son identifiant
      *
      * @param id Identifiant de la personne
@@ -152,31 +150,14 @@ public class PersonneController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public MappingJacksonValue rechercherParIdentifiant(
-        @PathVariable final String id,
-        @RequestParam @Parameter(name = "viewFull", description = "si true, les informations sur les thèses seront détaillées davantage'", example = "true") Optional<Boolean> viewFull
-    ) throws ApiException {
-        
+
+    public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
-
-            PersonneResponseDto response = personnesService.getPersonne(id, viewFull.orElse(false));
-
-            // permet de choisir quels champs exposés selon un modèle (soit full, soit lite)
-            MappingJacksonValue wrapper = new MappingJacksonValue(response);
-
-            if(viewFull.isPresent() && viewFull.get()){
-                wrapper.setSerializationView(JsonViews.Full.class);
-            }
-            else{
-                wrapper.setSerializationView(JsonViews.Normal.class);
-            }                    
-            
-            return wrapper;
+            return searchQueryBuilder.rechercherParIdentifiant(id, esIndexName);
 
         } catch (Exception e) {
-            // log.error(e.toString());
-            e.printStackTrace();
+            log.error(e.toString());
             throw new ApiException(e.getLocalizedMessage());
         }
     }

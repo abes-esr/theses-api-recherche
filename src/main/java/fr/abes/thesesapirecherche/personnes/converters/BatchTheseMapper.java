@@ -1,15 +1,16 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
-import fr.abes.thesesapirecherche.personnes.dto.TheseLiteResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.TheseResponseDto;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import fr.abes.thesesapirecherche.personnes.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
-import java.util.*;
-
-/**
- * Convertisseur de format pour les objets Thèses
- */
-public class TheseMapper {
+public class BatchTheseMapper {
 
     EtablissementMapper etablissementMapper = new EtablissementMapper();
     ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
@@ -22,11 +23,12 @@ public class TheseMapper {
      * @param these
      * @return
      */
-    public TheseResponseDto theseToDto(ThesePersonne these) {
-        return TheseResponseDto.builder()
+    public BatchTheseResponseDto theseToBatchDto(ThesePersonne these) {
+        return BatchTheseResponseDto.builder()
                 .id(these.getId())
                 .titre(these.getTitre())
                 .titres(these.getTitres())
+                .resumes(these.getResumes())
                 .role(these.getRole())
                 .discipline(these.getDiscipline())
                 .status(these.getStatus())
@@ -40,6 +42,14 @@ public class TheseMapper {
                 .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
                 .sujets(these.getSujets())
                 .oaiSetNames(these.getOaiSetNames())
+                .numSujetSansS(these.getNumSujetSansS())
+                .doi(these.getDoi())
+                .nnt(these.getNnt())
+                .codeEtab(these.getCodeEtab())
+                .dateCines(these.getDateCines())
+                .langues(these.getLangues())
+                .accessible(these.getAccessible())
+                .cas(these.getCas())
                 .build();
     }
 
@@ -49,15 +59,15 @@ public class TheseMapper {
      * @param theses
      * @return
      */
-    public Map<String, List<TheseResponseDto>> thesesToDto(List<ThesePersonne> theses) {
-        Map<String, List<TheseResponseDto>> results = new HashMap<>();
+    public Map<String, List<BatchTheseResponseDto>> thesesToBatchDto(List<ThesePersonne> theses) {
+        Map<String, List<BatchTheseResponseDto>> results = new HashMap<>();
         if (theses != null) {
             for (ThesePersonne item : theses) {
                 if (results.containsKey(item.getRole())) {
-                    results.get(item.getRole()).add(theseToDto(item));
+                    results.get(item.getRole()).add(theseToBatchDto(item));
                 } else {
-                    List<TheseResponseDto> list = new ArrayList<>();
-                    list.add(theseToDto(item));
+                    List<BatchTheseResponseDto> list = new ArrayList<>();
+                    list.add(theseToBatchDto(item));
                     results.put(item.getRole(), list);
                 }
             }
@@ -65,37 +75,7 @@ public class TheseMapper {
 
         //On tri les thèses par date
         for (String role : results.keySet()) {
-            Collections.sort(results.get(role), Comparator.comparing(TheseResponseDto::getDate_soutenanceTri).reversed());
-        }
-        return results;
-    }
-
-    /**
-     * Transforme une thèse simplifiée en web dto
-     *
-     * @param these
-     * @return
-     */
-    public TheseLiteResponseDto theseLiteToDto(ThesePersonne these) {
-        return TheseLiteResponseDto.builder()
-                .id(these.getId())
-                .role(these.getRole())
-                .discipline(these.getDiscipline())
-                .build();
-    }
-
-    /**
-     * Trasnforme une liste de thèse simplifié en web dto
-     *
-     * @param theses
-     * @return
-     */
-    public List<TheseLiteResponseDto> thesesLiteToDto(List<ThesePersonne> theses) {
-        List<TheseLiteResponseDto> results = new ArrayList<>();
-        if (theses != null) {
-            for (ThesePersonne item : theses) {
-                results.add(theseLiteToDto(item));
-            }
+            Collections.sort(results.get(role), Comparator.comparing(BatchTheseResponseDto::getDate_soutenanceTri).reversed());
         }
         return results;
     }

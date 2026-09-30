@@ -1,4 +1,4 @@
-package fr.abes.thesesapirecherche.personnes.dto;
+package fr.abes.thesesapirecherche.personnes.dto.client;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,6 +9,9 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fr.abes.thesesapirecherche.personnes.dto.EtablissementResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SujetRameauResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.ThesePersonneLiteResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -19,7 +22,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @Setter
-public class TheseResponseDto {
+public class ClientTheseResponseDto {
     @JsonProperty("id")
     String id;
 
@@ -47,9 +50,9 @@ public class TheseResponseDto {
     @JsonProperty("discipline")
     String discipline;
 
-
-    @JsonProperty("resumes")
-    Map<String, String> resumes;
+    // on ne fournit pas les résumés, jugé trop coûteux
+    // @JsonProperty("resumes")
+    // Map<String, String> resumes;
 
 
     @JsonProperty("date_soutenance")
@@ -86,6 +89,31 @@ public class TheseResponseDto {
 
     @JsonProperty("oaiSetNames")
     List<String> oaiSetNames;
+
+    // champs ajoutés pour enrichir les APIs
+    
+    String numSujetSansS;
+
+
+    String doi;
+
+
+    String nnt;
+
+
+    String codeEtab;
+
+
+    String dateCines;
+
+
+    List<String> langues;
+
+
+    String accessible;
+
+
+    String cas;
 
 
     @JsonIgnore
