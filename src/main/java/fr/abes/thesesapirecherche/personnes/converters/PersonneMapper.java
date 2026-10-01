@@ -20,7 +20,6 @@ import java.util.Map;
 public class PersonneMapper {
 
     TheseMapper theseMapper = new TheseMapper();
-    BatchTheseMapper batchTheseMapper = new BatchTheseMapper();
     ClientTheseMapper clientTheseMapper = new ClientTheseMapper();
 
     /**

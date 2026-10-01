@@ -47,7 +47,6 @@ public class PersonneController {
 
 
 
-    
     /**
      * Rechercher une personne avec un mot
      *
@@ -154,7 +153,7 @@ public class PersonneController {
     public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
-            return searchQueryBuilder.rechercherParIdentifiant(id, esIndexName);
+            return personnesService.getPersonne(id);
 
         } catch (Exception e) {
             log.error(e.toString());

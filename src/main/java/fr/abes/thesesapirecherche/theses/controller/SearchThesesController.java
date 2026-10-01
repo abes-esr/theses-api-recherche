@@ -1,9 +1,23 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.View;
+
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
-import fr.abes.thesesapirecherche.theses.dto.JsonViews;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseEnhancedDto;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.rss.RssFeedView;
@@ -12,18 +26,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJacksonValue;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.View;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -36,9 +38,10 @@ public class SearchThesesController {
     @Autowired
     private RssFeedView view;
 
-    @Autowired
+    @Autowired 
     private ThesesService thesesService;
 
+    // retourne un ensemble de thèses qui matchent avec les filtres (pour le front)
     @GetMapping(value = "/recherche/")
     @Operation(
             summary = "Rechercher une thèse via le titre",
@@ -46,35 +49,23 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public MappingJacksonValue simple(
+    public ResponseTheseLiteDto simple(
             @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
             @RequestParam @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
             @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
-            @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres,
-            @RequestParam @Parameter(name = "viewFull", description = "si true, les informations sur les thèses seront détaillées davantage'", example = "true") Optional<Boolean> viewFull
+            @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
             if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
-            ResponseTheseEnhancedDto response = thesesService.searchTheses(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""), viewFull.orElse(false));
-
-            // permet de choisir quels champs exposés selon un modèle (soit full, soit lite)
-            MappingJacksonValue wrapper = new MappingJacksonValue(response);
-
-            if(viewFull.isPresent() && viewFull.get()){
-                wrapper.setSerializationView(JsonViews.Full.class);
-            }
-            else{
-                wrapper.setSerializationView(JsonViews.Lite.class);
-            }   
-        
-            return wrapper;
-            
+            return thesesService.getTheses(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
         }
     }
+
+
 
     @GetMapping(value = "/rechercheCSV")
     @Operation(
@@ -127,6 +118,7 @@ public class SearchThesesController {
         }
     }
 
+    //retourne un ensemble de thèses par organisme (pour le front)
     @GetMapping(value = "/organisme/{ppn}")
     @Operation(
             summary = "Rechercher toutes les thèses liées à un établissement/organisme",
@@ -134,33 +126,18 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public MappingJacksonValue rechercheParOrganisme(
-            @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn,
-            @RequestParam @Parameter(name = "viewFull", description = "si true, les informations sur les thèses seront détaillées davantage'", example = "true") Optional<Boolean> viewFull
-
+    public ThesesByOrganismeResponseDto rechercheParOrganisme(
+            @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {
-            // on récupère le résultat
-            ThesesByOrganismeResponseDto response = thesesService.searchThesesByOrganisme(ppn, viewFull.orElse(false));
-            
-            // permet de choisir quels champs exposés selon un modèle (soit full, soit lite)
-            MappingJacksonValue wrapper = new MappingJacksonValue(response);
-
-            if(viewFull.isPresent() && viewFull.get()){
-                wrapper.setSerializationView(JsonViews.Full.class);
-            }
-            else{
-                wrapper.setSerializationView(JsonViews.Lite.class);
-            }                    
-            
-            return wrapper;
-
-
+            return thesesService.getThesesByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
         }
     }
+
+
 
     @GetMapping(value = "/completion/")
     @Operation(

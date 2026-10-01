@@ -21,7 +21,6 @@ import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
-import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

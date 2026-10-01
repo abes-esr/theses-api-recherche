@@ -15,10 +15,11 @@ import fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder;
 import fr.abes.thesesapirecherche.config.ElasticClient;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.dto.Facet;
-import fr.abes.thesesapirecherche.theses.converters.TheseEnhancedMapper;
+import fr.abes.thesesapirecherche.theses.converters.ClientTheseMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
 import fr.abes.thesesapirecherche.theses.dto.*;
+import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.These;
 import jdk.jshell.spi.ExecutionControlProvider;
@@ -46,7 +47,7 @@ public class SearchQueryBuilder {
 
     private final TheseMapper theseMapper = new TheseMapper();
     private final TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
-    private final TheseEnhancedMapper theseEnhancedMapper = new TheseEnhancedMapper();
+    private final ClientTheseMapper clientTheseMapper = new ClientTheseMapper();
 
     @Value("${es.theses.indexname}")
     private String esIndexName;
@@ -238,10 +239,10 @@ public class SearchQueryBuilder {
         );
 
         ResponseTheseCSVDto res = new ResponseTheseCSVDto();
-        List<TheseResponseDto> liste = new ArrayList<>();
+        List<ClientTheseResponseDto> liste = new ArrayList<>();
 
         for (Hit<These> theseHit : response.hits().hits()) {
-            liste.add(theseMapper.theseToDto(theseHit.source()));
+            liste.add(clientTheseMapper.theseToClientDto(theseHit.source()));
         }
 
         res.setTheses(liste);
@@ -287,25 +288,25 @@ public class SearchQueryBuilder {
         SearchResponse<These> responseEcoleSoutenue = searchByPpn("ecolesDoctoralesPpn", ppn, "soutenue");
         
 
-        List<TheseEnhancedResponseDto> listeEtabSoutenance = new ArrayList<>();
-        List<TheseEnhancedResponseDto> listeEtabSoutenanceEnCours = new ArrayList<>();
-        List<TheseEnhancedResponseDto> listeEtabCotutelle = new ArrayList<>();
-        List<TheseEnhancedResponseDto> listeEtabCotutelleEnCours = new ArrayList<>();
-        List<TheseEnhancedResponseDto> listePartenaire = new ArrayList<>();
-        List<TheseEnhancedResponseDto> listePartenaireEnCours = new ArrayList<>();
-        List<TheseEnhancedResponseDto> listeEcoleDoctorale = new ArrayList<>();
-        List<TheseEnhancedResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEtabSoutenance = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEtabSoutenanceEnCours = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEtabCotutelle = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEtabCotutelleEnCours = new ArrayList<>();
+        List<TheseLiteResponseDto> listePartenaire = new ArrayList<>();
+        List<TheseLiteResponseDto> listePartenaireEnCours = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEcoleDoctorale = new ArrayList<>();
+        List<TheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
 
 
         
-        for(Hit<These> theseHit : responseEtabSoutenanceEnEcours.hits().hits()) listeEtabSoutenance.add(theseEnhancedMapper.theseToLitedDto(theseHit));
-        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenanceEnCours.add(theseEnhancedMapper.theseToLitedDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelle.add(theseEnhancedMapper.theseToLitedDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelleEnCours.add(theseEnhancedMapper.theseToLitedDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaire.add(theseEnhancedMapper.theseToLitedDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaireEnCours.add(theseEnhancedMapper.theseToLitedDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctorale.add(theseEnhancedMapper.theseToLitedDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctoraleEnCours.add(theseEnhancedMapper.theseToLitedDto(theseHit));
+        for(Hit<These> theseHit : responseEtabSoutenanceEnEcours.hits().hits()) listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenanceEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelle.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaire.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaireEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctorale.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctoraleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
 
     
         
@@ -502,6 +503,23 @@ public class SearchQueryBuilder {
         These.class
     );
 }
+
+
+    //TODO c'est un copier coller de la méthode rechercheSurId plus haut, juste elle s'occupe de renvoyer un model et pas un dto (faire un refactoring)
+    public These getTheseById(String nnt) throws Exception {
+        SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(s -> s
+                        .index(esIndexName)
+                        .query(q -> q
+                                .match(t -> t
+                                        .query(nnt)
+                                        .field("_id"))),
+                These.class
+        );
+
+        Optional<These> a = response.hits().hits().stream().map(Hit::source).findFirst();
+
+        return a.orElse(null);
+    }
 
     
     

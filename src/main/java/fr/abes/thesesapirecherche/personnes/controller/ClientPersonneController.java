@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.abes.thesesapirecherche.exception.ApiException;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.client.ClientPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.service.PersonnesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/personnes/")
+@RequestMapping("/api/v1/client/personnes/")
 public class ClientPersonneController {
 
     @Autowired
@@ -37,10 +37,10 @@ public class ClientPersonneController {
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
 
-    public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
+    public ClientPersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
-            return personnesService.getPersonne(id);
+            return personnesService.getPersonneForClient(id);
 
         } catch (Exception e) {
             log.error(e.toString());

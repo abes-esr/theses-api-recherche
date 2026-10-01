@@ -1,30 +1,27 @@
 package fr.abes.thesesapirecherche.theses.dto;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonView;
-
 @Getter
 @Setter
-@JsonView({JsonViews.Full.class, JsonViews.Lite.class})
 public class ThesesByOrganismeResponseDto {
     private long totalHitsetabSoutenance;
-    private List<TheseEnhancedResponseDto> etabSoutenance;
+    private List<TheseLiteResponseDto> etabSoutenance;
     private long totalHitsetabSoutenanceEnCours;
-    private List<TheseEnhancedResponseDto> etabSoutenanceEnCours;
+    private List<TheseLiteResponseDto> etabSoutenanceEnCours;
     private long totalHitspartenaireRecherche;
-    private List<TheseEnhancedResponseDto> partenaireRecherche;
+    private List<TheseLiteResponseDto> partenaireRecherche;
     private long totalHitspartenaireRechercheEnCours;
-    private List<TheseEnhancedResponseDto> partenaireRechercheEnCours;
+    private List<TheseLiteResponseDto> partenaireRechercheEnCours;
     private long totalHitsetabCotutelle;
-    private List<TheseEnhancedResponseDto> etabCotutelle;
+    private List<TheseLiteResponseDto> etabCotutelle;
     private long totalHitsetabCotutelleEnCours;
-    private List<TheseEnhancedResponseDto> etabCotutelleEnCours;
+    private List<TheseLiteResponseDto> etabCotutelleEnCours;
     private long totalHitsecoleDoctorale;
-    private List<TheseEnhancedResponseDto> ecoleDoctorale;
+    private List<TheseLiteResponseDto> ecoleDoctorale;
     private long totalHitsecoleDoctoraleEnCours;
-    private List<TheseEnhancedResponseDto> ecoleDoctoraleEnCours;
+    private List<TheseLiteResponseDto> ecoleDoctoraleEnCours;
 }

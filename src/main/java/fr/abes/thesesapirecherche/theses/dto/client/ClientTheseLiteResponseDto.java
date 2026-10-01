@@ -1,27 +1,37 @@
-package fr.abes.thesesapirecherche.theses.dto;
+package fr.abes.thesesapirecherche.theses.dto.client;
 
+import java.util.List;
+import java.util.Map;
+
+import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesePersoneResponseDto;
+import fr.abes.thesesapirecherche.theses.model.PersonneThese;
+import fr.abes.thesesapirecherche.theses.model.Sujet;
+import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Map;
-
 @Builder
 @Getter
 @Setter
-public class TheseResponseDto {
-
+public class ClientTheseLiteResponseDto {
+    String id;
     String titrePrincipal;
     String nnt;
     String doi;
     String numSujet;
+    String numSujetSansS;
     String dateSoutenance;
     String datePremiereInscriptionDoctorat;
+    String dateCines;
     String discipline;
     Map<String, String> titres;
-    Map<String, String> resumes;
+
+    // pas fournit car considéré comme trop coûteux
+    // Map<String, String> resumes;
+    
     OrganismeResponseDto etabSoutenance;
     String codeEtab;
     List<OrganismeResponseDto> etabCotutelle;
@@ -32,6 +42,7 @@ public class TheseResponseDto {
     List<ThesePersoneResponseDto> auteurs;
     List<ThesePersoneResponseDto> directeurs;
     List<String> langues;
+    List<String> oaiSetNames;
     String cas;
     String accessible;
     List<OrganismeResponseDto> ecolesDoctorales;
@@ -39,5 +50,4 @@ public class TheseResponseDto {
     String source;
     String status;
     Boolean isSoutenue;
-
 }

@@ -12,7 +12,26 @@ import java.util.List;
 import java.util.Map;
 
 public class TheseMapper {
-    
+    ThesePersonneMapper personneMapper = new ThesePersonneMapper();
+    OrganismeMapper organismeMapper = new OrganismeMapper();
+
+    private Map<String, List<SujetsToMap>> formatKeywords(These these) {
+        Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();
+        for (Sujet s : these.getSujets()) {
+            List<SujetsToMap> l = new ArrayList<>();
+            if (mapSujets.get(s.getLangue()) != null) l = mapSujets.get(s.getLangue());
+            l.add(new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujet, s.getLibelle()));
+            mapSujets.put(s.getLangue(), l);
+        }
+        for (SujetsRameau s : these.getSujetsRameau()) {
+            List<SujetsToMap> l = new ArrayList<>();
+            if (mapSujets.get("fr") != null) l = mapSujets.get("fr");
+            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, "\"" + s.getLibelle() + "\" ET " + s.getPpn()));
+            mapSujets.put("fr", l);
+        }
+
+        return mapSujets;
+    }
 
     public TheseResponseDto theseToDto(These these) {
         return TheseResponseDto.builder()
@@ -20,28 +39,25 @@ public class TheseMapper {
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
-                .numSujetSansS(these.getNumSujetSansS())
                 .dateSoutenance(these.getDateSoutenance())
                 .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
-                .etabSoutenance(TheseMappingHelper.organismeToDto(these.getEtabSoutenance()))
+                .etabSoutenance(organismeMapper.organismeToDto(these.getEtabSoutenance()))
                 .codeEtab(these.getCodeEtab())
-                .etabCotutelle(TheseMappingHelper.organismesToDto(these.getEtabsCotutelle()))
-                .partenairesRecherche(TheseMappingHelper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(TheseMappingHelper.formatKeywords(these))
-                .membresJury(TheseMappingHelper.personnesToDto(these.getMembresJury()))
-                .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
-                .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
-                .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
-                .dateCines(these.getDateCines())
-                .langues(these.getLangues())
-                .oaiSetNames(these.getOaiSetNames())
+                .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
+                .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
+                .mapSujets(formatKeywords(these))
+                .membresJury(personneMapper.personnesToDto(these.getMembresJury()))
+                .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
+                .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
+                .directeurs(personneMapper.personnesToDto(these.getDirecteurs()))
                 .cas(these.getCas())
+                .langues(these.getLangues())
                 .accessible(these.getAccessible())
-                .ecolesDoctorales(TheseMappingHelper.organismesToDto(these.getEcolesDoctorales()))
-                .presidentJury(TheseMappingHelper.personneToDto(these.getPresidentJury()))
+                .ecolesDoctorales(organismeMapper.organismesToDto(these.getEcolesDoctorales()))
+                .presidentJury(personneMapper.personneToDto(these.getPresidentJury()))
                 .source(these.getSource())
                 .status(these.getStatus())
                 .isSoutenue(these.getIsSoutenue())

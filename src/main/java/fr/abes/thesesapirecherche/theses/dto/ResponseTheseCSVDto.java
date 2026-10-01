@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.dto;
 
+import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import java.util.List;
 @Setter
 public class ResponseTheseCSVDto {
 
-    List<TheseResponseDto> theses = new ArrayList<>();
+    List<ClientTheseResponseDto> theses = new ArrayList<>();
 
     public String toCSV() {
         StringBuilder s = new StringBuilder();
@@ -23,7 +24,7 @@ public class ResponseTheseCSVDto {
         Boolean firstRound = true;
 
         //contenu
-        for(TheseResponseDto t : theses) {
+        for(ClientTheseResponseDto t : theses) {
 
             String dateSoutenance = t.getDateSoutenance() == null ? "" : t.getDateSoutenance();
             String datePremiereInscriptionDoctorat = t.getDatePremiereInscriptionDoctorat() == null ? "" : t.getDatePremiereInscriptionDoctorat();
