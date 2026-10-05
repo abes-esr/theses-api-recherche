@@ -21,6 +21,7 @@ import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
+import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -372,7 +373,7 @@ public class SearchPersonneQueryBuilder {
      * @return Une personne au format Dto web
      * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
      */
-    public SearchResponse<ThesePersonne> getThesesByIds(List<String> ids) throws IOException {
+    public SearchResponse<These> getThesesByIds(List<String> ids) throws IOException {
 
         Query query = Query.of(q -> q.terms(t -> t
                 .field("_id")
@@ -389,7 +390,7 @@ public class SearchPersonneQueryBuilder {
                 .build();
 
         return ElasticClient.getElasticsearchClient()
-                .search(request, ThesePersonne.class);
+                .search(request, These.class);
     }
 
 

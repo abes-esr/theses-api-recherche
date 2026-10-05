@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -27,17 +28,18 @@ import fr.abes.thesesapirecherche.theses.model.These;
 
 @Service
 public class ThesesService {
-
     @Autowired
     private SearchQueryBuilder searchThesesQuery;
 
     @Autowired
+    @Qualifier("TheseTheseMapper")
     private TheseMapper theseMapper;
 
     @Autowired
     private TheseLiteMapper theseLiteMapper;
 
     @Autowired
+    @Qualifier("TheseClientTheseMapper")
     private ClientTheseMapper clientTheseMapper;
 
     @Autowired
@@ -127,7 +129,7 @@ public class ThesesService {
         ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
 
         // on interroge ES sur tous les index
-        SearchResponse<These> responseEtabSoutenanceEnEcours = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "enCours");
+        SearchResponse<These> responseEtabSoutenanceEnCours = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "enCours");
         SearchResponse<These> responseEtabSoutenanceSoutenue = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "soutenue");
         SearchResponse<These> responseEtabCotutelleEnCours = searchThesesQuery.searchByPpn("etabsCotutellePpn", ppn, "enCours");
         SearchResponse<These> responseEtabCotutelleSoutenue = searchThesesQuery.searchByPpn("etabsCotutellePpn", ppn, "soutenue");
@@ -147,20 +149,20 @@ public class ThesesService {
         List<TheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
 
 
-        for(Hit<These> theseHit : responseEtabSoutenanceEnEcours.hits().hits()) listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenanceEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelle.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaire.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaireEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctorale.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctoraleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEtabSoutenanceEnCours.hits().hits()) listeEtabSoutenanceEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelle.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaire.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaireEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctorale.add(theseLiteMapper.theseLiteToDto(theseHit));
+        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctoraleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
 
         
         // on remplit le dto
         thesesByOrganismeResponse.setEtabSoutenance(listeEtabSoutenance);
         thesesByOrganismeResponse.setEtabSoutenanceEnCours(listeEtabSoutenanceEnCours);
-        thesesByOrganismeResponse.setTotalHitsetabSoutenanceEnCours(responseEtabSoutenanceEnEcours.hits().total().value());
+        thesesByOrganismeResponse.setTotalHitsetabSoutenanceEnCours(responseEtabSoutenanceEnCours.hits().total().value());
         thesesByOrganismeResponse.setTotalHitsetabSoutenance(responseEtabSoutenanceSoutenue.hits().total().value());
 
         thesesByOrganismeResponse.setEtabCotutelle(listeEtabCotutelle);
@@ -189,7 +191,7 @@ public class ThesesService {
         ClientThesesByOrganismeResponseDto thesesByOrganismeResponse = new ClientThesesByOrganismeResponseDto();
 
         // on interroge ES sur tous les index
-        SearchResponse<These> responseEtabSoutenanceEnEcours = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "enCours");
+        SearchResponse<These> responseEtabSoutenanceEnCours = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "enCours");
         SearchResponse<These> responseEtabSoutenanceSoutenue = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "soutenue");
         SearchResponse<These> responseEtabCotutelleEnCours = searchThesesQuery.searchByPpn("etabsCotutellePpn", ppn, "enCours");
         SearchResponse<These> responseEtabCotutelleSoutenue = searchThesesQuery.searchByPpn("etabsCotutellePpn", ppn, "soutenue");
@@ -209,20 +211,19 @@ public class ThesesService {
         List<ClientTheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
 
 
-        for(Hit<These> theseHit : responseEtabSoutenanceEnEcours.hits().hits()) listeEtabSoutenance.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenanceEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelle.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelleEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaire.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaireEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctorale.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctoraleEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-
+        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenance.add(clientTheseMapper.theseToClientLiteDto(theseHit));
+        for(Hit<These> theseHit : responseEtabSoutenanceEnCours.hits().hits()) listeEtabSoutenanceEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
+        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelle.add(clientTheseMapper.theseToClientLiteDto(theseHit));
+        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelleEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
+        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaire.add(clientTheseMapper.theseToClientLiteDto(theseHit));
+        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaireEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
+        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctorale.add(clientTheseMapper.theseToClientLiteDto(theseHit));
+        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctoraleEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
         
         // on remplit le dto
         thesesByOrganismeResponse.setEtabSoutenance(listeEtabSoutenance);
         thesesByOrganismeResponse.setEtabSoutenanceEnCours(listeEtabSoutenanceEnCours);
-        thesesByOrganismeResponse.setTotalHitsetabSoutenanceEnCours(responseEtabSoutenanceEnEcours.hits().total().value());
+        thesesByOrganismeResponse.setTotalHitsetabSoutenanceEnCours(responseEtabSoutenanceEnCours.hits().total().value());
         thesesByOrganismeResponse.setTotalHitsetabSoutenance(responseEtabSoutenanceSoutenue.hits().total().value());
 
         thesesByOrganismeResponse.setEtabCotutelle(listeEtabCotutelle);

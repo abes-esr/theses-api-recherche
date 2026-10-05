@@ -1,12 +1,13 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+
+@Component 
 public class BatchTheseMapper {
     
 

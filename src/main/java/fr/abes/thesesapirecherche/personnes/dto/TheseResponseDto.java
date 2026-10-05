@@ -84,10 +84,6 @@ public class TheseResponseDto {
     List<ThesePersonneLiteResponseDto> directeurs;
 
 
-    @JsonProperty("oaiSetNames")
-    List<String> oaiSetNames;
-
-
     @JsonIgnore
     public String getDate_soutenanceTri() {
         if (date_soutenance != null) {

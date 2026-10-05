@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/client/personnes/")
+@RequestMapping("/api/v1/client/")
 public class ClientPersonneController {
 
     @Autowired
@@ -29,7 +29,7 @@ public class ClientPersonneController {
      * @return Retourne la personne
      * @throws ApiException si la personne n'est pas trouvée
      */
-    @GetMapping(value = "/personne/{id}")
+    @GetMapping(value = "/personnes/personne/{id}")
     @Operation(
             summary = "Rechercher une personne par son identifiant",
             description = "Retourne la personne correspondante à la recherche")

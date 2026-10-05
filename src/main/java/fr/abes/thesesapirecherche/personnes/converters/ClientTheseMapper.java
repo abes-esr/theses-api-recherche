@@ -7,9 +7,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import fr.abes.thesesapirecherche.personnes.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
+import fr.abes.thesesapirecherche.theses.model.These;
 
+
+@Component("PersonnesClientTheseMapper")
 public class ClientTheseMapper {
 
     EtablissementMapper etablissementMapper = new EtablissementMapper();
@@ -40,15 +45,6 @@ public class ClientTheseMapper {
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
                 .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
                 .sujets(these.getSujets())
-                .oaiSetNames(these.getOaiSetNames())
-                .numSujetSansS(these.getNumSujetSansS())
-                .doi(these.getDoi())
-                .nnt(these.getNnt())
-                .codeEtab(these.getCodeEtab())
-                .dateCines(these.getDateCines())
-                .langues(these.getLangues())
-                .accessible(these.getAccessible())
-                .cas(these.getCas())
                 .build();
     }
 
@@ -77,6 +73,26 @@ public class ClientTheseMapper {
             Collections.sort(results.get(role), Comparator.comparing(ClientTheseResponseDto::getDate_soutenanceTri).reversed());
         }
         return results;
+    }
+
+
+
+    /**
+     * Enrichit le dto déjà crée avec une thèse de l'index theses (informations en +)
+     *
+     * @param these
+     * @return
+     */
+    public void addTheseFieldsToDto(ClientTheseResponseDto theseDto, These these) {
+        theseDto.setNnt(these.getNnt());
+        theseDto.setCas(these.getCas());
+        theseDto.setLangues(these.getLangues());
+        theseDto.setAccessible(these.getAccessible());
+        theseDto.setCodeEtab(these.getCodeEtab());
+        theseDto.setDateCines(these.getDateCines());
+        theseDto.setNumSujetSansS(these.getNumSujetSansS());
+        theseDto.setOaiSetNames(these.getOaiSetNames());
+        theseDto.setDoi(these.getDoi());
     }
     
 }

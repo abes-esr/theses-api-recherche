@@ -1,5 +1,19 @@
 package fr.abes.thesesapirecherche.theses.builder;
 
+import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
+import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.buildFilter;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
+
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
@@ -18,27 +32,16 @@ import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.converters.ClientTheseMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
-import fr.abes.thesesapirecherche.theses.dto.*;
+import fr.abes.thesesapirecherche.theses.dto.ResponseTheseCSVDto;
+import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.These;
-import jdk.jshell.spi.ExecutionControlProvider;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
-import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.buildFilter;
 
 @Slf4j
 @Component

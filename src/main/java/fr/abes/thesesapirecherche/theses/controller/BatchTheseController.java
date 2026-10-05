@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/batch/theses")
+@RequestMapping("/api/v1/batch/")
 public class BatchTheseController {
 
 
@@ -35,7 +35,7 @@ public class BatchTheseController {
     
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)
-    @GetMapping(value = "/batch/recherche/")
+    @GetMapping(value = "theses/recherche/")
     @Operation(
             summary = "Rechercher une thèse via le titre",
             description = "Retourne une liste de thèses correspondant à la recherche")

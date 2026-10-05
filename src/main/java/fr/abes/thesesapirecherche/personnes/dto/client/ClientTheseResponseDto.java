@@ -26,6 +26,9 @@ public class ClientTheseResponseDto {
     @JsonProperty("id")
     String id;
 
+    @JsonProperty("nnt")
+    String nnt;
+
 
     @JsonProperty("role")
     String role;
@@ -49,10 +52,6 @@ public class ClientTheseResponseDto {
 
     @JsonProperty("discipline")
     String discipline;
-
-    // on ne fournit pas les résumés, jugé trop coûteux
-    // @JsonProperty("resumes")
-    // Map<String, String> resumes;
 
 
     @JsonProperty("date_soutenance")
@@ -79,6 +78,10 @@ public class ClientTheseResponseDto {
     String source;
 
 
+    @JsonProperty("oaiSetNames")
+    List<String> oaiSetNames;
+
+
     @JsonProperty("auteurs")
     List<ThesePersonneLiteResponseDto> auteurs;
 
@@ -86,34 +89,37 @@ public class ClientTheseResponseDto {
     @JsonProperty("directeurs")
     List<ThesePersonneLiteResponseDto> directeurs;
 
-
-    @JsonProperty("oaiSetNames")
-    List<String> oaiSetNames;
-
-    // champs ajoutés pour enrichir les APIs
     
-    String numSujetSansS;
 
-
-    String doi;
-
-
-    String nnt;
-
-
-    String codeEtab;
-
-
-    String dateCines;
-
-
+    //Les champs suivants ne sont pas indexés et sont récupérés sur l'index theses avec une seconde requête
+    
+    @JsonProperty("langues")
     List<String> langues;
-
-
+    
+    
+    @JsonProperty("accessible")
     String accessible;
-
-
+    
+    
+    @JsonProperty("codeEtab")
+    String codeEtab;
+    
+    
+    @JsonProperty("dateCines")
+    String dateCines;
+    
+    
+    @JsonProperty("numSujetSansS")
+    String numSujetSansS;
+    
+    
+    @JsonProperty("doi")
+    String doi;
+    
+    
+    @JsonProperty("cas")
     String cas;
+
 
 
     @JsonIgnore

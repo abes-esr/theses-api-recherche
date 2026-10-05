@@ -3,11 +3,15 @@ package fr.abes.thesesapirecherche.theses.converters;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+
+@Component("TheseClientTheseMapper")
 public class ClientTheseMapper {
     
 
@@ -21,6 +25,7 @@ public class ClientTheseMapper {
                 .dateSoutenance(these.getDateSoutenance())
                 .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
                 .discipline(these.getDiscipline())
+                .resumes(these.getResumes())
                 .titres(these.getTitres())
                 .etabSoutenance(TheseMappingHelper.organismeToDto(these.getEtabSoutenance()))
                 .codeEtab(these.getCodeEtab())

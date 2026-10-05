@@ -7,6 +7,7 @@ import fr.abes.thesesapirecherche.personnes.dto.PersonneComputedFields;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneLiteResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionPersonneResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.client.ClientPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
 import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 
@@ -14,9 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Convertisseur de format pour les objets Personne
  */
+@Component 
 public class PersonneMapper {
 
     TheseMapper theseMapper = new TheseMapper();
@@ -104,6 +108,32 @@ public class PersonneMapper {
         List<SuggestionPersonneResponseDto> results = new ArrayList<>();
         personnes.entrySet().forEach(a->a.getValue().forEach(s->s.completion().options().forEach(b->results.add(suggestionPersonneToDto(b)))));
         return results;
+    }
+
+
+
+
+
+    /**
+     * Conversion d'une personne du format ES au format DTO (pour les clients n'utilisant pas le front).
+     * Les champs d'une personne ainsi que les champs des thèses sont maximisé afin de renvoyer tous les champs.
+     * @param personne Hit<Personne>
+     * @return
+     */
+    public ClientPersonneResponseDto personneToClientDto(Hit<Personne> personne) {
+        ClientPersonneResponseDto item = ClientPersonneResponseDto.builder()
+                .id(personne.id())
+                .nom(personne.source().getNom())
+                .prenom(personne.source().getPrenom())
+                .hasIdref(personne.source().getHasIdref())
+                .theses(clientTheseMapper.thesesToClientDto(personne.source().getTheses()))
+                .build();
+
+        // On remplit les champs calculés
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getRoles()));
+        item.setMotsCles(PersonneComputedFields.calculerMotsCles(personne.source().getTheses()));
+
+        return item;
     }
 
 }

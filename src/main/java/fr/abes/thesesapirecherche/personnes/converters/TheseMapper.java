@@ -6,9 +6,12 @@ import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
 import java.util.*;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Convertisseur de format pour les objets Thèses
  */
+@Component("PersonnesTheseMapper")
 public class TheseMapper {
 
     EtablissementMapper etablissementMapper = new EtablissementMapper();
@@ -39,7 +42,6 @@ public class TheseMapper {
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
                 .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
                 .sujets(these.getSujets())
-                .oaiSetNames(these.getOaiSetNames())
                 .build();
     }
 
