@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
+@Component("TheseTheseMapper")
 public class TheseMapper {
     ThesePersonneMapper personneMapper = new ThesePersonneMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();

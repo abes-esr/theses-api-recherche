@@ -1,18 +1,21 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
-import fr.abes.thesesapirecherche.personnes.dto.TheseLiteResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-/**
- * Convertisseur de format pour les objets Thèses
- */
-@Component("PersonnesTheseMapper")
-public class TheseMapper {
+import fr.abes.thesesapirecherche.personnes.dto.client.ClientTheseResponseDto;
+import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
+import fr.abes.thesesapirecherche.theses.model.These;
+
+
+@Component("PersonnesClientTheseMapper")
+public class ClientTheseMapper {
 
     EtablissementMapper etablissementMapper = new EtablissementMapper();
     ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
@@ -25,8 +28,8 @@ public class TheseMapper {
      * @param these
      * @return
      */
-    public TheseResponseDto theseToDto(ThesePersonne these) {
-        return TheseResponseDto.builder()
+    public ClientTheseResponseDto theseToClientDto(ThesePersonne these) {
+        return ClientTheseResponseDto.builder()
                 .id(these.getId())
                 .titre(these.getTitre())
                 .titres(these.getTitres())
@@ -51,15 +54,15 @@ public class TheseMapper {
      * @param theses
      * @return
      */
-    public Map<String, List<TheseResponseDto>> thesesToDto(List<ThesePersonne> theses) {
-        Map<String, List<TheseResponseDto>> results = new HashMap<>();
+    public Map<String, List<ClientTheseResponseDto>> thesesToClientDto(List<ThesePersonne> theses) {
+        Map<String, List<ClientTheseResponseDto>> results = new HashMap<>();
         if (theses != null) {
             for (ThesePersonne item : theses) {
                 if (results.containsKey(item.getRole())) {
-                    results.get(item.getRole()).add(theseToDto(item));
+                    results.get(item.getRole()).add(theseToClientDto(item));
                 } else {
-                    List<TheseResponseDto> list = new ArrayList<>();
-                    list.add(theseToDto(item));
+                    List<ClientTheseResponseDto> list = new ArrayList<>();
+                    list.add(theseToClientDto(item));
                     results.put(item.getRole(), list);
                 }
             }
@@ -67,38 +70,29 @@ public class TheseMapper {
 
         //On tri les thèses par date
         for (String role : results.keySet()) {
-            Collections.sort(results.get(role), Comparator.comparing(TheseResponseDto::getDate_soutenanceTri).reversed());
+            Collections.sort(results.get(role), Comparator.comparing(ClientTheseResponseDto::getDate_soutenanceTri).reversed());
         }
         return results;
     }
 
+
+
     /**
-     * Transforme une thèse simplifiée en web dto
+     * Enrichit le dto déjà crée avec une thèse de l'index theses (informations en +)
      *
      * @param these
      * @return
      */
-    public TheseLiteResponseDto theseLiteToDto(ThesePersonne these) {
-        return TheseLiteResponseDto.builder()
-                .id(these.getId())
-                .role(these.getRole())
-                .discipline(these.getDiscipline())
-                .build();
+    public void addTheseFieldsToDto(ClientTheseResponseDto theseDto, These these) {
+        theseDto.setNnt(these.getNnt());
+        theseDto.setCas(these.getCas());
+        theseDto.setLangues(these.getLangues());
+        theseDto.setAccessible(these.getAccessible());
+        theseDto.setCodeEtab(these.getCodeEtab());
+        theseDto.setDateCines(these.getDateCines());
+        theseDto.setNumSujetSansS(these.getNumSujetSansS());
+        theseDto.setOaiSetNames(these.getOaiSetNames());
+        theseDto.setDoi(these.getDoi());
     }
-
-    /**
-     * Trasnforme une liste de thèse simplifié en web dto
-     *
-     * @param theses
-     * @return
-     */
-    public List<TheseLiteResponseDto> thesesLiteToDto(List<ThesePersonne> theses) {
-        List<TheseLiteResponseDto> results = new ArrayList<>();
-        if (theses != null) {
-            for (ThesePersonne item : theses) {
-                results.add(theseLiteToDto(item));
-            }
-        }
-        return results;
-    }
+    
 }

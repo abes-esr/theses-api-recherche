@@ -1,4 +1,4 @@
-package fr.abes.thesesapirecherche.personnes.dto;
+package fr.abes.thesesapirecherche.personnes.dto.client;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -9,6 +9,9 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import fr.abes.thesesapirecherche.personnes.dto.EtablissementResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.SujetRameauResponseDto;
+import fr.abes.thesesapirecherche.personnes.dto.ThesePersonneLiteResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -19,9 +22,12 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @Setter
-public class TheseResponseDto {
+public class ClientTheseResponseDto {
     @JsonProperty("id")
     String id;
+
+    @JsonProperty("nnt")
+    String nnt;
 
 
     @JsonProperty("role")
@@ -48,10 +54,6 @@ public class TheseResponseDto {
     String discipline;
 
 
-    @JsonProperty("resumes")
-    Map<String, String> resumes;
-
-
     @JsonProperty("date_soutenance")
     String date_soutenance;
 
@@ -76,12 +78,48 @@ public class TheseResponseDto {
     String source;
 
 
+    @JsonProperty("oaiSetNames")
+    List<String> oaiSetNames;
+
+
     @JsonProperty("auteurs")
     List<ThesePersonneLiteResponseDto> auteurs;
 
 
     @JsonProperty("directeurs")
     List<ThesePersonneLiteResponseDto> directeurs;
+
+    
+
+    //Les champs suivants ne sont pas indexés et sont récupérés sur l'index theses avec une seconde requête
+    
+    @JsonProperty("langues")
+    List<String> langues;
+    
+    
+    @JsonProperty("accessible")
+    String accessible;
+    
+    
+    @JsonProperty("codeEtab")
+    String codeEtab;
+    
+    
+    @JsonProperty("dateCines")
+    String dateCines;
+    
+    
+    @JsonProperty("numSujetSansS")
+    String numSujetSansS;
+    
+    
+    @JsonProperty("doi")
+    String doi;
+    
+    
+    @JsonProperty("cas")
+    String cas;
+
 
 
     @JsonIgnore

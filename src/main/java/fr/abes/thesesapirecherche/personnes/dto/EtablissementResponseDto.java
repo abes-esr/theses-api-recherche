@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,20 +10,19 @@ import lombok.Setter;
  * DTO web retournée par l'API pour un établissement lié à une thèse
  */
 @Builder
+@Getter
+@Setter
 public class EtablissementResponseDto {
 
-    @Getter
-    @Setter
+
     @JsonProperty("ppn")
     String ppn;
 
-    @Getter
-    @Setter
+
     @JsonProperty("nom")
     String nom;
 
-    @Getter
-    @Setter
+
     @JsonProperty("type")
     String type;
 

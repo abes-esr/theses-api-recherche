@@ -1,4 +1,4 @@
-package fr.abes.thesesapirecherche.personnes.dto;
+package fr.abes.thesesapirecherche.personnes.dto.client;
 
 import java.util.List;
 import java.util.Map;
@@ -10,12 +10,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * DTO web retournée par l'API pour un ensemble de personnes
+ * DTO web retournée par l'API pour une personne spécifique
  */
 @Builder
 @Getter
 @Setter
-public class PersonneLiteResponseDto {
+public class ClientPersonneResponseDto {
 
 
     @JsonProperty("id")
@@ -39,13 +39,9 @@ public class PersonneLiteResponseDto {
 
 
     @JsonProperty("theses")
-    List<String> theses;
+    Map<String, List<ClientTheseResponseDto>> theses;
 
 
-    @JsonProperty("disciplines")
-    List<String> disciplines;
-
-
-    @JsonProperty("etablissements")
-    List<String> etablissements;
+    @JsonProperty("mots_cles")
+    Map<String, List<String>> motsCles;
 }

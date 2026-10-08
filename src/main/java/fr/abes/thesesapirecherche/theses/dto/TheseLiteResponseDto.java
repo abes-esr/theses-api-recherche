@@ -1,15 +1,13 @@
 package fr.abes.thesesapirecherche.theses.dto;
 
+import java.util.List;
+
 import fr.abes.thesesapirecherche.theses.model.PersonneThese;
 import fr.abes.thesesapirecherche.theses.model.Sujet;
 import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
-import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
-import java.util.Map;
 
 @Builder
 @Getter

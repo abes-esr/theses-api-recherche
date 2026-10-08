@@ -6,6 +6,7 @@ import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
+import fr.abes.thesesapirecherche.personnes.service.PersonnesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,11 +28,24 @@ public class PersonneController {
     @Autowired
     SearchPersonneQueryBuilder searchQueryBuilder;
 
+    @Autowired
+    PersonnesService personnesService;
+
+
+    //TODO: voir pourquoi on met ces valeurs ici et pas dans le searchQueryBuilder ?
     @Value("${es.personnes.indexname}")
     private String esIndexName;
 
+    @Value("${es.theses.indexname}")
+    private String esTheseIndexName;
+
     @Value("${es.personnes.recherche.indexname}")
     private String esRechercheIndexName;
+
+
+
+
+
 
     /**
      * Rechercher une personne avec un mot
@@ -65,6 +79,11 @@ public class PersonneController {
         return searchQueryBuilder.rechercher(decodedQuery, esRechercheIndexName, decodedFilters, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
     }
 
+
+
+
+
+
     /**
      * Proposer l'autocompletion basée sur les noms et prénoms
      *
@@ -86,6 +105,12 @@ public class PersonneController {
         return searchQueryBuilder.completion(decodedQuery, esRechercheIndexName);
     }
 
+
+
+
+
+
+
     /**
      * Retourne une liste de facettes avec le nombre d'occurence pour chaque facette
      *
@@ -105,7 +130,12 @@ public class PersonneController {
         return searchQueryBuilder.facets(q, esRechercheIndexName, filtres.orElse(""));
     }
 
-    /**
+
+
+
+
+
+ /**
      * Recherche une personne à partir de son identifiant
      *
      * @param id Identifiant de la personne
@@ -123,13 +153,18 @@ public class PersonneController {
     public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
-            return searchQueryBuilder.rechercherParIdentifiant(id, esIndexName);
+            return personnesService.getPersonne(id);
 
         } catch (Exception e) {
             log.error(e.toString());
             throw new ApiException(e.getLocalizedMessage());
         }
     }
+
+
+
+
+
 
     /**
      * Retourne le nombre total de personnes
