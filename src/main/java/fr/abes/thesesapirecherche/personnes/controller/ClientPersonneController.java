@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/client/")
+@RequestMapping("/api/v1/client/personnes/")
 public class ClientPersonneController {
 
     @Autowired
@@ -29,7 +29,7 @@ public class ClientPersonneController {
      * @return Retourne la personne
      * @throws ApiException si la personne n'est pas trouvée
      */
-    @GetMapping(value = "/personnes/personne/{id}")
+    @GetMapping(value = "/personne/{id}")
     @Operation(
             summary = "Rechercher une personne par son identifiant",
             description = "Retourne la personne correspondante à la recherche")
@@ -37,7 +37,7 @@ public class ClientPersonneController {
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
 
-    public ClientPersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
+    public ClientPersonneResponseDto getPersonneClient(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
             return personnesService.getPersonneForClient(id);
