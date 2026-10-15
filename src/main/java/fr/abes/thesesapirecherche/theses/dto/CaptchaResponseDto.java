@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -55,22 +58,27 @@ public class CaptchaResponseDto {
         return false;
     }
 
-    static enum ErrorCode {
-        MissingSecret, InvalidSecret,
-        MissingResponse, InvalidResponse;
+    @Getter
+    enum ErrorCode {
+        MissingSecret("missing-input-secret"),
+        InvalidSecret("invalid-input-secret"),
+        MissingResponse("missing-input-response"),
+        InvalidResponse("invalid-input-response");
 
-        private static Map<String, ErrorCode> errorsMap = new HashMap<String, ErrorCode>(4);
+        private final String valeur;
 
-        static {
-            errorsMap.put("missing-input-secret", MissingSecret);
-            errorsMap.put("invalid-input-secret", InvalidSecret);
-            errorsMap.put("missing-input-response", MissingResponse);
-            errorsMap.put("invalid-input-response", InvalidResponse);
+        ErrorCode(String val) {
+            this.valeur = val;
         }
+
+        private static final Map<String, ErrorCode> errorsMap =
+                Arrays.stream(values())
+                        .collect(Collectors.toUnmodifiableMap(
+                                ErrorCode::getValeur, e -> e));
 
         @JsonCreator
         public static ErrorCode forValue(String value) {
-            return errorsMap.get(value.toLowerCase());
+            return value == null ? null : errorsMap.get(value.toLowerCase(Locale.ROOT));
         }
     }
 }

@@ -5,13 +5,9 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class SujetsRameau {
-
-    @Getter
-    @Setter
     private String ppn;
-
-    @Getter
-    @Setter
     private String libelle;
 }

@@ -1,16 +1,10 @@
 package fr.abes.thesesapirecherche.theses.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class TheseSuggest {
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
     String text;
-
-
 }

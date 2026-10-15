@@ -9,19 +9,15 @@ import lombok.Setter;
  * DTO web retournée par l'API pour une suggestion de personne
  */
 @Builder
+@Getter
+@Setter
 public class SuggestionPersonneResponseDto {
-
-    @Getter
-    @Setter
     @JsonProperty("suggestion")
     String text;
 
     /*
     Identifiant du document Elastic Search
      */
-    @Getter
-    @Setter
-    @JsonProperty("id")
     String id;
 
 }

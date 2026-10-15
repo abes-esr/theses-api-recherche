@@ -8,6 +8,9 @@ public class TheseLiteMapper {
 
     ThesePersonneMapper personneMapper = new ThesePersonneMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
+    PersonneTheseMapper personneTheseMapper = new PersonneTheseMapper();
+    SujetMapper sujetMapper = new SujetMapper();
+    SujetsRameauMapper sujetsRameauMapper = new SujetsRameauMapper();
 
     public TheseLiteResponseDto theseLiteToDto(Hit<These> theseHit) {
         return TheseLiteResponseDto.builder()
@@ -18,19 +21,19 @@ public class TheseLiteMapper {
                 .etabSoutenancePpn(theseHit.source().getEtabSoutenancePpn())
                 .dateSoutenance(theseHit.source().getDateSoutenance())
                 .datePremiereInscriptionDoctorat(theseHit.source().getDatePremiereInscriptionDoctorat())
-                .auteurs(theseHit.source().getAuteurs())
-                .directeurs(theseHit.source().getDirecteurs())
-                .rapporteurs(theseHit.source().getRapporteurs())
-                .examinateurs(theseHit.source().getMembresJury())
-                .president(theseHit.source().getPresidentJury())
+                .auteurs(personneTheseMapper.personnesTheseToDtoList(theseHit.source().getAuteurs()))
+                .directeurs(personneTheseMapper.personnesTheseToDtoList(theseHit.source().getDirecteurs()))
+                .rapporteurs(personneTheseMapper.personnesTheseToDtoList(theseHit.source().getRapporteurs()))
+                .examinateurs(personneTheseMapper.personnesTheseToDtoList(theseHit.source().getMembresJury()))
+                .president(personneTheseMapper.personneTheseToDto(theseHit.source().getPresidentJury()))
                 .nnt(theseHit.source().getNnt())
                 .doi(theseHit.source().getDoi())
                 .discipline(theseHit.source().getDiscipline())
                 .status(theseHit.source().getStatus())
                 .ecolesDoctorale(organismeMapper.organismesToDto(theseHit.source().getEcolesDoctorales()))
                 .partenairesDeRecherche(organismeMapper.organismesToDto(theseHit.source().getPartenairesRecherche()))
-                .sujets(theseHit.source().getSujets())
-                .sujetsRameau(theseHit.source().getSujetsRameau())
+                .sujets(sujetMapper.sujetsToDtoList(theseHit.source().getSujets()))
+                .sujetsRameau(sujetsRameauMapper.sujetsRameauListToDtoList(theseHit.source().getSujetsRameau()))
                 .build();
     }
 }

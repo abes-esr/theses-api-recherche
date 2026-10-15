@@ -5,23 +5,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * DTO web retournée par l'API pour une suggestion du module personne
  */
 @Builder
+@Getter
+@Setter
 public class SuggestionResponseDto {
-
-    @Getter
-    @Setter
-    @JsonProperty("personnes")
-    List<SuggestionPersonneResponseDto> personnes;
-
-    @Getter
-    @Setter
-    @JsonProperty("thematiques")
-    List<SuggestionPersonneResponseDto> thematiques;
-
-
+    List<SuggestionPersonneResponseDto> personnes = new ArrayList<>();
+    List<SuggestionPersonneResponseDto> thematiques = new ArrayList<>();
 }

@@ -29,12 +29,12 @@ public class TheseMapper {
                 .role(these.getRole())
                 .discipline(these.getDiscipline())
                 .status(these.getStatus())
-                .etablissement_soutenance(etablissementMapper.etablissementToDto(these.getEtablissement_soutenance()))
-                .date_soutenance(these.getDate_soutenance())
-                .date_inscription(these.getDate_inscription())
+                .etablissementSoutenance(etablissementMapper.etablissementToDto(these.getEtablissementSoutenance()))
+                .dateSoutenance(these.getDateSoutenance())
+                .dateInscription(these.getDateInscription())
                 .auteurs(personneMapper.personnesLiteToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
-                .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
+                .sujetsRameau(sujetRameauMapper.sujetsRameauToDto(these.getSujetsRameau()))
                 .sujets(these.getSujets())
                 .build();
     }

@@ -35,7 +35,7 @@ public class PersonneMapper {
                 .nom(personne.source().getNom())
                 .prenom(personne.source().getPrenom())
                 .hasIdref(personne.source().getHasIdref())
-                .theses(personne.source().getTheses_id())
+                .theses(personne.source().getThesesId())
                 .build();
 
         // On remplit les champs calculés

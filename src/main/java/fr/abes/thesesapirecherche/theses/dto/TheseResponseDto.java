@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,17 +25,18 @@ public class TheseResponseDto {
     Map<String, String> resumes;
     OrganismeResponseDto etabSoutenance;
     String codeEtab;
-    List<OrganismeResponseDto> etabCotutelle;
-    List<OrganismeResponseDto> partenairesRecherche;
+    List<OrganismeResponseDto> etabCotutelle = new ArrayList<>();
+    List<OrganismeResponseDto> partenairesRecherche = new ArrayList<>();
+    // TODO: utiliser un DTO plutot qu'un model
     Map<String, List<SujetsToMap>> mapSujets;
-    List<ThesePersoneResponseDto> membresJury;
-    List<ThesePersoneResponseDto> rapporteurs;
-    List<ThesePersoneResponseDto> auteurs;
-    List<ThesePersoneResponseDto> directeurs;
-    List<String> langues;
+    List<ThesePersoneResponseDto> membresJury = new ArrayList<>();
+    List<ThesePersoneResponseDto> rapporteurs = new ArrayList<>();
+    List<ThesePersoneResponseDto> auteurs = new ArrayList<>();
+    List<ThesePersoneResponseDto> directeurs = new ArrayList<>();
+    List<String> langues = new ArrayList<>();
     String cas;
     String accessible;
-    List<OrganismeResponseDto> ecolesDoctorales;
+    List<OrganismeResponseDto> ecolesDoctorales = new ArrayList<>();
     ThesePersoneResponseDto presidentJury;
     String source;
     String status;

@@ -38,8 +38,8 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
             .timedOut(false)
             .hits(h -> h
                     .total(t -> t.value(0).relation(TotalHitsRelation.Eq))
-                    .hits(Hit.of(z -> z.index("recherche_personnes").id("127566635").source(RecherchePersonne.builder().nom("Rousseau").prenom("Erwann").hasIdref(true).theses_id(List.of("2007PA066375")).roles(List.of("auteur")).build())),
-                            Hit.of(z -> z.index("recherche_personnes").id("D_Cs1oMBVl5--j0CzKFo").source(RecherchePersonne.builder().nom("Rousseau").prenom("Erwan").hasIdref(false).theses_id(List.of("s347820")).roles(List.of("directeur de thèse")).build())))
+                    .hits(Hit.of(z -> z.index("recherche_personnes").id("127566635").source(RecherchePersonne.builder().nom("Rousseau").prenom("Erwann").hasIdref(true).thesesId(List.of("2007PA066375")).roles(List.of("auteur")).build())),
+                            Hit.of(z -> z.index("recherche_personnes").id("D_Cs1oMBVl5--j0CzKFo").source(RecherchePersonne.builder().nom("Rousseau").prenom("Erwan").hasIdref(false).thesesId(List.of("s347820")).roles(List.of("directeur de thèse")).build())))
             )
             .shards(s -> s
                     .total(1)

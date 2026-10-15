@@ -13,74 +13,24 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class ThesePersonne {
-
-    @Getter
-    @Setter
     String id;
-
-    @Getter
-    @Setter
     String role;
-
-    @Getter
-    @Setter
     String titre;
-
-    @Getter
-    @Setter
-    Map<String, String> titres = new HashMap<String, String>();
-
-    @Getter
-    @Setter
-    List<SujetsRameau> sujets_rameau = new ArrayList<>();
-
-    @Getter
-    @Setter
+    Map<String, String> titres = new HashMap<>();
+    List<SujetsRameau> sujetsRameau = new ArrayList<>();
     Map<String, List<String>> sujets = new HashMap<>();
-
-    @Getter
-    @Setter
     String discipline;
-
-    @Getter
-    @Setter
     Map<String, String> resumes = new HashMap<>();
-
-    @Getter
-    @Setter
-    String date_soutenance;
-
-    @Getter
-    @Setter
-    String date_inscription;
-
-    @Getter
-    @Setter
-    Etablissement etablissement_soutenance = new Etablissement();
-
-    @Getter
-    @Setter
-    List<Etablissement> etablissements_cotutelle = new ArrayList<>();
-
-    @Getter
-    @Setter
+    String dateSoutenance;
+    String dateInscription;
+    Etablissement etablissementSoutenance;
+    List<Etablissement> etablissementsCotutelle = new ArrayList<>();
     String status;
-
-    @Getter
-    @Setter
     String source;
-
-    @Getter
-    @Setter
     List<PersonneLite> auteurs = new ArrayList<>();
-
-    @Getter
-    @Setter
     List<PersonneLite> directeurs = new ArrayList<>();
-
-    @Getter
-    @Setter
     List<String> oaiSetNames = new ArrayList<>();
-
 }

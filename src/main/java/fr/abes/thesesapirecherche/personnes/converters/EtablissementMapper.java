@@ -31,7 +31,7 @@ public class EtablissementMapper {
     }
 
     /**
-     * Transforme une liste de établissements en web dto
+     * Transforme une liste d'établissements en web dto
      *
      * @param items Liste des établissements à convertir
      * @return

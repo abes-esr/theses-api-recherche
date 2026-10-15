@@ -3,6 +3,7 @@ package fr.abes.thesesapirecherche.personnes.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,39 +12,17 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class RecherchePersonne {
-
-    @Getter
-    @Setter
     String ppn;
-
-    @Getter
-    @Setter
     String nom;
-
-    @Getter
-    @Setter
     String prenom;
-
-    @Getter
-    @Setter
     @JsonProperty("has_idref")
-    Boolean hasIdref = false;
-
-    @Getter
-    @Setter
-    List<String> roles;
-
-    @Getter
-    @Setter
-    List<String> etablissements;
-
-    @Getter
-    @Setter
-    List<String> disciplines;
-
-    @Getter
-    @Setter
-    List<String> theses_id;
-
+    Boolean hasIdref; // default to false
+    List<String> roles = new ArrayList<>();
+    List<String> etablissements = new ArrayList<>();
+    List<String> disciplines = new ArrayList<>();
+    @JsonProperty("theses_id")
+    List<String> thesesId = new ArrayList<>();
 }

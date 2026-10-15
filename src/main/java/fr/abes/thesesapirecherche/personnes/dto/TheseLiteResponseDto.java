@@ -1,41 +1,27 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import fr.abes.thesesapirecherche.personnes.model.Etablissement;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * DTO web retournée par l'API ppour un ensemble de thèses en lien avec une personne
  */
 @Builder
+@Getter
+@Setter
 public class TheseLiteResponseDto {
-    @Getter
-    @Setter
-    @JsonProperty("id")
     String id;
-
-    @Getter
-    @Setter
-    @JsonProperty("role")
     String role;
-
-    @Getter
-    @Setter
-    @JsonProperty("discipline")
     String discipline;
-
-    @Getter
-    @Setter
     @JsonProperty("etablissement_soutenance")
-    Etablissement etablissement_soutenance;
-
-    @Getter
-    @Setter
+    // TODO: utiliser un DTO à la place du model
+    EtablissementRefDto etablissementSoutenance;
+    // TODO: vérifier quelle requêtes utilise ce dto et vérifier dans le front si ils ont garder la faut de frappe ou pas
     @JsonProperty("etabliseements_cotutelle")
-    List<Etablissement> etablissements_cotutelle;
-
+    List<EtablissementRefDto> etablissementsCotutelle = new ArrayList<>();
 }
