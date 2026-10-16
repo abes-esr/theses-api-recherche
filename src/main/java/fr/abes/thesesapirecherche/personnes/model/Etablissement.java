@@ -8,18 +8,12 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class Etablissement {
 
-    @Getter
-    @Setter
     private String ppn;
-
-    @Getter
-    @Setter
     private String nom;
-
-    @Getter
-    @Setter
     private String type;
 
 }

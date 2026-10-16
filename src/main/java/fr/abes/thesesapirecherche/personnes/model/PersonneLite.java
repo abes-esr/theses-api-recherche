@@ -9,22 +9,15 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
 public class PersonneLite {
 
-    @Getter
-    @Setter
+
     String ppn;
-
-    @Getter
-    @Setter
     String nom;
-
-    @Getter
-    @Setter
     String prenom;
 
-    @Getter
-    @Setter
     @JsonProperty("has_idref")
     Boolean hasIdref = false;
 

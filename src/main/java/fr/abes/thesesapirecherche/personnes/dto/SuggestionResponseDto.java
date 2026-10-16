@@ -11,15 +11,15 @@ import java.util.List;
  * DTO web retournée par l'API pour une suggestion du module personne
  */
 @Builder
+@Getter
+@Setter
 public class SuggestionResponseDto {
 
-    @Getter
-    @Setter
+
     @JsonProperty("personnes")
     List<SuggestionPersonneResponseDto> personnes;
 
-    @Getter
-    @Setter
+
     @JsonProperty("thematiques")
     List<SuggestionPersonneResponseDto> thematiques;
 

@@ -7,80 +7,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * Représente une thèse pour une personne
  */
-@Builder
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ThesePersonne {
-
-    @Getter
-    @Setter
     String id;
-
-    @Getter
-    @Setter
+    String doi;
+    String nnt;
+    String numSujetSansS;
     String role;
-
-    @Getter
-    @Setter
     String titre;
-
-    @Getter
-    @Setter
     Map<String, String> titres = new HashMap<String, String>();
-
-    @Getter
-    @Setter
     List<SujetsRameau> sujets_rameau = new ArrayList<>();
-
-    @Getter
-    @Setter
     Map<String, List<String>> sujets = new HashMap<>();
-
-    @Getter
-    @Setter
     String discipline;
-
-    @Getter
-    @Setter
     Map<String, String> resumes = new HashMap<>();
-
-    @Getter
-    @Setter
     String date_soutenance;
-
-    @Getter
-    @Setter
     String date_inscription;
-
-    @Getter
-    @Setter
+    String dateCines;
+    String codeEtab;
     Etablissement etablissement_soutenance = new Etablissement();
-
-    @Getter
-    @Setter
     List<Etablissement> etablissements_cotutelle = new ArrayList<>();
-
-    @Getter
-    @Setter
     String status;
-
-    @Getter
-    @Setter
+    String accessible;
     String source;
-
-    @Getter
-    @Setter
+    String cas;
     List<PersonneLite> auteurs = new ArrayList<>();
-
-    @Getter
-    @Setter
     List<PersonneLite> directeurs = new ArrayList<>();
-
-    @Getter
-    @Setter
+    List<String> langues;
     List<String> oaiSetNames = new ArrayList<>();
+   
+    
 
 }
