@@ -1,6 +1,6 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
-import fr.abes.thesesapirecherche.theses.dto.ThesePersoneResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
 import fr.abes.thesesapirecherche.theses.model.PersonneThese;
 
 import java.util.ArrayList;
@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 
 @Component 
 public class ThesePersonneMapper {
-    public ThesePersoneResponseDto personneToDto(PersonneThese these) {
-        return ThesePersoneResponseDto.builder()
+    public ThesePersonneResponseDto personneToDto(PersonneThese these) {
+        return ThesePersonneResponseDto.builder()
                 .ppn(these.getPpn())
                 .prenom(these.getPrenom())
                 .nom(these.getNom())
                 .build();
     }
 
-    public List<ThesePersoneResponseDto> personnesToDto(List<PersonneThese> theses) {
-        List<ThesePersoneResponseDto> results = new ArrayList<>();
+    public List<ThesePersonneResponseDto> personnesToDto(List<PersonneThese> theses) {
+        List<ThesePersonneResponseDto> results = new ArrayList<>();
         if (theses != null) {
             for (PersonneThese item : theses) {
                 results.add(personneToDto(item));

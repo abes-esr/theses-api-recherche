@@ -46,7 +46,8 @@ public class SearchPersonneQueryBuilder {
     @Value("${es.personnes.recherche.indexname}")
     private String esRechercheIndexName;
 
-    PersonneMapper personneMapper = new PersonneMapper();
+    @Autowired
+    PersonneMapper personneMapper;
     @Autowired
     private FacetProps facetProps;
 

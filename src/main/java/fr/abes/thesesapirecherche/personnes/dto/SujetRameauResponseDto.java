@@ -13,12 +13,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SujetRameauResponseDto {
-
-
-    @JsonProperty("ppn")
     String ppn;
-
-
-    @JsonProperty("libelle")
     String libelle;
 }

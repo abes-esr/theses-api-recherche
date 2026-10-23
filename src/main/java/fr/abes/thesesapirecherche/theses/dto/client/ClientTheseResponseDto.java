@@ -1,7 +1,7 @@
 package fr.abes.thesesapirecherche.theses.dto.client;
 
 import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesePersoneResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,16 +31,16 @@ public class ClientTheseResponseDto {
     List<OrganismeResponseDto> etabCotutelle;
     List<OrganismeResponseDto> partenairesRecherche;
     Map<String, List<SujetsToMap>> mapSujets;
-    List<ThesePersoneResponseDto> membresJury;
-    List<ThesePersoneResponseDto> rapporteurs;
-    List<ThesePersoneResponseDto> auteurs;
-    List<ThesePersoneResponseDto> directeurs;
+    List<ThesePersonneResponseDto> membresJury;
+    List<ThesePersonneResponseDto> rapporteurs;
+    List<ThesePersonneResponseDto> auteurs;
+    List<ThesePersonneResponseDto> directeurs;
     List<String> langues;
     List<String> oaiSetNames;
     String cas;
     String accessible;
     List<OrganismeResponseDto> ecolesDoctorales;
-    ThesePersoneResponseDto presidentJury;
+    ThesePersonneResponseDto presidentJury;
     String source;
     String status;
     Boolean isSoutenue;

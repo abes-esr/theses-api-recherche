@@ -31,10 +31,6 @@ public class PersonnesService {
     private SearchPersonneQueryBuilder searchPersonneQueryBuilder;
 
     @Autowired
-    @Qualifier("PersonnesTheseMapper")
-    private TheseMapper theseMapper;
-
-    @Autowired
     @Qualifier("PersonnesClientTheseMapper")
     private ClientTheseMapper clientTheseMapper;
 

@@ -133,6 +133,7 @@ public class TheseController {
         return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
     }
 
+    // TODO extraire ça dans un service ??? ça n'a pas sa place dans la couche controller
     private List<String> getMailAdressesFromMovies(SignalerErreurDto json, RestTemplate restTemplate) {
         if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
 
@@ -147,7 +148,7 @@ public class TheseController {
 
             // Extraction du tableau de "ppnEtabCible"
             try {
-            return (List) bindings.stream()
+            return bindings.stream()
                     .flatMap(binding -> {
                         if (binding.get("ppnEtabCible") != null) {
                             return dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream();

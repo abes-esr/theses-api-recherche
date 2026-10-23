@@ -17,8 +17,8 @@ public class EtablissementMapper {
     /**
      * Transforme un établissement en web dto
      *
-     * @param item Etablissement à convertir
-     * @return
+     * @param item Établissement à convertir
+     * @return le DTO correspondant à l'établissement, ou {@code null} si {@code item} est {@code null}
      */
     public EtablissementResponseDto etablissementToDto(Etablissement item) {
 

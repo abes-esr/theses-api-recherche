@@ -42,7 +42,10 @@ import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
 
-
+/**
+ * TODO refactor tout ça avec un service custom où il y a toute la logique métier
+ * TODO introduire Spring Data Elasticsearch
+ */
 @Slf4j
 @Component
 @EnableConfigurationProperties(value = FacetProps.class)
