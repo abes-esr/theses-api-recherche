@@ -1,25 +1,31 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
-import fr.abes.thesesapirecherche.dto.Facet;
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
-import fr.abes.thesesapirecherche.theses.rss.RssFeedView;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
+import fr.abes.thesesapirecherche.dto.Facet;
+import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
+import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.rss.RssFeedView;
+import fr.abes.thesesapirecherche.theses.service.ThesesService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
@@ -32,6 +38,10 @@ public class SearchThesesController {
     @Autowired
     private RssFeedView view;
 
+    @Autowired 
+    private ThesesService thesesService;
+
+    // retourne un ensemble de thèses qui matchent avec les filtres (pour le front)
     @GetMapping(value = "/recherche/")
     @Operation(
             summary = "Rechercher une thèse via le titre",
@@ -48,12 +58,14 @@ public class SearchThesesController {
     ) throws Exception {
         try {
             if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
-            return searchQueryBuilder.simple(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+            return thesesService.getTheses(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
         }
     }
+
+
 
     @GetMapping(value = "/rechercheCSV")
     @Operation(
@@ -106,6 +118,7 @@ public class SearchThesesController {
         }
     }
 
+    //retourne un ensemble de thèses par organisme (pour le front)
     @GetMapping(value = "/organisme/{ppn}")
     @Operation(
             summary = "Rechercher toutes les thèses liées à un établissement/organisme",
@@ -117,12 +130,14 @@ public class SearchThesesController {
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {
-            return searchQueryBuilder.searchByOrganisme(ppn);
+            return thesesService.getThesesByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
         }
     }
+
+
 
     @GetMapping(value = "/completion/")
     @Operation(

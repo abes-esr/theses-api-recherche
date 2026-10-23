@@ -1,12 +1,13 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * DTO web retournée par l'API de recherche de personnes

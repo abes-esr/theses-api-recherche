@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.dto;
 
+import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,23 +12,25 @@ import java.util.List;
 @Setter
 public class ResponseTheseCSVDto {
 
-    List<TheseResponseDto> theses = new ArrayList<>();
+    List<ClientTheseResponseDto> theses = new ArrayList<>();
 
     // TODO: extraire cette fonction vers un service
     public String toCSV() {
         StringBuilder s = new StringBuilder();
         //en tête
-        s.append("\"NNT\";\"DOI\";\"NumSujet\";\"Auteurs\";\"Titre FR\";\"Titre EN\";\"Directeurs\";\"Discipline\";\"Date de soutenance\";\"Date de première inscription\";\"Etablissement de soutenance\";\"Code etablissement\";\"Etablissement de cotutelle\";\"Ecoles doctorales\";\"Partenaires de recherche\";\"Président du jury\";\"Rapporteurs\";\"Examinateurs\";\"Mots clés FR\";\"Mots clés EN\";\"Langue\";\"Source\";\"Statut\";\"Accessible\"");
+        s.append("\"NNT\";\"DOI\";\"NumSujet\";\"NumSujetSansS\";\"Auteurs\";\"Titre FR\";\"Titre EN\";\"Directeurs\";\"Discipline\";\"Date de soutenance\";\"Date de première inscription\";\"Date d'archivage CINES\";\"Etablissement de soutenance\";\"Code etablissement\";\"Etablissement de cotutelle\";\"Ecoles doctorales\";\"Partenaires de recherche\";\"Président du jury\";\"Rapporteurs\";\"Examinateurs\";\"Mots clés FR\";\"Mots clés EN\";\"Langue\";\"Noms des sets OAI\";\"Source\";\"Statut\";\"Cas\";\"Accessible\"");
         s.append("\n");
 
         //permet de déterminer quand on est dans le 1er tour de boucle (pour ajouter les sépérateurs ;)
         Boolean firstRound = true;
 
         //contenu
-        for(TheseResponseDto t : theses) {
+        for(ClientTheseResponseDto t : theses) {
 
             String dateSoutenance = t.getDateSoutenance() == null ? "" : t.getDateSoutenance();
             String datePremiereInscriptionDoctorat = t.getDatePremiereInscriptionDoctorat() == null ? "" : t.getDatePremiereInscriptionDoctorat();
+            String dateCines = t.getDateCines() == null ? "" : t.getDateCines();
+            
 
             //NNT
             s.append("\"").append(t.getNnt() != null ? t.getNnt() : "").append("\";");
@@ -37,6 +40,9 @@ public class ResponseTheseCSVDto {
 
             //NumSujet
             s.append("\"").append(t.getNumSujet() != null ? t.getNumSujet() : "").append("\";");
+
+            //NumSujetSansS
+            s.append("\"").append(t.getNumSujetSansS() != null ? t.getNumSujetSansS() : "").append("\";");
 
             // Auteurs
             firstRound = true;
@@ -81,6 +87,8 @@ public class ResponseTheseCSVDto {
             //Date d'inscription
             s.append("\"").append(datePremiereInscriptionDoctorat).append("\";");
 
+            //Date d'archivage CINES
+            s.append("\"").append(dateCines).append("\";");
 
             //Etablissement soutenance
             s.append("\"").append(t.getEtabSoutenance().getNom() != null ? t.getEtabSoutenance().getNom().replace("\"", "") : "").append(t.getEtabSoutenance().getPpn() != null ? " (" + t.getEtabSoutenance().getPpn() + ")" : "").append("\";");
@@ -190,14 +198,27 @@ public class ResponseTheseCSVDto {
             }
             s.append("\";");
 
+            //OaiSetNames
+            firstRound = true;
+            s.append("\"");
+            for(String l : t.getOaiSetNames()) {
+                if(!firstRound) s.append(" || ");
+                s.append(l);
+                firstRound = false;
+            }
+            s.append("\";");
+
             //Source
-            s.append("\"").append(t.getSource()).append("\";");
+            s.append("\"").append(t.getSource() != null ? t.getSource() : "").append("\";");
 
             //Statut
             s.append("\"").append(t.getStatus().equals("soutenue") ? "soutenue" : "en cours").append("\";");
+            
+            //Cas
+            s.append("\"").append(t.getCas() != null ? t.getCas() : "").append("\";");
 
             //Accessible
-            s.append("\"").append(t.getAccessible()).append("\"");
+            s.append("\"").append(t.getAccessible() != null ? t.getAccessible() : "").append("\";");
 
             s.append("\n");
         }
