@@ -11,12 +11,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.Builder;
 
 /**
  * DTO web retournée par l'API pour une thèse en lien avec une personne
  */
-@SuperBuilder
+@Builder
 @Getter
 @Setter
 public class TheseResponseDto {

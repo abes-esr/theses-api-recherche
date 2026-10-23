@@ -6,6 +6,7 @@ import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,10 +15,14 @@ import org.springframework.stereotype.Component;
 @Component("PersonnesTheseMapper")
 public class TheseMapper {
 
-    EtablissementMapper etablissementMapper = new EtablissementMapper();
-    ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
-
-    SujetRameauMapper sujetRameauMapper = new SujetRameauMapper();
+    @Autowired 
+    EtablissementMapper etablissementMapper;
+    
+    @Autowired 
+    ThesePersonneLiteMapper personneMapper;
+    
+    @Autowired 
+    SujetRameauMapper sujetRameauMapper;
 
     /**
      * Transforme une thèse en web dto

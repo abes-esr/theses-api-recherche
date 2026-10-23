@@ -6,9 +6,12 @@ import fr.abes.thesesapirecherche.personnes.model.SujetsRameau;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Convertisseur de format pour les objets Sujet Rameau
  */
+@Component 
 public class SujetRameauMapper {
 
     /**

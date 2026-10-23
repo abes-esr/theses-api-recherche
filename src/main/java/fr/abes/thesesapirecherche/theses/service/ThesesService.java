@@ -46,25 +46,46 @@ public class ThesesService {
     private BatchTheseMapper batchTheseMapper;
 
     
-    // récupère un ensemble de thèses (pour le front)
+    /**
+     * Retourne un ensemble de thèses selon les paramètres de la requête
+     * 
+     * @param chaine chaine de caractères à rechercher
+     * @param debut numero de la page à rechercher
+     * @param nombre nombre de résultats à retourner
+     * @param tri tri à appliquer sur la recherche ES
+     * @param filtres filtres à appliquer à la requête ES
+     * @return un objet réponse de la recerche au format DTO
+     * @throws Exception si une erreur est survenue
+     */
     public ResponseTheseLiteDto getTheses(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
         
-        ResponseTheseLiteDto res = new ResponseTheseLiteDto();
-        List<TheseLiteResponseDto> liste = new ArrayList<>();
+        List<TheseLiteResponseDto> liste = response.hits().hits()
+                                                    .stream()
+                                                    .map(t-> theseLiteMapper.theseLiteToDto(t))
+                                                    .toList();
 
-        for(Hit<These> theseHit : response.hits().hits()) {
-            liste.add(theseLiteMapper.theseLiteToDto(theseHit));
-        }
+        ResponseTheseLiteDto res = new ResponseTheseLiteDto();
 
         res.setTheses(liste);
         res.setTook(response.took());
         res.setTotalHits(response.hits().total().value());
+
         return res;
     }
 
 
-    // récupère un ensemble de thèses (pour le client)
+    /**
+     * Retourne un ensemble de thèses selon les paramètres de la requête. 
+     * 
+     * @param chaine chaine de caractères à rechercher
+     * @param debut numero de la page à rechercher
+     * @param nombre nombre de résultats à retourner
+     * @param tri tri à appliquer sur la recherche ES
+     * @param filtres filtres à appliquer à la requête ES
+     * @return un objet réponse de la recerche au format DTO (retourne plus d'informations que la méthode getTheses)
+     * @throws Exception si une erreur est survenue
+     */
     public ClientResponseTheseLiteDto getThesesClient(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
         
@@ -82,7 +103,17 @@ public class ThesesService {
     }
 
 
-    // récupère un ensemble de thèses (pour le batch)
+    /**
+     * Retourne un ensemble de thèses selon les paramètres de la requête. 
+     * 
+     * @param chaine chaine de caractères à rechercher
+     * @param debut numero de la page à rechercher
+     * @param nombre nombre de résultats à retourner
+     * @param tri tri à appliquer sur la recherche ES
+     * @param filtres filtres à appliquer à la requête ES
+     * @return un objet réponse de la recerche au format DTO (retourne plus d'informations que la méthode getThesesClient)
+     * @throws Exception si une erreur est survenue
+     */
     public BatchResponseTheseDto getThesesBatch(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
         
@@ -102,12 +133,24 @@ public class ThesesService {
 
 
 
-    // récupère une thèse (pour le front)
+    /**
+     * Retourne une thèse dans ElasticSearch selon son identifiant au format DTO (utilisée pour le front)
+     * 
+     * @param id identifiant interne de Elastic Search
+     * @return une thèse au format DTO web
+     * @throws Exception
+     */
     public TheseResponseDto getThese(String id) throws Exception{
         return theseMapper.theseToDto(searchThesesQuery.getTheseById(id));
     }
 
-    // récupère une thèse (pour le front)
+    /**
+     * Retourne une thèse dans ElasticSearch selon son identifiant au format DTO (utilisée pour les utilisateurs qui consomment l'api directement)
+     * 
+     * @param id
+     * @return une thèse au format DTO web (plus d'informations qu'avec la méthode getThese)
+     * @throws Exception
+     */
     public ClientTheseResponseDto getTheseClient(String id) throws Exception{
         return clientTheseMapper.theseToClientDto(searchThesesQuery.getTheseById(id));
     }
@@ -124,7 +167,12 @@ public class ThesesService {
 
     //TODO les 2 fonctions se ressemblent énormément, refactoring à faire
 
-    //récupère les thèses selon un organisme (pour le front)
+    /** Retourne toutes les thèses associées à un organisme (utilisé pour le front)
+     * 
+     * @param ppn l'identifiant ppn de l'organisme
+     * @return les listes de thèses soutenues et en cours
+     * @throws IOException
+     */
     public ThesesByOrganismeResponseDto getThesesByOrganisme(String ppn) throws IOException{
         ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
 
@@ -186,7 +234,12 @@ public class ThesesService {
 
 
     
-    //récupère les thèses selon un organisme (pour les clients)
+    /** Retourne toutes les thèses associées à un organisme (utilisée pour les utilisateurs qui consomment l'api directement)
+     * 
+     * @param ppn l'identifiant ppn de l'organisme
+     * @return les listes de thèses soutenues et en cours
+     * @throws IOException
+     */
     public ClientThesesByOrganismeResponseDto getThesesByOrganismeClient(String ppn) throws IOException{
         ClientThesesByOrganismeResponseDto thesesByOrganismeResponse = new ClientThesesByOrganismeResponseDto();
 

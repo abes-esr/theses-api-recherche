@@ -83,24 +83,6 @@ public class TheseController {
         }
     }
 
-    // endpoint pour les clients (ceux qui utilisent l'API directement)
-    @GetMapping(value = "/client/these/{id}")
-    @Operation(
-            summary = "Renvoyer une thèse à partir de son nnt",
-            description = "Retourne la thèse correspondante au nnt")
-    @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
-    @ApiResponse(responseCode = "400", description = "Mauvaise requête")
-    @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ClientTheseResponseDto getTheseClient(@PathVariable final String id) throws Exception {
-        log.info("debut de getThese...");
-        try {
-            return thesesService.getTheseClient(id);
-
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
-    }
 
     @GetMapping(value = "/checkNNT/{numSujet}")
     @Operation(

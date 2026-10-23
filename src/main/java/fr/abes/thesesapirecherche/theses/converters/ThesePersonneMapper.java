@@ -6,6 +6,9 @@ import fr.abes.thesesapirecherche.theses.model.PersonneThese;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+@Component 
 public class ThesePersonneMapper {
     public ThesePersoneResponseDto personneToDto(PersonneThese these) {
         return ThesePersoneResponseDto.builder()

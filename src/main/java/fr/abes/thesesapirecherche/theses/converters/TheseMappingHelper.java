@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.ThesePersoneResponseDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
@@ -14,6 +16,7 @@ import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+@Component 
 public class TheseMappingHelper {
 
     //mapping mots clés

@@ -12,14 +12,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fr.abes.thesesapirecherche.personnes.dto.EtablissementResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SujetRameauResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.ThesePersonneLiteResponseDto;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 /**
  * DTO web retournée par l'API pour une thèse en lien avec une personne
  */
-@SuperBuilder
+@Builder
 @Getter
 @Setter
 public class ClientTheseResponseDto {

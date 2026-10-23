@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,8 +25,13 @@ import org.springframework.stereotype.Component;
 @Component 
 public class PersonneMapper {
 
-    TheseMapper theseMapper = new TheseMapper();
-    ClientTheseMapper clientTheseMapper = new ClientTheseMapper();
+    @Autowired
+    @Qualifier("PersonnesTheseMapper")
+    TheseMapper theseMapper;
+
+    @Autowired 
+    @Qualifier("PersonnesClientTheseMapper")
+    ClientTheseMapper clientTheseMapper;
 
     /**
      * Conversion d'une personne du format ES au format DTO pour une liste de personnes.

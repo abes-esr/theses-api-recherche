@@ -267,64 +267,7 @@ public class SearchPersonneQueryBuilder {
         return FacetQueryBuilder.facets(ElasticClient.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, filtres);
     }
 
-    /**
-     * Rechercher dans ElasticSearch une personne avec son identifiant.
-     *
-     * @param id    Chaîne de caractère de l'identifiant de la personne
-     * @param personneIndex Nom de l'index ES à requêter pour obtenir la personne
-     * @param thesesIndex Nom de l'index ES à requêter pour obtenir les thèses
-     * @return Une personne au format Dto web
-     * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
-     */
-    public PersonneResponseDto rechercherParIdentifiant(String id, String personneIndex) throws Exception {
 
-        TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
-        Query query = new Query.Builder().term(termQuery).build();
-
-        SearchRequest searchRequest = new SearchRequest.Builder()
-                .index(personneIndex)
-                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses", "roles")))))
-                .query(query)
-                .build();
-
-        SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
-
-        if (response.hits().hits().size() != 1) {
-            throw new Exception("Person not found");
-        }
-
-        return personneMapper.personneToDto(response.hits().hits().get(0));
-    }
-
-
-
-    /**
-     * Rechercher dans ElasticSearch une personne avec son identifiant.
-     *
-     * @param id    Chaîne de caractère de l'identifiant de la personne
-     * @param index Nom de l'index ES à requêter
-     * @return Une personne au format Dto web
-     * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
-     */
-    public PersonneResponseDto getThesesOfPersonne(String id, String index) throws Exception {
-
-        TermQuery termQuery = QueryBuilders.term().field("_id").value(id).build();
-        Query query = new Query.Builder().term(termQuery).build();
-
-        SearchRequest searchRequest = new SearchRequest.Builder()
-                .index(index)
-                .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("nom", "prenom", "has_idref", "theses", "roles")))))
-                .query(query)
-                .build();
-
-        SearchResponse<Personne> response = ElasticClient.getElasticsearchClient().search(searchRequest, Personne.class);
-
-        if (response.hits().hits().size() != 1) {
-            throw new Exception("Person not found");
-        }
-
-        return personneMapper.personneToDto(response.hits().hits().get(0));
-    }
 
     //Retourne le nb total de personnes dans l'index
     public long getStatsPersonnes(String index) throws Exception {
@@ -340,8 +283,7 @@ public class SearchPersonneQueryBuilder {
      * Rechercher dans ElasticSearch une personne avec son identifiant.
      *
      * @param id    Chaîne de caractère de l'identifiant de la personne
-     * @param index Nom de l'index ES à requêter
-     * @return Une personne au format Dto web
+     * @return La réponse d'ElasticSearch (contenant une personne au format Model)
      * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
      */
     public SearchResponse<Personne> getPersonne(String id) throws Exception {
@@ -366,11 +308,10 @@ public class SearchPersonneQueryBuilder {
 
 
        /**
-     * Rechercher dans ElasticSearch toutes les thèses à partir d'une liste d'id
+     * Rechercher dans ElasticSearch toutes les thèses à partir d'une liste d'ids
      *
-     * @param id    Chaîne de caractère de l'identifiant de la personne
-     * @param index Nom de l'index ES à requêter
-     * @return Une personne au format Dto web
+     * @param ids    Chaîne de caractère de l'identifiant de la personne
+     * @return La réponse d'ElasticSearch (contenant une liste de theses au format Model)
      * @throws Exception si aucune personne n'a été trouvé ou si une autre erreur est survenue
      */
     public SearchResponse<These> getThesesByIds(List<String> ids) throws IOException {
