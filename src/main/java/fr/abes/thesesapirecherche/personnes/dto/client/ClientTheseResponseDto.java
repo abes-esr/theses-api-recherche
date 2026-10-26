@@ -44,8 +44,6 @@ public class ClientTheseResponseDto {
     List<ThesePersonneLiteResponseDto> auteurs;
     List<ThesePersonneLiteResponseDto> directeurs;
 
-    
-    // TODO
     //Les champs suivants ne sont pas indexés et sont récupérés sur l'index theses avec une seconde requête
 
     List<String> langues;
