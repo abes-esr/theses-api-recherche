@@ -4,11 +4,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/theses/")
+@Validated
 public class SearchThesesController {
 
     @Autowired
@@ -43,29 +47,20 @@ public class SearchThesesController {
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour le front)
     @GetMapping(value = "/recherche/")
-    @Operation(
-            summary = "Rechercher une thèse via le titre",
-            description = "Retourne une liste de thèses correspondant à la recherche")
-    @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
-    @ApiResponse(responseCode = "400", description = "Mauvaise requête")
-    @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ResponseTheseLiteDto simple(
+    public ResponseTheseLiteDto rechercheThese(
             @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
-            @RequestParam @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
-            @RequestParam @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
+            @RequestParam @Min(0) @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") int debut,
+            @RequestParam(defaultValue = "10") @Min(0) @Max(100000) @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") int nombre,
             @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
-            if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
-            return thesesService.getTheses(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+            return thesesService.getTheses(q, debut, nombre, tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
         }
     }
-
-
 
     @GetMapping(value = "/rechercheCSV")
     @Operation(

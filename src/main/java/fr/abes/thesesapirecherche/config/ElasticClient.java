@@ -5,6 +5,9 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -19,6 +22,7 @@ import org.elasticsearch.client.RestClient;
 import javax.net.ssl.SSLContext;
 
 @Slf4j
+// TODO fixme fusion ElasticClient, qui était déjà là, et ManualElasticConfig que j'ai ajouté
 public class ElasticClient {
 
     private static ElasticsearchClient client;
@@ -52,8 +56,12 @@ public class ElasticClient {
                             .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
                     ).build();
 
+            ObjectMapper mapper = new ObjectMapper()
+                    .registerModule(new JavaTimeModule())
+                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
             ElasticsearchTransport transport = new RestClientTransport(
-                    cc, new JacksonJsonpMapper());
+                    cc, new JacksonJsonpMapper(mapper));
 
             client = new ElasticsearchClient(transport);
 

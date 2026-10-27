@@ -6,6 +6,8 @@ import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +19,9 @@ import org.springframework.stereotype.Component;
 public class TheseMapper {
     ThesePersonneMapper personneMapper = new ThesePersonneMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
+
+    private static final DateTimeFormatter DD_MM_YYYY =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("Europe/Paris"));
 
     private Map<String, List<SujetsToMap>> formatKeywords(These these) {
         Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();
@@ -42,8 +47,39 @@ public class TheseMapper {
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+//                .dateSoutenance(these.getDateSoutenance()) FIXME
+//                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .discipline(these.getDiscipline())
+                .titres(these.getTitres())
+                .resumes(these.getResumes())
+                .etabSoutenance(organismeMapper.organismeToDto(these.getEtabSoutenance()))
+                .codeEtab(these.getCodeEtab())
+                .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
+                .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
+                .mapSujets(formatKeywords(these))
+                .membresJury(personneMapper.personnesToDto(these.getMembresJury()))
+                .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
+                .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
+                .directeurs(personneMapper.personnesToDto(these.getDirecteurs()))
+                .cas(these.getCas())
+                .langues(these.getLangues())
+                .accessible(these.getAccessible())
+                .ecolesDoctorales(organismeMapper.organismesToDto(these.getEcolesDoctorales()))
+                .presidentJury(personneMapper.personneToDto(these.getPresidentJury()))
+                .source(these.getSource())
+                .status(these.getStatus())
+                .isSoutenue(these.getIsSoutenue())
+                .build();
+    }
+
+    public TheseResponseDto theseToDtoCustomTotoToto(These these) {
+        return TheseResponseDto.builder()
+                .titrePrincipal(these.getTitrePrincipal())
+                .nnt(these.getNnt())
+                .doi(these.getDoi())
+                .numSujet(these.getNumSujet())
+                .dateSoutenance(these.getDateSoutenance().format(DD_MM_YYYY))
+                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat() != null ? these.getDatePremiereInscriptionDoctorat().format(DD_MM_YYYY) : null)
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())

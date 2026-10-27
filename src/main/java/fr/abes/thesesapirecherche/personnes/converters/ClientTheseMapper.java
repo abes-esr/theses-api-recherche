@@ -101,7 +101,7 @@ public class ClientTheseMapper {
         theseDto.setLangues(these.getLangues());
         theseDto.setAccessible(these.getAccessible());
         theseDto.setCodeEtab(these.getCodeEtab());
-        theseDto.setDateCines(these.getDateCines());
+//        theseDto.setDateCines(these.getDateCines()); fixme
         theseDto.setNumSujetSansS(these.getNumSujetSansS());
         theseDto.setOaiSetNames(these.getOaiSetNames());
         theseDto.setDoi(these.getDoi());

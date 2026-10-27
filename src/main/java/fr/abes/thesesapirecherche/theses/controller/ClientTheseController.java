@@ -3,6 +3,7 @@ package fr.abes.thesesapirecherche.theses.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/client/theses")
+@Validated
 public class ClientTheseController {
 
 
@@ -49,11 +51,17 @@ public class ClientTheseController {
         log.info("debut de getThese...");
         try {
             return thesesService.getTheseClient(id);
+//            return thesesService.getTheseClientToto(id);
 
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
         }
+    }
+    @GetMapping(value = "/these/toto/{id}")
+    public ClientTheseResponseDto getTheseClientToto(@PathVariable final String id) throws Exception {
+        log.info("debut de getTheseToto..."+"id='"+id+"'");
+        return thesesService.getTheseClientToto(id);
     }
 
 
@@ -100,6 +108,16 @@ public class ClientTheseController {
             throw e;
         }
     }
-
-
+    //retourne un ensemble de thèses par organisme (pour les clients)
+    @GetMapping(value = "/organisme/toto/{ppn}")
+    public ClientThesesByOrganismeResponseDto rechercheParOrganismeClientToto(
+            @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
+    ) throws Exception {
+        try {
+            return thesesService.getThesesByOrganismeClientToto(ppn);
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw e;
+        }
+    }
 }

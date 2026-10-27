@@ -2,9 +2,19 @@ package fr.abes.thesesapirecherche.theses.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.ValueConverter;
 
+//import org.springframework.data.elasticsearch.annotations.DateFormat;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -12,8 +22,10 @@ import java.util.Map;
 
 @Getter
 @Setter
+// TODO introduire indexName de façon plus clean ???
+@Document(indexName = "theses3", createIndex = false)
 public class These {
-
+    @Id
     String idDoc;
     String dateInsertionDansES;
     String cas;
@@ -27,11 +39,17 @@ public class These {
     Boolean isSoutenue;
     String source;
     String codeEtab;
-    Date dateSoutenance;
-    Date dateFinEmbargo;
-    Date dateFiltre;
-    Date datePremiereInscriptionDoctorat;
-    Date dateCines;
+    @Field(type = FieldType.Date, format = org.springframework.data.elasticsearch.annotations.DateFormat.date)
+    private LocalDate dateSoutenance;
+    @Field(type = FieldType.Date, format = org.springframework.data.elasticsearch.annotations.DateFormat.date)
+    private LocalDate dateFinEmbargo;
+    @Field(type = FieldType.Date, format = org.springframework.data.elasticsearch.annotations.DateFormat.date)
+    private LocalDate dateFiltre;
+    @Field(type = FieldType.Date, format = org.springframework.data.elasticsearch.annotations.DateFormat.date)
+    private LocalDate datePremiereInscriptionDoctorat;
+    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ssX||uuuu-MM-dd'T'HH:mm:ss")
+    @ValueConverter(CustomZonedDateTimeConverter.class)
+    private ZonedDateTime dateCines;
     List<String> langues;
     List<String> oaiSets;
 
@@ -77,19 +95,4 @@ public class These {
     String presidentJuryPN;
     String presidentJuryPpn;
     String theseTravaux;
-
-    public String getDateSoutenance() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateSoutenance != null ? dateFormat.format(dateSoutenance) : null;
-    }
-
-    public String getDatePremiereInscriptionDoctorat() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return datePremiereInscriptionDoctorat != null ? dateFormat.format(datePremiereInscriptionDoctorat) : null;
-    }
-
-    public String getDateCines() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateCines != null ? dateFormat.format(dateCines) : null;
-    }
 }

@@ -8,10 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import fr.abes.thesesapirecherche.exception.DocumentNotFoundException;
+import fr.abes.thesesapirecherche.theses.model.These;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/theses")
+@Validated
 public class TheseController {
     final SearchQueryBuilder searchQueryBuilder;
     @Value("${google.recaptcha.key.site}")
@@ -81,6 +85,12 @@ public class TheseController {
             log.error(e.toString());
             throw e;
         }
+    }
+
+    @GetMapping(value = "/these/toto/{id}")
+    public TheseResponseDto getTheseToto(@PathVariable final String id) {
+        log.info("debut de getTheseToto...");
+        return thesesService.getTheseNewAndImproved(id);
     }
 
 

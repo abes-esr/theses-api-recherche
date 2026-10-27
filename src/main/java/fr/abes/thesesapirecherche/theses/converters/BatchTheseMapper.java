@@ -6,10 +6,15 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
 
 @Component 
 public class BatchTheseMapper {
-    
+
+    private static final DateTimeFormatter DD_MM_YYYY =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("Europe/Paris"));
 
     public BatchTheseResponseDto theseToBatchDto(Hit<These> theseHit) {
         These these = theseHit.source();
@@ -20,8 +25,8 @@ public class BatchTheseMapper {
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
                 .numSujetSansS(these.getNumSujetSansS())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+//                .dateSoutenance(these.getDateSoutenance()) //FIXME
+//                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
@@ -34,7 +39,7 @@ public class BatchTheseMapper {
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
-                .dateCines(these.getDateCines())
+                .dateCines(DD_MM_YYYY.format(these.getDateCines()))
                 .langues(these.getLangues())
                 .oaiSetNames(these.getOaiSetNames())
                 .cas(these.getCas())

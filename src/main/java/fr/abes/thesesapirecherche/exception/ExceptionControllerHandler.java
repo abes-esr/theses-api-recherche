@@ -2,10 +2,7 @@ package fr.abes.thesesapirecherche.exception;
 
 import fr.abes.thesesapirecherche.dto.ApiExceptionDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
@@ -91,6 +88,14 @@ public class ExceptionControllerHandler {
         log.error(ex.toString());
         ex.printStackTrace();
         return buildResponseEntity(new ApiExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage()));
+    }
+
+    // in ExceptionControllerHandler
+    @ExceptionHandler(DocumentNotFoundException.class)
+    public ProblemDetail handleNotFound(DocumentNotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        pd.setTitle("Document not found");
+        return pd;
     }
 }
 

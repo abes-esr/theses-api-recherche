@@ -172,7 +172,7 @@ public class SearchQueryBuilder {
      * @param input
      * @return
      */
-    private static String cleanDoi(String input) {
+    public static String cleanDoi(String input) {
         if (input == null) {
             return null;
         }
