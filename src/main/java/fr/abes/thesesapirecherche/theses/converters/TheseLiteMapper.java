@@ -1,12 +1,14 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
+import org.springframework.stereotype.Component;
+
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+@Component 
 public class TheseLiteMapper {
 
-    ThesePersonneMapper personneMapper = new ThesePersonneMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
 
     public TheseLiteResponseDto theseLiteToDto(Hit<These> theseHit) {
