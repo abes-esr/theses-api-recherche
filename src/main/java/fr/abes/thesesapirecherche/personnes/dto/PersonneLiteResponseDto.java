@@ -1,14 +1,13 @@
 package fr.abes.thesesapirecherche.personnes.dto;
 
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * DTO web retournée par l'API pour un ensemble de personnes
@@ -16,7 +15,6 @@ import java.util.Map;
 @Builder
 @Getter
 @Setter
-@JsonView({JsonViews.Normal.class, JsonViews.Full.class})
 public class PersonneLiteResponseDto {
 
 
