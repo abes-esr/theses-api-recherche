@@ -32,7 +32,9 @@ public class ClientTheseResponseDto {
     List<SujetRameauResponseDto> sujetsRameau;
     Map<String, List<String>> sujets;
     String discipline;
+    @JsonProperty("date_soutenance")
     String dateSoutenance;
+    @JsonProperty("date_inscription")
     String dateInscription;
     @JsonProperty("etablissement_soutenance")
     EtablissementResponseDto etablissementSoutenance;
