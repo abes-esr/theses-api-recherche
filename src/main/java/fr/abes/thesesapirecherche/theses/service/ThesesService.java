@@ -84,7 +84,7 @@ public class ThesesService {
 
     // récupère un ensemble de thèses (pour le batch)
     public BatchResponseTheseDto getThesesBatch(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
-        SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
+        SearchResponse<These> response = searchThesesQuery.getThesesBatchSearchResponse(chaine, debut, nombre, tri, filtres);
         
         BatchResponseTheseDto res = new BatchResponseTheseDto();
         List<BatchTheseResponseDto> liste = new ArrayList<>();

@@ -491,6 +491,29 @@ public class SearchQueryBuilder {
 
     }
 
+    // Variante pour le batch d'export : toutes les pages d'un export complet doivent arriver dans le même
+    // ordre. Sans "preference", chaque requête peut être servie par une copie différente de l'index
+    // (primaire ou réplica), qui ne classe pas les ex aequo de la même façon : des thèses apparaissent
+    // alors en double ou jamais d'une page à l'autre.
+    public SearchResponse<These> getThesesBatchSearchResponse(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+        return ElasticClient.getElasticsearchClient().search(
+            s -> s
+                .index(esIndexName)
+                .query(q -> q
+                    .bool(t -> t
+                        .must(buildQuery(chaine))
+                        .filter(addFilters(filtres, facetProps.getMainTheses(), facetProps.getSubsTheses()))
+                    ))
+                .from(debut)
+                .size(nombre)
+                .sort(addTri(tri))
+                .preference("theses-batch")
+                .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+        These.class
+        );
+
+    }
+
     public SearchResponse<These> searchByPpn(String field, String ppn, String status) throws IOException {
 
     return ElasticClient.getElasticsearchClient().search(
