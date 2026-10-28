@@ -2,6 +2,8 @@ package fr.abes.thesesapirecherche.theses.controller;
 
 import java.util.Optional;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,6 +85,22 @@ public class ClientTheseController {
         try {
             if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
             return thesesService.getThesesClient(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+        } catch (Exception e) {
+            log.error(e.toString());
+            throw e;
+        }
+    }
+    // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)
+    @GetMapping(value = "/toto/recherche/")
+    public ClientResponseTheseLiteDto rechercheThesesClientToto(
+            @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
+            @RequestParam @Min(0) @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") int debut,
+            @RequestParam @Min(10) @Max(100000) @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") int nombre,
+            @RequestParam(defaultValue = "") @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") String tri,
+            @RequestParam(defaultValue = "") @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") String filtres
+    ) throws Exception {
+        try {
+            return thesesService.rechercheTheseDetail(q, debut, nombre, tri, filtres);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;

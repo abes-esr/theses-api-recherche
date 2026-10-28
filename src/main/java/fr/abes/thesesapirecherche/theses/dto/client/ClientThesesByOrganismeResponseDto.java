@@ -2,9 +2,13 @@ package fr.abes.thesesapirecherche.theses.dto.client;
 
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
+@Accessors(chain = true)
 @Getter
 @Setter
 public class ClientThesesByOrganismeResponseDto {

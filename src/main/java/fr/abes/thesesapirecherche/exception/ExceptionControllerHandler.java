@@ -2,6 +2,7 @@ package fr.abes.thesesapirecherche.exception;
 
 import fr.abes.thesesapirecherche.dto.ApiExceptionDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.http.*;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -90,12 +91,18 @@ public class ExceptionControllerHandler {
         return buildResponseEntity(new ApiExceptionDto(HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
-    // in ExceptionControllerHandler
     @ExceptionHandler(DocumentNotFoundException.class)
     public ProblemDetail handleNotFound(DocumentNotFoundException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         pd.setTitle("Document not found");
         return pd;
+    }
+
+    @ExceptionHandler(DataAccessResourceFailureException.class)
+    ProblemDetail handleDataAccess(DataAccessResourceFailureException ex) {
+        log.error("Search backend unavailable", ex);   // log once, here
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.SERVICE_UNAVAILABLE, "Search is temporarily unavailable");
     }
 }
 

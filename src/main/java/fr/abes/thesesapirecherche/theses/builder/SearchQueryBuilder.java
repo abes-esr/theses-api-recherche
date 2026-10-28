@@ -182,6 +182,11 @@ public class SearchQueryBuilder {
     }
 
 
+    /**
+     * Requis: input n'as pas d'espace au début et à la fin
+     * @param input
+     * @return
+     */
     public static String replaceAndOutsideQuotes(String input) {
         StringBuilder result = new StringBuilder();
         boolean insideQuotes = false;

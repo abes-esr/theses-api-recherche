@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.repository;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
@@ -9,25 +10,67 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import fr.abes.thesesapirecherche.config.ElasticClient;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.theses.model.These;
+import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder.cleanDoi;
 import static fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder.replaceAndOutsideQuotes;
+import static fr.abes.thesesapirecherche.theses.repository.QueryStringNormalizer.normalize;
 
 public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
 
     private final ElasticsearchOperations operations;
     private final FacetProps facetProps;
     private final String esIndexName = "theses3";
+    private final ElasticsearchClient myElasticsearchClient;
+
+    private final List<String> CHAMPS_RECHERCHABLE = List.of(
+            "resumes.*^30",
+            "titres.*^30",
+            "nnt^15",
+            "doi^15",
+            "numSujet^15",
+            "numSujetSansS^15",
+            "etabSoutenancePpn^15",
+            "etabsCotutellePpn^15",
+            "partenairesRecherchePpn^15",
+            "ecolesDoctoralesPpn^15",
+            "nnt^15",
+            "discipline^15",
+            "sujetsRameauPpn^15",
+            "sujetsRameauLibelle^15",
+            "sujetsLibelle^15",
+            "auteursNP^12",
+            "auteursPN^12",
+            "auteursPpn^12",
+            "directeursNP^2",
+            "directeursPN^2",
+            "directeursPpn^2",
+            "ecolesDoctoralesN^5",
+            "etabSoutenanceN^5",
+            "oaiSets^5",
+            "etabsCotutelleN^1",
+            "membresJuryNP^1",
+            "membresJuryPN^1",
+            "membresJuryPpn^1",
+            "partenairesRechercheN^1",
+            "presidentJuryNP^1",
+            "presidentJuryPN^1",
+            "presidentJuryPpn^1",
+            "rapporteursNP^1",
+            "rapporteursPN^1",
+            "rapporteursPpn^1");
 
     public TheseRepositoryCustomImpl(ElasticsearchOperations operations,
                                      FacetProps facetProps) {
         this.operations = operations;
         this.facetProps = facetProps;
+        myElasticsearchClient = ElasticClient.getElasticsearchClient();
     }
 
     @Override
@@ -42,15 +85,16 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
 //                .withPageable(new OffsetPageRequest(debut, nombre))   // from + size
 //                .withTrackTotalHits(true);
         try {
-            return ElasticClient.getElasticsearchClient().search( q -> q
+            return myElasticsearchClient.search( q -> q
                     .index(esIndexName)
                     .query(buildQuery(chaine))
                     .from(debut)
                     .size(nombre)
-                    .sort(addTri(tri))
+                    .sort(SortEnum.fromCode(tri).getSortOption())
                     .trackTotalHits(t -> t.enabled(Boolean.TRUE)), These.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessResourceFailureException(
+                    "Elasticsearch search failed on index="+esIndexName+" query="+chaine+" debut="+debut+" nombre="+nombre+" tri="+tri, e);
         }
 
 //        List<SortOptions> monTri = addTri(tri);
@@ -62,58 +106,22 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
     }
 
     private Query buildQuery(String chaine) {
-        chaine = chaine.trim();
-        chaine = replaceAndOutsideQuotes(chaine);
-        chaine = replaceSpacesOutsideQuotes(chaine);
-        chaine = cleanDoi(chaine);
+        if (chaine.isBlank()) {
+            return Query.of(q -> q.matchAll(m -> m));
+        }
 
-        QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
-        builderQuery.query(chaine);
-        builderQuery.defaultOperator(Operator.And);
-        builderQuery.analyzeWildcard(true);
-        builderQuery.allowLeadingWildcard(true);
-        builderQuery.fields("resumes.*^30",
-                "titres.*^30",
-                "nnt^15",
-                "doi^15",
-                "numSujet^15",
-                "numSujetSansS^15",
-                "etabSoutenancePpn^15",
-                "etabsCotutellePpn^15",
-                "partenairesRecherchePpn^15",
-                "ecolesDoctoralesPpn^15",
-                "nnt^15",
-                "discipline^15",
-                "sujetsRameauPpn^15",
-                "sujetsRameauLibelle^15",
-                "sujetsLibelle^15",
-                "auteursNP^12",
-                "auteursPN^12",
-                "auteursPpn^12",
-                "directeursNP^2",
-                "directeursPN^2",
-                "directeursPpn^2",
-                "ecolesDoctoralesN^5",
-                "etabSoutenanceN^5",
-                "oaiSets^5",
-                "etabsCotutelleN^1",
-                "membresJuryNP^1",
-                "membresJuryPN^1",
-                "membresJuryPpn^1",
-                "partenairesRechercheN^1",
-                "presidentJuryNP^1",
-                "presidentJuryPN^1",
-                "presidentJuryPpn^1",
-                "rapporteursNP^1",
-                "rapporteursPN^1",
-                "rapporteursPpn^1"
-        );
-        builderQuery.quoteFieldSuffix(".exact");
+        String queryString = normalize(chaine);
 
-        return builderQuery.build()._toQuery();
+        return Query.of(q -> q.queryString(qs -> qs.
+                query(queryString)
+                .defaultOperator(Operator.And)
+                .analyzeWildcard(true)
+                .allowLeadingWildcard(true)
+                .fields(CHAMPS_RECHERCHABLE)
+                .quoteFieldSuffix(".exact")));
     }
 
-    private String replaceSpacesOutsideQuotes(String input) {
+    public static String replaceSpacesOutsideQuotes(String input) {
         StringBuilder result = new StringBuilder();
         boolean insideQuotes = false;
         boolean insideBrackets = false;
@@ -154,30 +162,5 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
         }
 
         return result.toString();
-    }
-
-    //TODO : Sortir les fields dans un fichier properties
-    private List<SortOptions> addTri(String tri) {
-        List<SortOptions> list = new ArrayList<>();
-        if (!tri.equals("")) {
-            SortOptions sort = switch (tri) {
-                case "dateAsc" ->
-                        new SortOptions.Builder().field(f -> f.field("dateFiltre").order(SortOrder.Asc)).build();
-                case "dateDesc" ->
-                        new SortOptions.Builder().field(f -> f.field("dateFiltre").order(SortOrder.Desc)).build();
-                case "auteursAsc" ->
-                        new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Asc)).build();
-                case "auteursDesc" ->
-                        new SortOptions.Builder().field(f -> f.field("auteursNP.exact").order(SortOrder.Desc)).build();
-                case "disciplineAsc" ->
-                        new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Asc)).build();
-                case "disciplineDesc" ->
-                        new SortOptions.Builder().field(f -> f.field("discipline.exact").order(SortOrder.Desc)).build();
-                default -> null;
-            };
-            if (sort != null)
-                list.add(sort);
-        }
-        return list;
     }
 }
