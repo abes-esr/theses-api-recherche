@@ -7,6 +7,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import fr.abes.thesesapirecherche.exception.DocumentNotFoundException;
+import fr.abes.thesesapirecherche.theses.dto.*;
 import fr.abes.thesesapirecherche.theses.repository.TheseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,10 +20,6 @@ import fr.abes.thesesapirecherche.theses.converters.BatchTheseMapper;
 import fr.abes.thesesapirecherche.theses.converters.ClientTheseMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchResponseTheseDto;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientResponseTheseLiteDto;
@@ -172,6 +169,23 @@ public class ThesesService {
         res.setTotalHits(response.hits().total().value());
         return res;
     }
+
+    // TODO faire un truc generic pour éviter de dupliquer du code partout ...
+//    public <T> GenericSearchDto<T> rechercheTheseGeneric(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+//        SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
+//
+//        GenericSearchDto<T> res = new GenericSearchDto<>();
+//        List<T> liste = new ArrayList<>();
+//
+//        for(Hit<These> theseHit : response.hits().hits()) {
+//            liste.add(batchTheseMapper.theseToBatchDto(theseHit));
+//        }
+//
+//        res.setContenus(liste);
+//        res.setTook(response.took());
+//        res.setTotalHits(response.hits().total().value());
+//        return res;
+//    }
 
 
 

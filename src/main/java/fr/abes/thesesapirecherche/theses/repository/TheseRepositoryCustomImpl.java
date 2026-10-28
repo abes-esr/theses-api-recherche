@@ -76,14 +76,6 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
     @Override
     public SearchResponse<These> rechercher(String chaine, Integer debut, Integer nombre,
                                             String tri, String filtres) {
-//        ElasticClient.getElasticsearchClient().search();
-
-//        NativeQueryBuilder queryBuilder = NativeQuery.builder()
-//                .withQuery(q -> q.bool(b -> b
-//                        .must(buildQuery(chaine))
-//                        .filter(FacetQueryBuilder.addFilters(filtres, facetProps.getMainTheses(), facetProps.getSubsTheses()))))
-//                .withPageable(new OffsetPageRequest(debut, nombre))   // from + size
-//                .withTrackTotalHits(true);
         try {
             return myElasticsearchClient.search( q -> q
                     .index(esIndexName)
@@ -96,13 +88,6 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
             throw new DataAccessResourceFailureException(
                     "Elasticsearch search failed on index="+esIndexName+" query="+chaine+" debut="+debut+" nombre="+nombre+" tri="+tri, e);
         }
-
-//        List<SortOptions> monTri = addTri(tri);
-//        if (!monTri.isEmpty()) {
-//            queryBuilder.withSort(monTri);
-//        }
-//
-//        return operations.search(queryBuilder.build(), These.class, IndexCoordinates.of(esIndexName));
     }
 
     private Query buildQuery(String chaine) {
