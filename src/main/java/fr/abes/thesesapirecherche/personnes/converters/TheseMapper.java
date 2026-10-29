@@ -6,6 +6,7 @@ import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -14,10 +15,14 @@ import org.springframework.stereotype.Component;
 @Component("PersonnesTheseMapper")
 public class TheseMapper {
 
-    EtablissementMapper etablissementMapper = new EtablissementMapper();
-    ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
-
-    SujetRameauMapper sujetRameauMapper = new SujetRameauMapper();
+    @Autowired 
+    EtablissementMapper etablissementMapper;
+    
+    @Autowired 
+    ThesePersonneLiteMapper personneMapper;
+    
+    @Autowired 
+    SujetRameauMapper sujetRameauMapper;
 
     /**
      * Transforme une thèse en web dto
@@ -34,13 +39,13 @@ public class TheseMapper {
                 .discipline(these.getDiscipline())
                 .status(these.getStatus())
                 .source(these.getSource())
-                .etablissement_soutenance(etablissementMapper.etablissementToDto(these.getEtablissement_soutenance()))
-                .etablissements_cotutelle(etablissementMapper.etablissementsToDto(these.getEtablissements_cotutelle()))
-                .date_soutenance(these.getDate_soutenance())
-                .date_inscription(these.getDate_inscription())
+                .etablissementSoutenance(etablissementMapper.etablissementToDto(these.getEtablissementSoutenance()))
+                .etablissementsCotutelle(etablissementMapper.etablissementsToDto(these.getEtablissementsCotutelle()))
+                .dateSoutenance(these.getDateSoutenance())
+                .dateInscription(these.getDateInscription())
                 .auteurs(personneMapper.personnesLiteToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
-                .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
+                .sujetsRameau(sujetRameauMapper.sujetsRameauToDto(these.getSujetsRameau()))
                 .sujets(these.getSujets())
                 .build();
     }

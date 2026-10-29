@@ -16,32 +16,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClientPersonneResponseDto {
-
-
-    @JsonProperty("id")
     String id;
-
-
-    @JsonProperty("nom")
     String nom;
-
-
-    @JsonProperty("prenom")
     String prenom;
-
-
     @JsonProperty("has_idref")
     Boolean hasIdref;
-
-
-    @JsonProperty("roles")
     Map<String, Integer> roles;
-
-
-    @JsonProperty("theses")
     Map<String, List<ClientTheseResponseDto>> theses;
-
-
     @JsonProperty("mots_cles")
     Map<String, List<String>> motsCles;
 }

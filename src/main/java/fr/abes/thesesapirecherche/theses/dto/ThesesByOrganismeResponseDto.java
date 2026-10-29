@@ -8,6 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ThesesByOrganismeResponseDto {
+    // TODO : breaking change, mettre le e de établissement en majuscule
     private long totalHitsetabSoutenance;
     private List<TheseLiteResponseDto> etabSoutenance;
     private long totalHitsetabSoutenanceEnCours;

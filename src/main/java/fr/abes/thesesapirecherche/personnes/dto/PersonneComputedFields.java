@@ -5,6 +5,10 @@ import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Ceci n'est pas du tout un DTO
+ * TODO : refactor en servce
+ */
 public class PersonneComputedFields {
 
     /**
@@ -87,12 +91,12 @@ public class PersonneComputedFields {
                 }
 
                 // Sujets Rameau
-                if (item.getSujets_rameau() != null) {
+                if (item.getSujetsRameau() != null) {
                     if (!set.containsKey("fr")) {
                         set.put("fr", new LinkedHashSet<>());
                     }
 
-                    set.get("fr").addAll(item.getSujets_rameau().stream()
+                    set.get("fr").addAll(item.getSujetsRameau().stream()
                             .map(e -> e.getLibelle())
                             .collect(Collectors.toList()));
                 }

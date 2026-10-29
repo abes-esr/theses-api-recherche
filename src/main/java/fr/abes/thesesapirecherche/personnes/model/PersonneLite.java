@@ -13,7 +13,6 @@ import lombok.*;
 @Setter
 public class PersonneLite {
 
-
     String ppn;
     String nom;
     String prenom;

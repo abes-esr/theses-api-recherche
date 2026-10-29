@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -36,21 +37,30 @@ import fr.abes.thesesapirecherche.theses.dto.ResponseTheseCSVDto;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.These;
 import lombok.extern.slf4j.Slf4j;
 
-
+/**
+ * TODO refactor tout ça avec un service custom où il y a toute la logique métier
+ * TODO introduire Spring Data Elasticsearch
+ */
 @Slf4j
 @Component
 @EnableConfigurationProperties(value = FacetProps.class)
 public class SearchQueryBuilder {
 
-    private final TheseMapper theseMapper = new TheseMapper();
-    private final TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
-    private final ClientTheseMapper clientTheseMapper = new ClientTheseMapper();
+    @Autowired 
+    @Qualifier("TheseTheseMapper")
+    private TheseMapper theseMapper;
+    
+    @Autowired 
+    private TheseLiteMapper theseLiteMapper;
+    
+    @Autowired 
+    @Qualifier("TheseClientTheseMapper")
+    private ClientTheseMapper clientTheseMapper;
 
     @Value("${es.theses.indexname}")
     private String esIndexName;
@@ -276,70 +286,6 @@ public class SearchQueryBuilder {
         //Si on retourne "" alors ce n'est pas un organisme mais une personne
     }
 
-    // TODO : Simplifier cette fonction / éviter duplication
-    public ThesesByOrganismeResponseDto searchByOrganisme(String ppn) throws Exception {
-        ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
-
-        // on interroge ES sur tous les index
-        SearchResponse<These> responseEtabSoutenanceEnEcours = searchByPpn("etabSoutenancePpn", ppn, "enCours");
-        SearchResponse<These> responseEtabSoutenanceSoutenue = searchByPpn("etabSoutenancePpn", ppn, "soutenue");
-        SearchResponse<These> responseEtabCotutelleEnCours = searchByPpn("etabsCotutellePpn", ppn, "enCours");
-        SearchResponse<These> responseEtabCotutelleSoutenue = searchByPpn("etabsCotutellePpn", ppn, "soutenue");
-        SearchResponse<These> responsePartenaireEnCours = searchByPpn("partenairesRecherchePpn", ppn, "enCours");
-        SearchResponse<These> responsePartenaireSoutenue = searchByPpn("partenairesRecherchePpn", ppn, "soutenue");
-        SearchResponse<These> responseEcoleEnCours = searchByPpn("ecolesDoctoralesPpn", ppn, "enCours");
-        SearchResponse<These> responseEcoleSoutenue = searchByPpn("ecolesDoctoralesPpn", ppn, "soutenue");
-        
-
-        List<TheseLiteResponseDto> listeEtabSoutenance = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEtabSoutenanceEnCours = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEtabCotutelle = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEtabCotutelleEnCours = new ArrayList<>();
-        List<TheseLiteResponseDto> listePartenaire = new ArrayList<>();
-        List<TheseLiteResponseDto> listePartenaireEnCours = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEcoleDoctorale = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
-
-
-        
-        for(Hit<These> theseHit : responseEtabSoutenanceEnEcours.hits().hits()) listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenanceEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelle.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaire.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaireEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctorale.add(theseLiteMapper.theseLiteToDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctoraleEnCours.add(theseLiteMapper.theseLiteToDto(theseHit));
-
-    
-        
-        // on remplit le dto
-        thesesByOrganismeResponse.setEtabSoutenance(listeEtabSoutenance);
-        thesesByOrganismeResponse.setEtabSoutenanceEnCours(listeEtabSoutenanceEnCours);
-        thesesByOrganismeResponse.setTotalHitsetabSoutenanceEnCours(responseEtabSoutenanceEnEcours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitsetabSoutenance(responseEtabSoutenanceSoutenue.hits().total().value());
-
-        thesesByOrganismeResponse.setEtabCotutelle(listeEtabCotutelle);
-        thesesByOrganismeResponse.setEtabCotutelleEnCours(listeEtabCotutelleEnCours);
-        thesesByOrganismeResponse.setTotalHitsetabCotutelleEnCours(responseEtabCotutelleEnCours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitsetabCotutelle(responseEtabCotutelleSoutenue.hits().total().value());
-
-        thesesByOrganismeResponse.setPartenaireRecherche(listePartenaire);
-        thesesByOrganismeResponse.setPartenaireRechercheEnCours(listePartenaireEnCours);
-        thesesByOrganismeResponse.setTotalHitspartenaireRechercheEnCours(responsePartenaireEnCours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitspartenaireRecherche(responsePartenaireSoutenue.hits().total().value());
-
-        thesesByOrganismeResponse.setEcoleDoctorale(listeEcoleDoctorale);
-        thesesByOrganismeResponse.setEcoleDoctoraleEnCours(listeEcoleDoctoraleEnCours);
-        thesesByOrganismeResponse.setTotalHitsecoleDoctoraleEnCours(responseEcoleEnCours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitsecoleDoctorale(responseEcoleSoutenue.hits().total().value());
-
-
-        return thesesByOrganismeResponse;
-    }
-
-
-
 
 
     public long getStatsTheses(String statusFilter) throws Exception {
@@ -360,20 +306,6 @@ public class SearchQueryBuilder {
         return FacetQueryBuilder.facets(ElasticClient.getElasticsearchClient(), buildQuery(chaine), esIndexName, facetProps.getMainTheses(), facetProps.getSubsTheses(), maxFacetsValues, filtres);
     }
 
-    public TheseResponseDto rechercheSurId(String nnt) throws Exception {
-        SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(s -> s
-                        .index(esIndexName)
-                        .query(q -> q
-                                .match(t -> t
-                                        .query(nnt)
-                                        .field("_id"))),
-                These.class
-        );
-
-        Optional<These> a = response.hits().hits().stream().map(Hit::source).findFirst();
-
-        return a.map(theseMapper::theseToDto).orElse(null);
-    }
 
     public List<String> completion(String q) throws Exception {
         FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
@@ -508,7 +440,6 @@ public class SearchQueryBuilder {
 }
 
 
-    //TODO c'est un copier coller de la méthode rechercheSurId plus haut, juste elle s'occupe de renvoyer un model et pas un dto (faire un refactoring)
     public These getTheseById(String nnt) throws Exception {
         SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(s -> s
                         .index(esIndexName)

@@ -17,24 +17,13 @@ import lombok.Setter;
 @Setter
 
 public class TheseLiteResponseDto {
-
-    @JsonProperty("id")
     String id;
-
-
-    @JsonProperty("role")
     String role;
-
-
-    @JsonProperty("discipline")
     String discipline;
-
-
     @JsonProperty("etablissement_soutenance")
-    Etablissement etablissement_soutenance;
-
-
+    Etablissement etablissementSoutenance;
+    // TODO typo double e, à modifier mais breaking change ...
     @JsonProperty("etabliseements_cotutelle")
-    List<Etablissement> etablissements_cotutelle;
+    List<Etablissement> etablissementsCotutelle;
 
 }

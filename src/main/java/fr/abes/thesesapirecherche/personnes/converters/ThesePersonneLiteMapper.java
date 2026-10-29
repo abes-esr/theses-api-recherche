@@ -6,9 +6,12 @@ import fr.abes.thesesapirecherche.personnes.model.PersonneLite;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Convertisseur de format pour les objets Personne dans les informations d'une thèse
  */
+@Component 
 public class ThesePersonneLiteMapper {
 
     /**
