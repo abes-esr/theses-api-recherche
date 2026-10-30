@@ -76,21 +76,9 @@ public class TheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public TheseResponseDto getThese(@PathVariable final String id) throws Exception {
+    public TheseResponseDto getThese(@PathVariable final String id) {
         log.info("debut de getThese...");
-        try {
-            return thesesService.getThese(id);
-
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
-    }
-
-    @GetMapping(value = "/these/toto/{id}")
-    public TheseResponseDto getTheseToto(@PathVariable final String id) {
-        log.info("debut de getTheseToto...");
-        return thesesService.getTheseNewAndImproved(id);
+        return thesesService.getThese(id);
     }
 
 

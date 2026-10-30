@@ -64,9 +64,10 @@ public class ThesesService {
      * @return un objet réponse de la recerche au format DTO
      * @throws Exception si une erreur est survenue
      */
-    public ResponseTheseLiteDto getTheses(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
-        SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
-        
+    // TODO fusioner ça avec recherche() ???
+    public ResponseTheseLiteDto getTheses(String chaine, Integer debut, Integer nombre, String tri, String filtres) {
+        SearchResponse<These> response = theseRepository.rechercher(chaine, debut, nombre, tri, filtres);
+
         List<TheseLiteResponseDto> liste = response.hits().hits()
                                                     .stream()
                                                     .map(t-> theseLiteMapper.theseLiteToDto(t))
@@ -110,25 +111,7 @@ public class ThesesService {
      * @return un objet réponse de la recerche au format DTO (retourne plus d'informations que la méthode getTheses)
      * @throws Exception si une erreur est survenue
      */
-    public ClientResponseTheseLiteDto getThesesClient(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
-        // TODO FIXME passer par repository
-        SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
-        
-        ClientResponseTheseLiteDto res = new ClientResponseTheseLiteDto();
-        List<ClientTheseLiteResponseDto> liste = new ArrayList<>();
-
-        for(Hit<These> theseHit : response.hits().hits()) {
-            liste.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        }
-
-        res.setTheses(liste);
-        res.setTook(response.took());
-        res.setTotalHits(response.hits().total().value());
-        return res;
-    }
-
     public ClientResponseTheseLiteDto rechercheTheseDetail(String chaine, int debut, int nombre, String tri, String filtres) throws Exception {
-        // TODO FIXME passer par repository
         SearchResponse<These> response = theseRepository.rechercher(chaine, debut, nombre, tri, filtres);
 
         ClientResponseTheseLiteDto res = new ClientResponseTheseLiteDto();
@@ -155,6 +138,7 @@ public class ThesesService {
      * @throws Exception si une erreur est survenue
      */
     public BatchResponseTheseDto getThesesBatch(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+        // TODO pourquoi celui là utilise les facets mais pas certain autres
         SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
         
         BatchResponseTheseDto res = new BatchResponseTheseDto();
@@ -188,19 +172,6 @@ public class ThesesService {
 //    }
 
 
-
-
-    /**
-     * Retourne une thèse dans ElasticSearch selon son identifiant au format DTO (utilisée pour le front)
-     * 
-     * @param id identifiant interne de Elastic Search
-     * @return une thèse au format DTO web
-     * @throws Exception
-     */
-    public TheseResponseDto getThese(String id) throws Exception { // TODO supprimer cette fonction et la remplacer par celle en dessous getTheseNewAndImproved()
-        return theseMapper.theseToDto(searchThesesQuery.getTheseById(id));
-    }
-
     /**
      * Retourne une thèse dans ElasticSearch selon son identifiant au format DTO (utilisée pour le front)
      *
@@ -208,7 +179,7 @@ public class ThesesService {
      * @return une thèse au format DTO web
      * @throws DocumentNotFoundException si aucune thèse ne correspond
      */
-    public TheseResponseDto getTheseNewAndImproved(String theseId) {
+    public TheseResponseDto getThese(String theseId) {
         Optional<These> optThese = theseRepository.findById(theseId);
         return theseMapper.theseToDtoCustomTotoToto(optThese.orElseThrow(() -> new DocumentNotFoundException("La these "+ theseId + " n'a pas été trouvé")));
     }
@@ -216,17 +187,24 @@ public class ThesesService {
     /**
      * Retourne une thèse dans ElasticSearch selon son identifiant au format DTO (utilisée pour les utilisateurs qui consomment l'api directement)
      * 
-     * @param id
+     * @param theseId
      * @return une thèse au format DTO web (plus d'informations qu'avec la méthode getThese)
      * @throws Exception
      */
-    public ClientTheseResponseDto getTheseClient(String id) throws Exception {
-        return clientTheseMapper.theseToClientDto(searchThesesQuery.getTheseById(id));
-    }
-
-    public ClientTheseResponseDto getTheseClientToto(String theseId) throws Exception{
+    public ClientTheseResponseDto getTheseClientToClient(String theseId) {
         Optional<These> optThese = theseRepository.findById(theseId);
         return clientTheseMapper.theseToClientDto(optThese.orElseThrow(() -> new DocumentNotFoundException("La these "+ theseId + " n'a pas été trouvé")));
+    }
+
+    /**
+     * Trouve le nom de l'organisme ayant l'identifiant ppn.
+     * @param ppn PICA production number
+     * @return nom de l'organisme si c'est un identifiant d'organisme, chaine vide sinon
+     */
+    public String getOrganismeName(String ppn) {
+        theseRepository.rechercherOrganisme(ppn);
+
+        return "";
     }
 
 
@@ -240,14 +218,13 @@ public class ThesesService {
 
 
     //TODO les 2 fonctions se ressemblent énormément, refactoring à faire
-
     /** Retourne toutes les thèses associées à un organisme (utilisé pour le front)
      * 
      * @param ppn l'identifiant ppn de l'organisme
      * @return les listes de thèses soutenues et en cours
      * @throws IOException
      */
-    public ThesesByOrganismeResponseDto getThesesByOrganisme(String ppn) throws IOException{
+    public ThesesByOrganismeResponseDto getTheseSummariesByOrganisme(String ppn) throws IOException{
         ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
 
         // on interroge ES sur tous les index
@@ -324,7 +301,12 @@ public class ThesesService {
     }
 
 
-    public ClientThesesByOrganismeResponseDto getThesesByOrganismeClientToto(String ppn) {
+    /** Retourne toutes les thèses associées à un organisme (utilisée pour les utilisateurs qui consomment l'api directement)
+     *
+     * @param ppn l'identifiant ppn de l'organisme
+     * @return les listes de thèses soutenues et en cours
+     */
+    public ClientThesesByOrganismeResponseDto getTheseDetailsByOrganisme(String ppn) {
         ClientThesesByOrganismeResponseDto resDto = new ClientThesesByOrganismeResponseDto();
 
 
@@ -364,68 +346,5 @@ public class ThesesService {
 
 
         return resDto;
-    }
-
-    /** Retourne toutes les thèses associées à un organisme (utilisée pour les utilisateurs qui consomment l'api directement)
-     * 
-     * @param ppn l'identifiant ppn de l'organisme
-     * @return les listes de thèses soutenues et en cours
-     * @throws IOException
-     */
-    public ClientThesesByOrganismeResponseDto getThesesByOrganismeClient(String ppn) throws IOException{
-        ClientThesesByOrganismeResponseDto thesesByOrganismeResponse = new ClientThesesByOrganismeResponseDto();
-
-        // on interroge ES sur tous les index
-        SearchResponse<These> responseEtabSoutenanceEnCours = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "enCours");
-        SearchResponse<These> responseEtabSoutenanceSoutenue = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "soutenue");
-        SearchResponse<These> responseEtabCotutelleEnCours = searchThesesQuery.searchByPpn("etabsCotutellePpn", ppn, "enCours");
-        SearchResponse<These> responseEtabCotutelleSoutenue = searchThesesQuery.searchByPpn("etabsCotutellePpn", ppn, "soutenue");
-        SearchResponse<These> responsePartenaireEnCours = searchThesesQuery.searchByPpn("partenairesRecherchePpn", ppn, "enCours");
-        SearchResponse<These> responsePartenaireSoutenue = searchThesesQuery.searchByPpn("partenairesRecherchePpn", ppn, "soutenue");
-        SearchResponse<These> responseEcoleEnCours = searchThesesQuery.searchByPpn("ecolesDoctoralesPpn", ppn, "enCours");
-        SearchResponse<These> responseEcoleSoutenue = searchThesesQuery.searchByPpn("ecolesDoctoralesPpn", ppn, "soutenue");
-        
-
-        List<ClientTheseLiteResponseDto> listeEtabSoutenance = new ArrayList<>();
-        List<ClientTheseLiteResponseDto> listeEtabSoutenanceEnCours = new ArrayList<>();
-        List<ClientTheseLiteResponseDto> listeEtabCotutelle = new ArrayList<>();
-        List<ClientTheseLiteResponseDto> listeEtabCotutelleEnCours = new ArrayList<>();
-        List<ClientTheseLiteResponseDto> listePartenaire = new ArrayList<>();
-        List<ClientTheseLiteResponseDto> listePartenaireEnCours = new ArrayList<>();
-        List<ClientTheseLiteResponseDto> listeEcoleDoctorale = new ArrayList<>();
-        List<ClientTheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
-
-
-        for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenance.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEtabSoutenanceEnCours.hits().hits()) listeEtabSoutenanceEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleSoutenue.hits().hits()) listeEtabCotutelle.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEtabCotutelleEnCours.hits().hits()) listeEtabCotutelleEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireSoutenue.hits().hits()) listePartenaire.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responsePartenaireEnCours.hits().hits()) listePartenaireEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleSoutenue.hits().hits()) listeEcoleDoctorale.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        for(Hit<These> theseHit : responseEcoleEnCours.hits().hits()) listeEcoleDoctoraleEnCours.add(clientTheseMapper.theseToClientLiteDto(theseHit));
-        
-        // on remplit le dto
-        thesesByOrganismeResponse.setEtabSoutenance(listeEtabSoutenance);
-        thesesByOrganismeResponse.setEtabSoutenanceEnCours(listeEtabSoutenanceEnCours);
-        thesesByOrganismeResponse.setTotalHitsetabSoutenanceEnCours(responseEtabSoutenanceEnCours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitsetabSoutenance(responseEtabSoutenanceSoutenue.hits().total().value());
-
-        thesesByOrganismeResponse.setEtabCotutelle(listeEtabCotutelle);
-        thesesByOrganismeResponse.setEtabCotutelleEnCours(listeEtabCotutelleEnCours);
-        thesesByOrganismeResponse.setTotalHitsetabCotutelleEnCours(responseEtabCotutelleEnCours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitsetabCotutelle(responseEtabCotutelleSoutenue.hits().total().value());
-
-        thesesByOrganismeResponse.setPartenaireRecherche(listePartenaire);
-        thesesByOrganismeResponse.setPartenaireRechercheEnCours(listePartenaireEnCours);
-        thesesByOrganismeResponse.setTotalHitspartenaireRechercheEnCours(responsePartenaireEnCours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitspartenaireRecherche(responsePartenaireSoutenue.hits().total().value());
-
-        thesesByOrganismeResponse.setEcoleDoctorale(listeEcoleDoctorale);
-        thesesByOrganismeResponse.setEcoleDoctoraleEnCours(listeEcoleDoctoraleEnCours);
-        thesesByOrganismeResponse.setTotalHitsecoleDoctoraleEnCours(responseEcoleEnCours.hits().total().value());
-        thesesByOrganismeResponse.setTotalHitsecoleDoctorale(responseEcoleSoutenue.hits().total().value());
-
-        return thesesByOrganismeResponse;
     }
 }

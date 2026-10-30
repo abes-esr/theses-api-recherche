@@ -53,13 +53,8 @@ public class SearchThesesController {
             @RequestParam(defaultValue = "10") @Min(0) @Max(100000) @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") int nombre,
             @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
-    ) throws Exception {
-        try {
-            return thesesService.getTheses(q, debut, nombre, tri.orElse(""), filtres.orElse(""));
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
+    ) {
+        return thesesService.getTheses(q, debut, nombre, tri.orElse(""), filtres.orElse(""));
     }
 
     @GetMapping(value = "/rechercheCSV")
@@ -95,7 +90,7 @@ public class SearchThesesController {
         }
     }
 
-    @GetMapping(value = "/getorganismename/{ppn}")
+    @GetMapping(value = "/getorganismename/{ppn}", produces = MediaType.TEXT_PLAIN_VALUE)
     @Operation(
             summary = "Obtenir le nom d'un organisme",
             description = "Retourne le nom d'un organisme. Si ce nom est vide, alors ce PPN ne correspond pas à un organisme, mais à une personne.")
@@ -106,6 +101,8 @@ public class SearchThesesController {
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {
+            // TODO refactor ça avec repository, pas de facet
+            String res = thesesService.getOrganismeName(ppn);
             return searchQueryBuilder.getOrganismeName(ppn);
         } catch (Exception e) {
             log.error(e.toString());
@@ -125,7 +122,7 @@ public class SearchThesesController {
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {
-            return thesesService.getThesesByOrganisme(ppn);
+            return thesesService.getTheseSummariesByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;

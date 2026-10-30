@@ -51,48 +51,12 @@ public class ClientTheseController {
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public ClientTheseResponseDto getTheseClient(@PathVariable final String id) throws Exception {
         log.info("debut de getThese...");
-        try {
-            return thesesService.getTheseClient(id);
-//            return thesesService.getTheseClientToto(id);
-
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
+        return thesesService.getTheseClientToClient(id);
     }
-    @GetMapping(value = "/these/toto/{id}")
-    public ClientTheseResponseDto getTheseClientToto(@PathVariable final String id) throws Exception {
-        log.info("debut de getTheseToto..."+"id='"+id+"'");
-        return thesesService.getTheseClientToto(id);
-    }
-
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)
     @GetMapping(value = "/recherche/")
-    @Operation(
-            summary = "Rechercher une thèse via le titre",
-            description = "Retourne une liste de thèses correspondant à la recherche")
-    @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
-    @ApiResponse(responseCode = "400", description = "Mauvaise requête")
-    @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ClientResponseTheseLiteDto rechercheThesesClient(
-            @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
-            @RequestParam @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
-            @RequestParam @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
-            @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") Optional<String> tri,
-            @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
-    ) throws Exception {
-        try {
-            if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
-            return thesesService.getThesesClient(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
-    }
-    // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)
-    @GetMapping(value = "/toto/recherche/")
-    public ClientResponseTheseLiteDto rechercheThesesClientToto(
+    public ClientResponseTheseLiteDto rechercheThesesDetail(
             @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @Min(0) @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") int debut,
             @RequestParam @Min(10) @Max(100000) @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") int nombre,
@@ -118,24 +82,7 @@ public class ClientTheseController {
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public ClientThesesByOrganismeResponseDto rechercheParOrganismeClient(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) throws Exception {
-        try {
-            return thesesService.getThesesByOrganismeClient(ppn);
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
-    }
-    //retourne un ensemble de thèses par organisme (pour les clients)
-    @GetMapping(value = "/organisme/toto/{ppn}")
-    public ClientThesesByOrganismeResponseDto rechercheParOrganismeClientToto(
-            @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) throws Exception {
-        try {
-            return thesesService.getThesesByOrganismeClientToto(ppn);
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
+    ) {
+        return thesesService.getTheseDetailsByOrganisme(ppn);
     }
 }

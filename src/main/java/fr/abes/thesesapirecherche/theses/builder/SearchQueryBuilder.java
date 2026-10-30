@@ -268,6 +268,12 @@ public class SearchQueryBuilder {
     }
 
     public String getOrganismeName(String ppn) throws Exception {
+
+        // TODO y a du refactor à faire
+        /**
+         * Alors on cherche uniquement dans "etabSoutenancePpn", "etabsCotutellePpn", "partenairesRecherchePpn", "ecolesDoctoralesPpn"
+         * + on veut uniquement le nom qui peut être contenue que dans une poigné de champs ...
+         */
         QueryStringQuery.Builder builderQuery = new QueryStringQuery.Builder();
         builderQuery.query('"' + ppn + '"');
         builderQuery.defaultOperator(Operator.And);
@@ -382,34 +388,6 @@ public class SearchQueryBuilder {
     }
 
     // ********************** UTILS **********************
-
-    public List<These> getTheses(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
-        SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(
-            s -> s
-                .index(esIndexName)
-                .query(q -> q
-                    .bool(t -> t
-                        .must(buildQuery(chaine))
-                        .filter(addFilters(filtres, facetProps.getMainTheses(), facetProps.getSubsTheses()))
-                    ))
-                .from(debut)
-                .size(nombre)
-                .sort(addTri(tri))
-                .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
-        These.class
-        );
-
-        List<These> res = new ArrayList<>();
-        List<TheseResponseDto> liste = new ArrayList<>();
-
-        for (Hit<These> theseHit : response.hits().hits()) {
-            liste.add(theseMapper.theseToDto(theseHit.source()));
-        }
-
-        return res;
-    }
-
-
     public SearchResponse<These> getThesesSearchResponse(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         return ElasticClient.getElasticsearchClient().search(
             s -> s
@@ -444,24 +422,6 @@ public class SearchQueryBuilder {
     );
 }
 
-
-    public These getTheseById(String nnt) throws Exception {
-        SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(s -> s
-                        .index(esIndexName)
-                        .query(q -> q
-                                .match(t -> t
-                                        .query(nnt)
-                                        .field("_id"))),
-                These.class
-        );
-
-        Optional<These> a = response.hits().hits().stream().map(Hit::source).findFirst();
-
-        return a.orElse(null);
-    }
-
-    
-    
 }
 
 

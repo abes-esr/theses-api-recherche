@@ -3,15 +3,18 @@ package fr.abes.thesesapirecherche.theses.repository;
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.Operator;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryStringQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
+import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.SourceConfig;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fr.abes.thesesapirecherche.config.ElasticClient;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.theses.model.These;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -88,6 +91,65 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
             throw new DataAccessResourceFailureException(
                     "Elasticsearch search failed on index="+esIndexName+" query="+chaine+" debut="+debut+" nombre="+nombre+" tri="+tri, e);
         }
+    }
+
+    @Override
+    public String rechercherOrganisme(String ppn) {
+        List<String> fields = List.of(
+                "etabSoutenancePpn",
+                "etabsCotutellePpn",
+                "partenairesRecherchePpn",
+                "ecolesDoctoralesPpn"
+        );
+
+        Query q = buildQueryForOrganisme(ppn, fields);
+
+        SearchRequest searchRequest = SearchRequest.of(s -> s
+                .index(esIndexName)
+                .query(q)
+                .size(1)
+                .source(SourceConfig.of(sc -> sc
+                        .filter(f -> f
+                                .includes(fields)) // 2. Return ONLY this field
+                        )
+                ));
+
+        SearchResponse<OrganismePpn> response;
+        SearchResponse<ObjectNode> foo;
+        try {
+            response = myElasticsearchClient.search(searchRequest, OrganismePpn.class);
+//             foo =  myElasticsearchClient.search(searchRequest, ObjectNode.class);
+//
+//            foo.hits().hits().forEach(hit -> {
+//                assert hit.source() != null;
+//                System.out.println("Source brute : " + hit.source().toPrettyString());
+//            });
+
+        } catch (IOException e) {
+            throw new DataAccessResourceFailureException(
+                    "Elasticsearch search failed on index="+esIndexName+" searching for organisme ppn="+ppn, e);
+        }
+
+
+        return response.hits().hits().stream().findFirst()
+                    .map(Hit::source)
+                    .map(OrganismePpn::firstMatch)
+                .orElse("");
+    }
+
+    private Query buildQueryForOrganisme(String ppn, List<String> fields) {
+        BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
+        for (String field : fields) {
+            boolBuilder.should(
+                    MatchPhraseQuery.of(mp -> mp
+                            .field(field)
+                            .query(ppn)
+                            .slop(0)
+                    )._toQuery()
+            );
+        }
+
+        return boolBuilder.build()._toQuery();
     }
 
     private Query buildQuery(String chaine) {
