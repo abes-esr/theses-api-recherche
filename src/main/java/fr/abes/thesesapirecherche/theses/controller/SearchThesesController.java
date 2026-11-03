@@ -48,6 +48,18 @@ public class SearchThesesController {
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour le front)
     @GetMapping(value = "/recherche/")
+    @Operation(
+            summary = "Recherche les thèses grâce à un moteur de recherche",
+            description = """
+                    Recherche les thèses sur Elasticsearch à l'aide de mot clé exacte sur de nombreux champs tel que : le résumé, le titre et les sujets, etc ...\n
+                    La requête accepte l'utilisation d'opérateur logique écrit en toute lettre majuscule AND mais pas + ou le pipe |.
+                    Les espaces sont considérés comme des AND par défaut.
+                    Si q="quick AND brown", dans les résultats de la recherche, il y aura exactement avec la même orthographe les mots quick et brown dans un des champs d'une thèse.
+                    La documentation Elasticsearch complète peut être consulté aux adresses suivantes :
+                    - https://www.elastic.co/guide/en/elasticsearch/reference/5.2/query-dsl-query-string-query.html
+                    - https://github.com/elastic/elasticsearch/blob/master/docs/reference/query-dsl/query-string-syntax.asciidoc
+                    """
+    )
     public ResponseTheseLiteDto rechercheThese(
             @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @Min(0) @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") int debut,

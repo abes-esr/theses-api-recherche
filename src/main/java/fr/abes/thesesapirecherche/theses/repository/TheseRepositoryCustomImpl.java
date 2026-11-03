@@ -11,9 +11,9 @@ import fr.abes.thesesapirecherche.config.ElasticClient;
 import fr.abes.thesesapirecherche.config.FacetProps;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.model.These;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,9 +21,9 @@ import java.util.List;
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
 import static fr.abes.thesesapirecherche.theses.repository.QueryStringNormalizer.normalize;
 
+@RequiredArgsConstructor
 public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
 
-    private final ElasticsearchOperations operations;
     private final FacetProps facetProps;
     @Value("${es.theses.indexname}")
     private String esIndexName;
@@ -31,7 +31,7 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
     @Value("${maxfacetsvalues}")
     private int maxFacetsValues;
 
-    private final List<String> CHAMPS_RECHERCHABLE = List.of(
+    private static final List<String> CHAMPS_RECHERCHABLE = List.of(
             "resumes.*^30",
             "titres.*^30",
             "nnt^15",
@@ -68,12 +68,6 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
             "rapporteursPN^1",
             "rapporteursPpn^1");
 
-    public TheseRepositoryCustomImpl(ElasticsearchOperations operations,
-                                     FacetProps facetProps) {
-        this.operations = operations;
-        this.facetProps = facetProps;
-        myElasticsearchClient = ElasticClient.getElasticsearchClient();
-    }
 
     @Override
     public SearchResponse<These> rechercher(String chaine, Integer debut, Integer nombre,
@@ -202,7 +196,7 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
     }
 
     /**
-     * Crée une requête ElasticSearch afin faire correspondre exactement les champs donnée à la valeur ppn
+     * Crée une requête ElasticSearch afin de faire correspondre exactement les champs donnés à la valeur ppn
      * @param ppn la valeur qu'on recherche
      * @param fields les champs dans lesquels nous allons lancer la recherche
      * @return une requête type Query d'Elasticsearch
@@ -223,86 +217,33 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
     }
 
     private Query buildQuery(String chaine) {
-        if (chaine.isBlank()) {
-            return Query.of(q -> q.matchAll(m -> m));
-        }
-
         String queryString = normalize(chaine);
-
-        return Query.of(q -> q.queryString(qs -> qs.
-                query(queryString)
+        Query query = Query.of(q -> q.queryString(qs -> qs.query(queryString)
                 .defaultOperator(Operator.And)
                 .analyzeWildcard(true)
                 .allowLeadingWildcard(true)
                 .fields(CHAMPS_RECHERCHABLE)
                 .quoteFieldSuffix(".exact")));
+
+        return query;
     }
 
     private Query buildQueryWithFacets(String chaine, String filtres) {
         List<Query> filtresList = addFilters(filtres, facetProps.getMainTheses(), facetProps.getSubsTheses());
 
         return Query.of(q -> q.bool(b -> {
-            // 1. Full-text part (or match_all if blank)
-            if (chaine.isBlank()) {
-                b.must(m -> m.matchAll(ma -> ma));
-            } else {
-                String queryString = normalize(chaine);
-                b.must(m -> m.queryString(qs -> qs
-                        .query(queryString)
-                        .defaultOperator(Operator.And)
-                        .analyzeWildcard(true)
-                        .allowLeadingWildcard(true)
-                        .fields(CHAMPS_RECHERCHABLE)
-                        .quoteFieldSuffix(".exact")));
-            }
+            String queryString = normalize(chaine);
+            b.must(m -> m.queryString(qs -> qs
+                    .query(queryString)
+                    .defaultOperator(Operator.And)
+                    .analyzeWildcard(true)
+                    .allowLeadingWildcard(true)
+                    .fields(CHAMPS_RECHERCHABLE)
+                    .quoteFieldSuffix(".exact")));
+
 
             b.filter(filtresList);
             return b;
         }));
-    }
-
-
-
-    public static String replaceSpacesOutsideQuotes(String input) {
-        StringBuilder result = new StringBuilder();
-        boolean insideQuotes = false;
-        boolean insideBrackets = false;
-
-
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(i);
-
-            if (c == '"') {
-                insideQuotes = !insideQuotes;
-                result.append(c);
-            } else if (c == '[') {
-                insideBrackets = true;
-                result.append(c);
-            } else if (c == ']') {
-                insideBrackets = false;
-                result.append(c);
-            }
-            else if (c == ' ') {
-                if (i + 2 < input.length() && input.charAt(i + 1) == 'O'&& input.charAt(i + 2) == 'R') {
-
-                    result.append(" OR ");
-                    i+= 3;
-                } else if (i + 3 < input.length() && input.charAt(i + 1) == 'N' && input.charAt(i + 2) == 'O' && input.charAt(i + 3) == 'T') {
-
-                    result.append(" NOT ");
-                    i+= 4;
-                } else if (!insideQuotes && !insideBrackets) {
-                    result.append(" AND ");
-                } else {
-                    result.append(c);
-                }
-            } else {
-                result.append(c);
-
-            }
-
-        }
-
-        return result.toString();
     }
 }

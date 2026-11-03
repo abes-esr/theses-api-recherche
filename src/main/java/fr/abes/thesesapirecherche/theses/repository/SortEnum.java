@@ -7,7 +7,6 @@ import lombok.Getter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Getter
 public enum SortEnum {
     PERTINENCE("pertinence", List.of()),
     DATE_ASC("dateAsc", List.of(byField("dateFiltre", SortOrder.Asc))),
@@ -28,7 +27,7 @@ public enum SortEnum {
         this.sortOption = sortOption;
     }
 
-    public static SortEnum fromCode(String code) {
+    private static SortEnum fromCode(String code) {
         SortEnum result = code == null ? null : BY_CODE.get(code.trim());
         if (result == null) {
             throw new IllegalArgumentException("Unknown sort: \"" + code + "\"");
@@ -37,7 +36,7 @@ public enum SortEnum {
     }
 
     /** "dateDesc,auteursAsc" -> [SortEnum.DATE_DESC, SortEnum.AUTEUR_ASC] */
-    public static List<SortEnum> fromCodes(String codes) {
+    private static List<SortEnum> fromCodes(String codes) {
         if (codes == null || codes.isBlank()) {
             return List.of(PERTINENCE);
         }
