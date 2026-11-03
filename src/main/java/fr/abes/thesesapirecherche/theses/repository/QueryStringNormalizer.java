@@ -1,10 +1,10 @@
 package fr.abes.thesesapirecherche.theses.repository;
 
-import static fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder.cleanDoi;
-import static fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder.replaceAndOutsideQuotes;
+import org.springframework.stereotype.Component;
 
+
+@Component
 final class QueryStringNormalizer {
-//    private QueryStringNormalizer() {}
 
     static String normalize(String input) {
         String s = input.trim();
@@ -13,6 +13,55 @@ final class QueryStringNormalizer {
         return cleanDoi(s);
     }
 
+    /**
+     * Supprime "https://doi.org/" ou "doi.org/" de la query pour pouvoir matcher avec
+     * le champ doi qui ne contient que le doi simple
+     * @param input
+     * @return
+     */
+    public static String cleanDoi(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replace("https\\:\\/\\/doi.org\\/", "")
+                .replace("http\\:\\/\\/doi.org\\/", "")
+                .replace("doi.org\\/", "");
+    }
+
+    /**
+     * Requis: input n'as pas d'espace au début et à la fin
+     * @param input
+     * @return
+     */
+    @Deprecated
+    // TODO extraire ça
+    // TODO test unitaire
+    public static String replaceAndOutsideQuotes(String input) {
+        StringBuilder result = new StringBuilder();
+        boolean insideQuotes = false;
+        int i = 0;
+
+        while (i < input.length()) {
+            char currentChar = input.charAt(i);
+
+            if (currentChar == '\"') {
+                insideQuotes = !insideQuotes;
+                result.append(currentChar);
+                i++;
+            } else if (!insideQuotes && i + 2 < input.length() && input.startsWith(" AND ", i)) {
+                result.append(" ");
+                i += 5;  // Skip past the "AND"
+            } else {
+                result.append(currentChar);
+                i++;
+            }
+        }
+
+        return result.toString();
+    }
+
+    @Deprecated
+    /* Corriger cette fonction pcq y a beaucoup de bug dedans */
     private static String replaceSpacesOutsideQuotes(String input) {
         StringBuilder result = new StringBuilder();
         boolean insideQuotes = false;

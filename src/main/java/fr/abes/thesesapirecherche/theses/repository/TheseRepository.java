@@ -16,12 +16,4 @@ public interface TheseRepository extends ElasticsearchRepository<These, String>,
     List<These> findByEtabsCotutellePpnAndStatus(String etabsCocutellePpn, String status);
     List<These> findByPartenairesRecherchePpnAndStatus(String partenairesRecherchePpn, String status);
     List<These> findByEcolesDoctoralesPpnAndStatus(String partenairesRecherchePpn, String status);
-
-    @Query("""
-    { "bool": { "filter": [
-        { "term":  { "etabSoutenancePpn": "?0" } },
-        { "term": { "status": "?1" } }
-    ] } }
-    """)
-    List<These> findByEtabSoutenancePpnAndStatusBis(String etabSoutenancePpn, String status);
 }

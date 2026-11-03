@@ -1,10 +1,8 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
-import java.util.Optional;
-
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientThesesByOrganismeResponseDto;
@@ -26,20 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/client/theses")
 @Validated
+@AllArgsConstructor
 public class ClientTheseController {
-
-
-    final SearchQueryBuilder searchQueryBuilder;
-    
-
-    @Autowired 
     private ThesesService thesesService;
-
-    public ClientTheseController(SearchQueryBuilder searchQueryBuilder) {
-        this.searchQueryBuilder = searchQueryBuilder;
-    }
-
-    
 
     // endpoint pour les clients (ceux qui utilisent l'API directement)
     @GetMapping(value = "/these/{id}")
@@ -49,7 +35,7 @@ public class ClientTheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ClientTheseResponseDto getTheseClient(@PathVariable final String id) throws Exception {
+    public ClientTheseResponseDto getTheseClient(@PathVariable final String id) {
         log.info("debut de getThese...");
         return thesesService.getTheseClientToClient(id);
     }
@@ -62,13 +48,8 @@ public class ClientTheseController {
             @RequestParam @Min(10) @Max(100000) @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") int nombre,
             @RequestParam(defaultValue = "") @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") String tri,
             @RequestParam(defaultValue = "") @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") String filtres
-    ) throws Exception {
-        try {
-            return thesesService.rechercheTheseDetail(q, debut, nombre, tri, filtres);
-        } catch (Exception e) {
-            log.error(e.toString());
-            throw e;
-        }
+    ) {
+        return thesesService.rechercheTheseDetail(q, debut, nombre, tri, filtres);
     }
 
 

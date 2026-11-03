@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.exception;
 
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import fr.abes.thesesapirecherche.dto.ApiExceptionDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -11,6 +12,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 /**
  * Gestionnaire d'exception pour Spring Boot MVC
@@ -104,5 +108,30 @@ public class ExceptionControllerHandler {
         return ProblemDetail.forStatusAndDetail(
                 HttpStatus.SERVICE_UNAVAILABLE, "Search is temporarily unavailable");
     }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ApiError> handleIo(IOException e) {
+        log.error("Elasticsearch unreachable", e);
+        HttpStatus status = (e instanceof SocketTimeoutException)
+                ? HttpStatus.GATEWAY_TIMEOUT : HttpStatus.SERVICE_UNAVAILABLE;
+        return ResponseEntity.status(status)
+                .body(new ApiError("Search service temporarily unavailable. Please try again later."));
+    }
+
+    @ExceptionHandler(ElasticsearchException.class)
+    public ResponseEntity<ApiError> handleEs(ElasticsearchException e) {
+        log.error("Elasticsearch error, status={}", e.status(), e);
+        return switch (e.status()) {
+            case 400 -> ResponseEntity.badRequest().body(new ApiError("Invalid search query."));
+            case 429 -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .header("Retry-After", "5")
+                    .body(new ApiError("Service is busy. Please try again shortly."));
+            case 502, 503, 504 -> ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body(new ApiError("Search service temporarily unavailable. Please try again later."));
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiError("Internal error."));
+        };
+    }
+    public record ApiError(String message) {}
 }
 

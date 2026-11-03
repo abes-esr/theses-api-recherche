@@ -6,14 +6,14 @@ import com.rometools.rome.feed.rss.Channel;
 import com.rometools.rome.feed.rss.Description;
 import com.rometools.rome.feed.rss.Guid;
 import com.rometools.rome.feed.rss.Item;
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
+import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import org.jdom2.Element;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.feed.AbstractRssFeedView;
 
@@ -24,10 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
+@AllArgsConstructor
 public class RssFeedView extends AbstractRssFeedView {
 
-    @Autowired
-    SearchQueryBuilder searchQueryBuilder;
+    private ThesesService thesesService;
 
     @SneakyThrows
     @Override
@@ -57,11 +57,11 @@ public class RssFeedView extends AbstractRssFeedView {
         Optional<String> q = Optional.ofNullable(URLDecoder.decode(request.getParameter("q") != null ? request.getParameter("q") : "", StandardCharsets.UTF_8));
         Optional<String> filtres = Optional.ofNullable(URLDecoder.decode(request.getParameter("filtres") != null ? request.getParameter("filtres") : "", StandardCharsets.UTF_8));
 
-        ResponseTheseLiteDto ESresponse = searchQueryBuilder.simple(q.orElse("*"), 0, 30, "dateDesc", filtres.orElse(""));
+        ResponseTheseLiteDto ElasticsearchResponse = thesesService.rechercheAvecFacets(q.orElse("*"), 0, 30, "dateDesc", filtres.orElse(""));
 
         List<Item> rssItems = new ArrayList<>();
 
-        for(TheseLiteResponseDto these : ESresponse.getTheses()) {
+        for(TheseLiteResponseDto these : ElasticsearchResponse.getTheses()) {
             Item i = new Item();
 
             // Balise DublinCore pour auteur (car balise author = uniquement des adresses mails)

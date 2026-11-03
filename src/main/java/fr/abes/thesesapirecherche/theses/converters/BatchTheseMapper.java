@@ -16,17 +16,16 @@ public class BatchTheseMapper {
     private static final DateTimeFormatter DD_MM_YYYY =
             DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("Europe/Paris"));
 
-    public BatchTheseResponseDto theseToBatchDto(Hit<These> theseHit) {
-        These these = theseHit.source();
-        return BatchTheseResponseDto.builder()
-                .id(theseHit.id())
+    public BatchTheseResponseDto theseToBatchDtoSingle(These these) {
+        return these == null ? null : BatchTheseResponseDto.builder()
+                .id(these.getIdDoc())
                 .titrePrincipal(these.getTitrePrincipal())
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
                 .numSujetSansS(these.getNumSujetSansS())
-//                .dateSoutenance(these.getDateSoutenance()) //FIXME
-//                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(these.getDateSoutenance() != null ? these.getDateSoutenance().format(DD_MM_YYYY) : null)
+                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat() != null ? these.getDatePremiereInscriptionDoctorat().format(DD_MM_YYYY) : null)
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
@@ -39,7 +38,7 @@ public class BatchTheseMapper {
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
-                .dateCines(DD_MM_YYYY.format(these.getDateCines()))
+                .dateCines(these.getDateCines() != null ? DD_MM_YYYY.format(these.getDateCines()) : null)
                 .langues(these.getLangues())
                 .oaiSetNames(these.getOaiSetNames())
                 .cas(these.getCas())

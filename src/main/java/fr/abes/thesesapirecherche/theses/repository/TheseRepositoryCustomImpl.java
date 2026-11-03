@@ -1,36 +1,35 @@
 package fr.abes.thesesapirecherche.theses.repository;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.SortOptions;
-import co.elastic.clients.elasticsearch._types.SortOrder;
+import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchRequest;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
-import co.elastic.clients.elasticsearch.core.search.SourceConfig;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import co.elastic.clients.elasticsearch.core.search.*;
+import fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder;
 import fr.abes.thesesapirecherche.config.ElasticClient;
 import fr.abes.thesesapirecherche.config.FacetProps;
+import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.model.These;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder.cleanDoi;
-import static fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder.replaceAndOutsideQuotes;
+import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFilters;
 import static fr.abes.thesesapirecherche.theses.repository.QueryStringNormalizer.normalize;
 
 public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
 
     private final ElasticsearchOperations operations;
     private final FacetProps facetProps;
-    private final String esIndexName = "theses3";
+    @Value("${es.theses.indexname}")
+    private String esIndexName;
     private final ElasticsearchClient myElasticsearchClient;
+    @Value("${maxfacetsvalues}")
+    private int maxFacetsValues;
 
     private final List<String> CHAMPS_RECHERCHABLE = List.of(
             "resumes.*^30",
@@ -85,7 +84,7 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
                     .query(buildQuery(chaine))
                     .from(debut)
                     .size(nombre)
-                    .sort(SortEnum.fromCode(tri).getSortOption())
+                    .sort(SortEnum.toSortOptions(tri))
                     .trackTotalHits(t -> t.enabled(Boolean.TRUE)), These.class);
         } catch (IOException e) {
             throw new DataAccessResourceFailureException(
@@ -94,15 +93,87 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
     }
 
     @Override
+    public SearchResponse<These> rechercherAvecFacets(String chaine, Integer debut, Integer nombre,
+                                            String tri, String filtres) {
+        try {
+            return myElasticsearchClient.search( q -> q
+                    .index(esIndexName)
+                    .query(buildQueryWithFacets(chaine, filtres))
+                    .from(debut)
+                    .size(nombre)
+                    .sort(SortEnum.toSortOptions(tri))
+                    .trackTotalHits(t -> t.enabled(Boolean.TRUE)), These.class);
+        } catch (IOException e) {
+            throw new DataAccessResourceFailureException(
+                    "Elasticsearch search failed on index="+esIndexName+" query="+chaine+" debut="+debut+" nombre="+nombre+" tri="+tri, e);
+        }
+    }
+
+    @Override
+    public SearchResponse<Void> getSuggestions(String q) throws ElasticsearchException, IOException {
+        FieldSuggester fieldSuggester = FieldSuggester.of(fs -> fs
+                .completion(cs -> cs.skipDuplicates(true)
+                        .size(10)
+                        .fuzzy(SuggestFuzziness.of(sf -> sf.
+                                fuzziness("0") // TODO p-t enlever 0 pour mettre 1
+                                .transpositions(true)
+                                .minLength(2)
+                                .prefixLength(3)))
+                        .field("suggestion")));
+
+        Suggester suggester = Suggester.of(s -> s
+                .suggesters("suggestion", fieldSuggester)
+                .text(q)
+        );
+
+        return ElasticClient
+                .getElasticsearchClient()
+                .search(s -> s
+                                .index(esIndexName)
+                                .suggest(suggester)
+                , Void.class);
+    }
+
+    @Override
+    public List<Facet> facets(String chaine, String filtres) throws Exception {
+        return FacetQueryBuilder.facets(
+                ElasticClient.getElasticsearchClient(),
+                buildQuery(chaine),
+                esIndexName,
+                facetProps.getMainTheses(),
+                facetProps.getSubsTheses(),
+                maxFacetsValues,
+                filtres);
+    }
+
+    @Override
+    public long getStatsByStatus(Status status) throws IOException, ElasticsearchException {
+        return ElasticClient.getElasticsearchClient().count(c -> c
+                .index(esIndexName)
+                .query(q -> q.term(t -> t
+                        .field("status")
+                        .value(status.val)))
+        ).count();
+    }
+
+    @Override
     public String rechercherOrganisme(String ppn) {
-        List<String> fields = List.of(
+        List<String> fieldsToSearchIn = List.of(
                 "etabSoutenancePpn",
                 "etabsCotutellePpn",
                 "partenairesRecherchePpn",
                 "ecolesDoctoralesPpn"
         );
 
-        Query q = buildQueryForOrganisme(ppn, fields);
+        List<String> fieldsIncludedInResponse = List.of(
+                "etabSoutenance",
+                "etabsCotutelle",
+                "partenairesRecherche",
+                "ecolesDoctorales"
+
+        );
+
+        Query q = buildQueryForOrganisme(ppn, fieldsToSearchIn);
 
         SearchRequest searchRequest = SearchRequest.of(s -> s
                 .index(esIndexName)
@@ -110,20 +181,13 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
                 .size(1)
                 .source(SourceConfig.of(sc -> sc
                         .filter(f -> f
-                                .includes(fields)) // 2. Return ONLY this field
+                                .includes(fieldsIncludedInResponse)) // Récupère cette liste de champ uniquement dans la réponse
                         )
                 ));
 
-        SearchResponse<OrganismePpn> response;
-        SearchResponse<ObjectNode> foo;
+        SearchResponse<GroupeOrganisme> response;
         try {
-            response = myElasticsearchClient.search(searchRequest, OrganismePpn.class);
-//             foo =  myElasticsearchClient.search(searchRequest, ObjectNode.class);
-//
-//            foo.hits().hits().forEach(hit -> {
-//                assert hit.source() != null;
-//                System.out.println("Source brute : " + hit.source().toPrettyString());
-//            });
+            response = myElasticsearchClient.search(searchRequest, GroupeOrganisme.class);
 
         } catch (IOException e) {
             throw new DataAccessResourceFailureException(
@@ -133,10 +197,16 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
 
         return response.hits().hits().stream().findFirst()
                     .map(Hit::source)
-                    .map(OrganismePpn::firstMatch)
+                    .map(unGroupeDOrganisme -> unGroupeDOrganisme.firstMatch(ppn))
                 .orElse("");
     }
 
+    /**
+     * Crée une requête ElasticSearch afin faire correspondre exactement les champs donnée à la valeur ppn
+     * @param ppn la valeur qu'on recherche
+     * @param fields les champs dans lesquels nous allons lancer la recherche
+     * @return une requête type Query d'Elasticsearch
+     */
     private Query buildQueryForOrganisme(String ppn, List<String> fields) {
         BoolQuery.Builder boolBuilder = new BoolQuery.Builder();
         for (String field : fields) {
@@ -167,6 +237,31 @@ public class TheseRepositoryCustomImpl implements TheseRepositoryCustom {
                 .fields(CHAMPS_RECHERCHABLE)
                 .quoteFieldSuffix(".exact")));
     }
+
+    private Query buildQueryWithFacets(String chaine, String filtres) {
+        List<Query> filtresList = addFilters(filtres, facetProps.getMainTheses(), facetProps.getSubsTheses());
+
+        return Query.of(q -> q.bool(b -> {
+            // 1. Full-text part (or match_all if blank)
+            if (chaine.isBlank()) {
+                b.must(m -> m.matchAll(ma -> ma));
+            } else {
+                String queryString = normalize(chaine);
+                b.must(m -> m.queryString(qs -> qs
+                        .query(queryString)
+                        .defaultOperator(Operator.And)
+                        .analyzeWildcard(true)
+                        .allowLeadingWildcard(true)
+                        .fields(CHAMPS_RECHERCHABLE)
+                        .quoteFieldSuffix(".exact")));
+            }
+
+            b.filter(filtresList);
+            return b;
+        }));
+    }
+
+
 
     public static String replaceSpacesOutsideQuotes(String input) {
         StringBuilder result = new StringBuilder();

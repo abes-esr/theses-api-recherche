@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class TheseLiteMapperTest {
 
@@ -85,7 +86,8 @@ public class TheseLiteMapperTest {
     @DisplayName("Conversion d'une thèse lite du format ES vers DTO")
     void testConversionTheseLiteESversDto() {
 
-        TheseLiteResponseDto thesesLite = theseLiteMapper.theseLiteToDto(searchResponse.hits().hits().get(0));
+        Assertions.assertNotNull(searchResponse.hits().hits().get(0).source());
+        TheseLiteResponseDto thesesLite = theseLiteMapper.theseLiteToDto(Objects.requireNonNull(searchResponse.hits().hits().get(0).source()));
 
         Assertions.assertEquals("127566635", thesesLite.getId());
         Assertions.assertEquals("Zhu",

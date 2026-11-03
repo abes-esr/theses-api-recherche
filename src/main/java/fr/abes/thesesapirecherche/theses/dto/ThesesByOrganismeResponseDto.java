@@ -2,9 +2,12 @@ package fr.abes.thesesapirecherche.theses.dto;
 
 import java.util.List;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
+@Accessors(chain = true)
 @Getter
 @Setter
 public class ThesesByOrganismeResponseDto {

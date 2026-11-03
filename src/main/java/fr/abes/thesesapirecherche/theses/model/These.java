@@ -1,5 +1,9 @@
 package fr.abes.thesesapirecherche.theses.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import fr.abes.thesesapirecherche.config.FlexibleZonedDateTimeDeserializer;
+import fr.abes.thesesapirecherche.config.ZonedDateTimeSerializer;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -47,8 +51,10 @@ public class These {
     private LocalDate dateFiltre;
     @Field(type = FieldType.Date, format = org.springframework.data.elasticsearch.annotations.DateFormat.date)
     private LocalDate datePremiereInscriptionDoctorat;
-    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ssX||uuuu-MM-dd'T'HH:mm:ss")
+    @Field(type = FieldType.Date, format = {}, pattern = "uuuu-MM-dd'T'HH:mm:ssXXX||uuuu-MM-dd'T'HH:mm:ss")
     @ValueConverter(CustomZonedDateTimeConverter.class)
+    @JsonDeserialize(using = FlexibleZonedDateTimeDeserializer.class)
+    @JsonSerialize(using = ZonedDateTimeSerializer.class)
     private ZonedDateTime dateCines;
     List<String> langues;
     List<String> oaiSets;

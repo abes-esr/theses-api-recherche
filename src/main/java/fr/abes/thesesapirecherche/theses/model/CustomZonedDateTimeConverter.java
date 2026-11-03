@@ -4,21 +4,28 @@ import org.springframework.data.elasticsearch.core.mapping.PropertyValueConverte
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.TemporalAccessor;
 
 public class CustomZonedDateTimeConverter implements PropertyValueConverter {
 
-    private final DateTimeFormatter formatterWithZone =
-            DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssX");
-    private final DateTimeFormatter formatterWithoutZone =
-            DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss");
+    // Parsing: offset is optional, accepts "Z", "+02", "+0200" and "+02:00"
+    private static final DateTimeFormatter PARSER = new DateTimeFormatterBuilder()
+            .appendPattern("uuuu-MM-dd'T'HH:mm:ss")
+            .optionalStart().appendOffset("+HH:MM:ss", "Z").optionalEnd()
+            .toFormatter();
+
+    // Writing: always "+02:00" or "Z"
+    private static final DateTimeFormatter WRITER =
+            DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssXXX");
 
     @Override
     public Object write(Object value) {
-        // When writing to Elasticsearch, always use the format with the zone (Z)
-        if (value instanceof ZonedDateTime zonedDateTime) {
-            return formatterWithZone.format(zonedDateTime);
+        if (value instanceof ZonedDateTime zdt) {
+            return WRITER.format(zdt);
         }
         return value;
     }
@@ -26,14 +33,11 @@ public class CustomZonedDateTimeConverter implements PropertyValueConverter {
     @Override
     public Object read(Object value) {
         if (value instanceof String s) {
-            try {
-                // First, try to parse assuming a timezone is present (e.g., ...Z)
-                return formatterWithZone.parse(s, ZonedDateTime::from);
-            } catch (Exception e) {
-                // If that fails, parse without a timezone and assume UTC
-                return formatterWithoutZone.parse(s, LocalDateTime::from)
-                        .atZone(ZoneId.of("UTC"));
+            TemporalAccessor parsed = PARSER.parseBest(s, ZonedDateTime::from, LocalDateTime::from);
+            if (parsed instanceof ZonedDateTime zdt) {
+                return zdt;
             }
+            return ((LocalDateTime) parsed).atZone(ZoneOffset.UTC); // no offset: assume UTC
         }
         return value;
     }

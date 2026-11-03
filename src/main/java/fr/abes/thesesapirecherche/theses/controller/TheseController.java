@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import fr.abes.thesesapirecherche.exception.DocumentNotFoundException;
-import fr.abes.thesesapirecherche.theses.model.These;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -26,12 +25,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import fr.abes.thesesapirecherche.commons.services.Mail;
 import fr.abes.thesesapirecherche.exception.RecaptchaInvalidException;
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.data.DbRequests;
 import fr.abes.thesesapirecherche.theses.dto.CaptchaResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.SignalerErreurDto;
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -41,8 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/theses")
 @Validated
+@RequiredArgsConstructor
 public class TheseController {
-    final SearchQueryBuilder searchQueryBuilder;
     @Value("${google.recaptcha.key.site}")
     private String recaptchaSite;
     @Value("${google.recaptcha.key.secret}")
@@ -55,18 +52,12 @@ public class TheseController {
     @Value("${mail.ws}")
     private String wsMailURL;
 
-    @Autowired
-    private DbRequests dbRequests;
+    private final DbRequests dbRequests;
 
-    @Autowired
-    private Environment env;
+    private final Environment env;
 
-    @Autowired 
-    private ThesesService thesesService;
+    private final ThesesService thesesService;
 
-    public TheseController(SearchQueryBuilder searchQueryBuilder) {
-        this.searchQueryBuilder = searchQueryBuilder;
-    }
 
     // endpoint pour le front
     @GetMapping(value = "/these/{id}")
@@ -89,7 +80,7 @@ public class TheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public String getNntIfExist(@PathVariable final String numSujet) throws Exception {
+    public String getNntIfExist(@PathVariable final String numSujet) {
         try {
             return dbRequests.checkIfNNT(numSujet);
         } catch (Exception e) {
@@ -104,7 +95,7 @@ public class TheseController {
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public String signalerErreur(@RequestBody SignalerErreurDto json) throws RecaptchaInvalidException, IOException {
-        /**
+        /*
          * GESTION DU CAPTCHA GOOGLE
          */
         //requête à l'API google
@@ -120,7 +111,7 @@ public class TheseController {
             throw new RecaptchaInvalidException("reCaptcha non valide");
         }
 
-        /**
+        /*
          * SI CAPTCHA OK, ON PASSE A LA SUITE
          * ENVOI DU MAIL A LA VRAIE ADRESSE EN PROD ET TEST
          */

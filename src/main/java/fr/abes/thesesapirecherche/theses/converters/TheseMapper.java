@@ -47,38 +47,7 @@ public class TheseMapper {
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
-//                .dateSoutenance(these.getDateSoutenance()) FIXME
-//                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
-                .discipline(these.getDiscipline())
-                .titres(these.getTitres())
-                .resumes(these.getResumes())
-                .etabSoutenance(organismeMapper.organismeToDto(these.getEtabSoutenance()))
-                .codeEtab(these.getCodeEtab())
-                .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
-                .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(formatKeywords(these))
-                .membresJury(personneMapper.personnesToDto(these.getMembresJury()))
-                .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
-                .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
-                .directeurs(personneMapper.personnesToDto(these.getDirecteurs()))
-                .cas(these.getCas())
-                .langues(these.getLangues())
-                .accessible(these.getAccessible())
-                .ecolesDoctorales(organismeMapper.organismesToDto(these.getEcolesDoctorales()))
-                .presidentJury(personneMapper.personneToDto(these.getPresidentJury()))
-                .source(these.getSource())
-                .status(these.getStatus())
-                .isSoutenue(these.getIsSoutenue())
-                .build();
-    }
-
-    public TheseResponseDto theseToDtoCustomTotoToto(These these) {
-        return TheseResponseDto.builder()
-                .titrePrincipal(these.getTitrePrincipal())
-                .nnt(these.getNnt())
-                .doi(these.getDoi())
-                .numSujet(these.getNumSujet())
-                .dateSoutenance(these.getDateSoutenance().format(DD_MM_YYYY))
+                .dateSoutenance(these.getDateSoutenance() != null ? these.getDateSoutenance().format(DD_MM_YYYY) : null)
                 .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat() != null ? these.getDatePremiereInscriptionDoctorat().format(DD_MM_YYYY) : null)
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
@@ -103,11 +72,4 @@ public class TheseMapper {
                 .build();
     }
 
-    public List<TheseResponseDto> thesesToDto(List<These> personnes) {
-        List<TheseResponseDto> results = new ArrayList<>();
-        for (These item : personnes) {
-            results.add(theseToDto(item));
-        }
-        return results;
-    }
 }

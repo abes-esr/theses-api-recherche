@@ -1,21 +1,18 @@
-package fr.abes.thesesapirecherche.theses.dto;
+package fr.abes.thesesapirecherche.theses.service;
 
+import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-public class ResponseTheseCSVDto {
+@Component
+public class ResultatCsvWriter {
+//    private static final String SEPARATOR = ";";
 
-    List<ClientTheseResponseDto> theses = new ArrayList<>();
-
-    // TODO extraire dans un service
-    public String toCSV() {
+    public String toCSV(List<ClientTheseResponseDto> theseList) {
         StringBuilder s = new StringBuilder();
         //en tête
         s.append("\"NNT\";\"DOI\";\"NumSujet\";\"NumSujetSansS\";\"Auteurs\";\"Titre FR\";\"Titre EN\";\"Directeurs\";\"Discipline\";\"Date de soutenance\";\"Date de première inscription\";\"Date d'archivage CINES\";\"Etablissement de soutenance\";\"Code etablissement\";\"Etablissement de cotutelle\";\"Ecoles doctorales\";\"Partenaires de recherche\";\"Président du jury\";\"Rapporteurs\";\"Examinateurs\";\"Mots clés FR\";\"Mots clés EN\";\"Langue\";\"Noms des sets OAI\";\"Source\";\"Statut\";\"Cas\";\"Accessible\"");
@@ -25,12 +22,12 @@ public class ResponseTheseCSVDto {
         boolean firstRound;
 
         //contenu
-        for(ClientTheseResponseDto t : theses) {
+        for(ClientTheseResponseDto t : theseList) {
 
             String dateSoutenance = t.getDateSoutenance() == null ? "" : t.getDateSoutenance();
             String datePremiereInscriptionDoctorat = t.getDatePremiereInscriptionDoctorat() == null ? "" : t.getDatePremiereInscriptionDoctorat();
             String dateCines = t.getDateCines() == null ? "" : t.getDateCines();
-            
+
 
             //NNT
             s.append("\"").append(t.getNnt() != null ? t.getNnt() : "").append("\";");
@@ -170,11 +167,11 @@ public class ResponseTheseCSVDto {
             firstRound = true;
             s.append("\"");
             if(t.getMapSujets().containsKey("fr")){
-            for(SujetsToMap map : t.getMapSujets().get("fr")) {
-                if(!firstRound) s.append(" || ");
-                s.append(map.getKeyword().replace("\"", "").replace("||", " "));
-                firstRound = false;
-            }}
+                for(SujetsToMap map : t.getMapSujets().get("fr")) {
+                    if(!firstRound) s.append(" || ");
+                    s.append(map.getKeyword().replace("\"", "").replace("||", " "));
+                    firstRound = false;
+                }}
             s.append("\";");
 
             //Mots clés EN
@@ -213,7 +210,7 @@ public class ResponseTheseCSVDto {
 
             //Statut
             s.append("\"").append(t.getStatus().equals("soutenue") ? "soutenue" : "en cours").append("\";");
-            
+
             //Cas
             s.append("\"").append(t.getCas() != null ? t.getCas() : "").append("\";");
 
@@ -225,4 +222,5 @@ public class ResponseTheseCSVDto {
 
         return s.toString();
     }
+
 }
