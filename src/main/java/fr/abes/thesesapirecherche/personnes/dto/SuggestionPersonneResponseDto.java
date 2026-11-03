@@ -19,7 +19,7 @@ public class SuggestionPersonneResponseDto {
     String text;
 
     /**
-     * Identifiant du document Elastic Search
+     * Identifiant du document
      */
     @JsonProperty("id")
     String id;
