@@ -10,7 +10,6 @@ import java.util.List;
 
 @Component
 public class ResultatCsvWriter {
-//    private static final String SEPARATOR = ";";
 
     public String toCSV(List<ClientTheseResponseDto> theseList) {
         StringBuilder s = new StringBuilder();

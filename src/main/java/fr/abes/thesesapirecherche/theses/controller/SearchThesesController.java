@@ -44,7 +44,6 @@ public class SearchThesesController {
 
     private RssFeedView view;
     private ThesesService thesesService;
-    private TheseRepository theseRepository;
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour le front)
     @GetMapping(value = "/recherche/")
@@ -67,7 +66,7 @@ public class SearchThesesController {
             @RequestParam(defaultValue = "") @Parameter(name = "tri", description = "Type de tri", example = "dateAsc, dateDesc, auteursAsc, auteursDesc, disciplineAsc, discplineDesc") String tri,
             @RequestParam(defaultValue = "") @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") String filtres
     ) {
-        return thesesService.recherche(q, debut, nombre, tri, filtres);
+        return thesesService.rechercheAvecFacets(q, debut, nombre, tri, filtres);
     }
 
     @GetMapping(value = "/rechercheCSV")
@@ -155,7 +154,7 @@ public class SearchThesesController {
     public List<Facet> facets(@RequestParam final String q,
                               @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
-        return theseRepository.facets(q, filtres.orElse(""));
+        return thesesService.facets(q, filtres.orElse(""));
     }
 
     @GetMapping(value = "/statsTheses")

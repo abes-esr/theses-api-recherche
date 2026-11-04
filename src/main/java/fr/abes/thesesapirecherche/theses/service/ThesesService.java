@@ -55,12 +55,9 @@ public class ThesesService {
     @Autowired
     private ResultatCsvWriter resultatCsvWriter;
 
-    @Value("${es.theses.indexname}")
-    private String esIndexName;
-
     /**
-     * Recherche les thèses selon les paramètres de la requête
-     * 
+     * Recherche les thèses selon les paramètres de la requête en incluant les facets dans la requête
+     *
      * @param chaine chaine de caractères à rechercher
      * @param debut numero de la page à rechercher
      * @param nombre nombre de résultats à retourner
@@ -68,23 +65,6 @@ public class ThesesService {
      * @param filtres filtres à appliquer à la requête ES
      * @return un objet réponse de la recherche au format DTO (contient plus d'informations que la méthode {@link rechercheTheseDetail}).
      */
-    public ResponseTheseLiteDto recherche(String chaine, Integer debut, Integer nombre, String tri, String filtres) {
-        SearchResponse<These> response = theseRepository.rechercher(chaine, debut, nombre, tri, filtres);
-
-        List<TheseLiteResponseDto> liste = response.hits().hits()
-                .stream()
-                .map(t-> theseLiteMapper.theseLiteToDto(Objects.requireNonNull(t.source())))
-                .toList();
-
-        ResponseTheseLiteDto res = new ResponseTheseLiteDto();
-
-        res.setTheses(liste);
-        res.setTook(response.took());
-        res.setTotalHits(Objects.requireNonNull(response.hits().total()).value());
-
-        return res;
-    }
-
     public ResponseTheseLiteDto rechercheAvecFacets(String chaine, Integer debut, Integer nombre, String tri, String filtres) {
         SearchResponse<These> response = theseRepository.rechercherAvecFacets(chaine, debut, nombre, tri, filtres);
 
@@ -111,10 +91,10 @@ public class ThesesService {
      * @param nombre nombre de résultats à retourner
      * @param tri tri à appliquer sur la recherche ES
      * @param filtres filtres à appliquer à la requête ES
-     * @return un objet réponse de la recherche au format DTO (contient plus d'informations que la méthode {@link recherche}).
+     * @return un objet réponse de la recherche au format DTO (contient plus d'informations que la méthode {@link rechercheAvecFacets}).
      */
     public ClientResponseTheseLiteDto rechercheTheseDetail(String chaine, int debut, int nombre, String tri, String filtres) {
-        SearchResponse<These> response = theseRepository.rechercher(chaine, debut, nombre, tri, filtres);
+        SearchResponse<These> response = theseRepository.rechercherAvecFacets(chaine, debut, nombre, tri, filtres);
 
         ClientResponseTheseLiteDto res = new ClientResponseTheseLiteDto();
         List<ClientTheseLiteResponseDto> listeThese = response.hits().hits().stream()
@@ -130,14 +110,14 @@ public class ThesesService {
 
 
     /**
-     * Retourne un ensemble de thèses selon les paramètres de la requête. 
+     * Recherche les thèses selon les paramètres de la requête et renvoie une réponse complète, qui contient une grande quantité d'information
      * 
      * @param chaine chaine de caractères à rechercher
      * @param debut numero de la page à rechercher
      * @param nombre nombre de résultats à retourner
      * @param tri tri à appliquer sur la recherche ES
      * @param filtres filtres à appliquer à la requête ES
-     * @return un objet réponse de la recherche au format DTO (retourne plus d'informations que la méthode {@link recherche})
+     * @return un objet réponse de la recherche au format DTO (retourne plus d'informations que la méthode {@link rechercheAvecFacets})
      * @throws Exception si une erreur est survenue
      */
     public BatchResponseTheseDto getThesesBatch(String chaine, Integer debut, Integer nombre, String tri, String filtres) {
@@ -160,7 +140,7 @@ public class ThesesService {
     /**
      * Retourne une thèse dans ElasticSearch selon son identifiant au format DTO (utilisée pour le front)
      *
-     * @param theseId identifiant interne de Elastic Search
+     * @param theseId identifiant interne de Elasticsearch
      * @return une thèse au format DTO web (moins d'informations qu'avec la méthode {@link getTheseClientToClient})
      * @throws DocumentNotFoundException si aucune thèse ne correspond
      */
@@ -172,7 +152,7 @@ public class ThesesService {
     /**
      * Retourne une thèse dans ElasticSearch selon son identifiant au format DTO (utilisée pour les utilisateurs qui consomment l'api directement)
      * 
-     * @param theseId identifiant interne de Elastic Search
+     * @param theseId identifiant interne de Elasticsearch
      * @return une thèse au format DTO web (plus d'informations qu'avec la méthode {@link getThese})
      * @throws DocumentNotFoundException si aucune thèse ne correspond
      */
@@ -190,6 +170,16 @@ public class ThesesService {
         return theseRepository.rechercherOrganisme(ppn);
     }
 
+    /**
+     * Recherche les thèses selon les paramètres de la requête.
+     *
+     * @param chaine chaine de caractères à rechercher
+     * @param debut numero de la page à rechercher
+     * @param nombre nombre de résultats à retourner
+     * @param tri tri à appliquer sur la recherche ES
+     * @param filtres filtres à appliquer à la requête ES
+     * @return un String au format CSV séparés par des points virgules ; - voir {@link ResultatCsvWriter} pour le format précis.
+     */
     public String rechercheToCsv(String chaine, Integer debut, Integer nombre, String tri, String filtres) {
         SearchResponse<These> response = theseRepository.rechercherAvecFacets(chaine, debut, nombre, tri, filtres);
 
