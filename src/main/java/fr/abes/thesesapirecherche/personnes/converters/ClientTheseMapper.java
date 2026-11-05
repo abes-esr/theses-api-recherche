@@ -1,5 +1,9 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +30,11 @@ public class ClientTheseMapper {
     
     @Autowired 
     SujetRameauMapper sujetRameauMapper;
+
+    static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private static final DateTimeFormatter DD_MM_YYYY =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy").withZone(ZoneId.of("Europe/Paris"));
 
     /**
      * Transforme une thèse en web dto
@@ -82,8 +91,10 @@ public class ClientTheseMapper {
 
         //On tri les thèses par date
         for (String role : results.keySet()) {
-            Collections.sort(results.get(role), Comparator.comparing(ClientTheseResponseDto::getDate_soutenanceTri).reversed());
+            results.get(role)
+                    .sort(Comparator.comparing(x -> getDate_soutenanceTri(x.getDateSoutenance(), x.getDateInscription()), Comparator.reverseOrder()));
         }
+
         return results;
     }
 
@@ -101,10 +112,24 @@ public class ClientTheseMapper {
         theseDto.setLangues(these.getLangues());
         theseDto.setAccessible(these.getAccessible());
         theseDto.setCodeEtab(these.getCodeEtab());
-//        theseDto.setDateCines(these.getDateCines()); fixme
+        theseDto.setDateCines(these.getDateCines() != null ? DD_MM_YYYY.format(these.getDateCines()) : null);
         theseDto.setNumSujetSansS(these.getNumSujetSansS());
         theseDto.setOaiSetNames(these.getOaiSetNames());
         theseDto.setDoi(these.getDoi());
+    }
+
+    static public String getDate_soutenanceTri(String dateSoutenance, String dateInscription) {
+        if (dateSoutenance != null)
+            return dateSoutenance;
+        if (dateInscription != null) {
+            // On ajoute 20 ans à la date pour mettre les thèses en préparation
+            // avant les thèses soutenues
+            LocalDate date = LocalDate.parse(dateInscription);
+            return date.plusYears(20).format(dateFormat);
+        }
+
+        // Au cas où, on met la date du jour
+        return dateFormat.format(LocalDateTime.now());
     }
     
 }

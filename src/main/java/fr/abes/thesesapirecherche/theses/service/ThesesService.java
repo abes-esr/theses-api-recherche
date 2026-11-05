@@ -13,9 +13,7 @@ import fr.abes.thesesapirecherche.exception.DocumentNotFoundException;
 import fr.abes.thesesapirecherche.theses.dto.*;
 import fr.abes.thesesapirecherche.theses.repository.Status;
 import fr.abes.thesesapirecherche.theses.repository.TheseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -33,27 +31,18 @@ import fr.abes.thesesapirecherche.theses.dto.client.ClientThesesByOrganismeRespo
 import fr.abes.thesesapirecherche.theses.model.These;
 
 @Service
+@AllArgsConstructor
 public class ThesesService {
 
-    @Autowired
-    @Qualifier("TheseTheseMapper")
-    private TheseMapper theseMapper;
+    private final TheseMapper theseMapper;
 
-    @Autowired
-    private TheseLiteMapper theseLiteMapper;
+    private final TheseLiteMapper theseLiteMapper;
 
-    @Autowired
-    @Qualifier("TheseClientTheseMapper")
-    private ClientTheseMapper clientTheseMapper;
+    private final ClientTheseMapper clientTheseMapper;
 
-    @Autowired
-    private BatchTheseMapper batchTheseMapper;
+    private final BatchTheseMapper batchTheseMapper;
 
-    @Autowired
-    private TheseRepository theseRepository;
-
-    @Autowired
-    private ResultatCsvWriter resultatCsvWriter;
+    private final TheseRepository theseRepository;
 
     /**
      * Recherche les thèses selon les paramètres de la requête en incluant les facets dans la requête
@@ -118,7 +107,6 @@ public class ThesesService {
      * @param tri tri à appliquer sur la recherche ES
      * @param filtres filtres à appliquer à la requête ES
      * @return un objet réponse de la recherche au format DTO (retourne plus d'informations que la méthode {@link rechercheAvecFacets})
-     * @throws Exception si une erreur est survenue
      */
     public BatchResponseTheseDto getThesesBatch(String chaine, Integer debut, Integer nombre, String tri, String filtres) {
         SearchResponse<These> response = theseRepository.rechercherAvecFacets(chaine, debut, nombre, tri, filtres);
@@ -178,7 +166,7 @@ public class ThesesService {
      * @param nombre nombre de résultats à retourner
      * @param tri tri à appliquer sur la recherche ES
      * @param filtres filtres à appliquer à la requête ES
-     * @return un String au format CSV séparés par des points virgules ; - voir {@link ResultatCsvWriter} pour le format précis.
+     * @return un String au format CSV séparés par des points virgules ; - voir {@link CsvWriter} pour le format précis.
      */
     public String rechercheToCsv(String chaine, Integer debut, Integer nombre, String tri, String filtres) {
         SearchResponse<These> response = theseRepository.rechercherAvecFacets(chaine, debut, nombre, tri, filtres);
@@ -188,7 +176,7 @@ public class ThesesService {
                 .map(t-> clientTheseMapper.theseToClientDto(Objects.requireNonNull(t.source())))
                 .toList();
 
-        return resultatCsvWriter.toCSV(liste);
+        return CsvWriter.ClientTheseResponseDtoCsvWriter.write(liste);
     }
 
     /**
@@ -317,7 +305,7 @@ public class ThesesService {
     public List<String> completion(String q) throws IOException, ElasticsearchException {
         SearchResponse<Void> response = theseRepository.getSuggestions(q);
 
-        List<String> listeSuggestions = new ArrayList<String>();
+        List<String> listeSuggestions = new ArrayList<>();
         response
                 .suggest()
                 .forEach((key, value) -> value.forEach(s -> s

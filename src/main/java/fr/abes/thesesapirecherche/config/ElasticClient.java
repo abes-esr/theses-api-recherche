@@ -23,7 +23,6 @@ import org.elasticsearch.client.RestClient;
 import javax.net.ssl.SSLContext;
 
 @Slf4j
-// TODO fixme fusion ElasticClient, qui était déjà là, et ManualElasticConfig que j'ai ajouté
 public class ElasticClient {
 
     private static ElasticsearchClient client;

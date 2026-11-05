@@ -9,6 +9,8 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static fr.abes.thesesapirecherche.personnes.converters.ClientTheseMapper.getDate_soutenanceTri;
+
 /**
  * Convertisseur de format pour les objets Thèses
  */
@@ -72,8 +74,10 @@ public class TheseMapper {
 
         //On tri les thèses par date
         for (String role : results.keySet()) {
-            Collections.sort(results.get(role), Comparator.comparing(TheseResponseDto::getDate_soutenanceTri).reversed());
+            results.get(role)
+                    .sort(Comparator.comparing(x -> getDate_soutenanceTri(x.getDateSoutenance(), x.getDateInscription()), Comparator.reverseOrder()));
         }
+
         return results;
     }
 

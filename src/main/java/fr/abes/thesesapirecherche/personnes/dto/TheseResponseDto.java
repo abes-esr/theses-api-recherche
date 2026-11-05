@@ -41,21 +41,4 @@ public class TheseResponseDto {
     String source;
     List<ThesePersonneLiteResponseDto> auteurs;
     List<ThesePersonneLiteResponseDto> directeurs;
-
-    @JsonIgnore
-    public String getDate_soutenanceTri() {
-        if (dateSoutenance != null) {
-            return dateSoutenance;
-        } else if (dateInscription != null) {
-            // On ajoute 20 ans à la date pour mettre les thèses en préparation
-            // avant les thèses soutenues
-            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate date = LocalDate.parse(dateInscription);
-            return date.plusYears(20).format(dateFormat);
-        } else {
-            // Au cas où, on met la date du jour
-            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return dateFormat.format(LocalDateTime.now());
-        }
-    }
 }
