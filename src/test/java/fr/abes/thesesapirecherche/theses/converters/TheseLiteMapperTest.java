@@ -52,6 +52,7 @@ public class TheseLiteMapperTest {
         these1.setAuteurs(auteurs);
         these1.setDirecteurs(directeurs);
         these1.setNnt("2017TOU30281");
+        these1.setIdDoc("127566635");
         these1.setCodeEtab("TOU3");
         these1.setDiscipline("Chimie organométallique de coordination");
 
