@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
+import fr.abes.thesesapirecherche.theses.service.DateFormats;
 import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -20,8 +21,8 @@ public class BatchTheseMapper {
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
                 .numSujetSansS(these.getNumSujetSansS())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(DateFormats.formatDate(these::getDateSoutenance))
+                .datePremiereInscriptionDoctorat(DateFormats.formatDate(these::getDatePremiereInscriptionDoctorat))
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
@@ -34,7 +35,7 @@ public class BatchTheseMapper {
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
-                .dateCines(these.getDateCines())
+                .dateCines(DateFormats.formatDate(these::getDateCines))
                 .langues(these.getLangues())
                 .oaiSetNames(these.getOaiSetNames())
                 .cas(these.getCas())

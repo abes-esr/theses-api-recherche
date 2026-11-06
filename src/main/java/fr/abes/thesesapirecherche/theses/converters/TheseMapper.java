@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.abes.thesesapirecherche.theses.service.DateFormats;
 import org.springframework.stereotype.Component;
 
 @Component("TheseTheseMapper")
@@ -42,8 +43,8 @@ public class TheseMapper {
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(DateFormats.formatDate(these::getDateSoutenance))
+                .datePremiereInscriptionDoctorat(DateFormats.formatDate(these::getDatePremiereInscriptionDoctorat))
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())

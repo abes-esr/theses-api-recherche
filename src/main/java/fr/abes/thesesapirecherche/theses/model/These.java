@@ -77,19 +77,4 @@ public class These {
     String presidentJuryPN;
     String presidentJuryPpn;
     String theseTravaux;
-
-    public String getDateSoutenance() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateSoutenance != null ? dateFormat.format(dateSoutenance) : null;
-    }
-
-    public String getDatePremiereInscriptionDoctorat() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return datePremiereInscriptionDoctorat != null ? dateFormat.format(datePremiereInscriptionDoctorat) : null;
-    }
-
-    public String getDateCines() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateCines != null ? dateFormat.format(dateCines) : null;
-    }
 }

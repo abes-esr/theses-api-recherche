@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
+import fr.abes.thesesapirecherche.theses.service.DateFormats;
 import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -18,8 +19,8 @@ public class TheseLiteMapper {
                 .titreEN(theseHit.source().getTitres().get("en") != null ? theseHit.source().getTitres().get("en") : "")
                 .etabSoutenanceN(theseHit.source().getEtabSoutenanceN())
                 .etabSoutenancePpn(theseHit.source().getEtabSoutenancePpn())
-                .dateSoutenance(theseHit.source().getDateSoutenance())
-                .datePremiereInscriptionDoctorat(theseHit.source().getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(DateFormats.formatDate(() -> theseHit.source().getDateSoutenance()))
+                .datePremiereInscriptionDoctorat(DateFormats.formatDate(() -> theseHit.source().getDatePremiereInscriptionDoctorat()))
                 .auteurs(theseHit.source().getAuteurs())
                 .directeurs(theseHit.source().getDirecteurs())
                 .rapporteurs(theseHit.source().getRapporteurs())
