@@ -2,6 +2,8 @@ package fr.abes.thesesapirecherche.theses.converters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import fr.abes.thesesapirecherche.theses.service.DateFormats;
 import org.springframework.stereotype.Component;
@@ -11,10 +13,12 @@ import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.formatKeywords;
+
 
 @Component("TheseClientTheseMapper")
 public class ClientTheseMapper {
-    
+    SujetsToMapMapper sujetsToMapMapper = new SujetsToMapMapper();
 
     public ClientTheseResponseDto theseToClientDto(These these) {
         return ClientTheseResponseDto.builder()
@@ -32,7 +36,13 @@ public class ClientTheseMapper {
                 .codeEtab(these.getCodeEtab())
                 .etabCotutelle(TheseMappingHelper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(TheseMappingHelper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(TheseMappingHelper.formatKeywords(these))
+                .mapSujets(formatKeywords(these).entrySet().stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> entry.getValue().stream()
+                                        .map(model -> sujetsToMapMapper.sujetsToMapToDto(model))
+                                        .collect(Collectors.toList())
+                        )))
                 .membresJury(TheseMappingHelper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
@@ -78,7 +88,13 @@ public class ClientTheseMapper {
                 .codeEtab(these.getCodeEtab())
                 .etabCotutelle(TheseMappingHelper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(TheseMappingHelper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(TheseMappingHelper.formatKeywords(these))
+                .mapSujets(formatKeywords(these).entrySet().stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> entry.getValue().stream()
+                                        .map(model -> sujetsToMapMapper.sujetsToMapToDto(model))
+                                        .collect(Collectors.toList())
+                        )))
                 .membresJury(TheseMappingHelper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))

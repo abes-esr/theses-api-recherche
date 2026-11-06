@@ -7,10 +7,15 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.formatKeywords;
+
 
 @Component 
 public class BatchTheseMapper {
-    
+    SujetsToMapMapper sujetsToMapMapper = new SujetsToMapMapper();
 
     public BatchTheseResponseDto theseToBatchDto(Hit<These> theseHit) {
         These these = theseHit.source();
@@ -30,7 +35,13 @@ public class BatchTheseMapper {
                 .codeEtab(these.getCodeEtab())
                 .etabCotutelle(TheseMappingHelper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(TheseMappingHelper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(TheseMappingHelper.formatKeywords(these))
+                .mapSujets(formatKeywords(these).entrySet().stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> entry.getValue().stream()
+                                        .map(model -> sujetsToMapMapper.sujetsToMapToDto(model))
+                                        .collect(Collectors.toList())
+                        )))
                 .membresJury(TheseMappingHelper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))

@@ -1,13 +1,9 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
 import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.model.Sujet;
-import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
-import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import fr.abes.thesesapirecherche.theses.model.These;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

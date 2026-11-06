@@ -3,6 +3,7 @@ package fr.abes.thesesapirecherche.theses.dto.batch;
 import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.SujetsToMapDto;
 import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
+import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
