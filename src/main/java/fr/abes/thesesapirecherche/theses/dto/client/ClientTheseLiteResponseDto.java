@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.SujetsToMapDto;
 import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
-import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -33,7 +33,7 @@ public class ClientTheseLiteResponseDto {
     String codeEtab;
     List<OrganismeResponseDto> etabCotutelle;
     List<OrganismeResponseDto> partenairesRecherche;
-    Map<String, List<SujetsToMap>> mapSujets;
+    Map<String, List<SujetsToMapDto>> mapSujets;
     List<ThesePersonneResponseDto> membresJury;
     List<ThesePersonneResponseDto> rapporteurs;
     List<ThesePersonneResponseDto> auteurs;

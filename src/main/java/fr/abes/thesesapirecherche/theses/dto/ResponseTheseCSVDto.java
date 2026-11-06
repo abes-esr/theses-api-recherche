@@ -170,7 +170,7 @@ public class ResponseTheseCSVDto {
             firstRound = true;
             s.append("\"");
             if(t.getMapSujets().containsKey("fr")){
-            for(SujetsToMap map : t.getMapSujets().get("fr")) {
+            for(SujetsToMapDto map : t.getMapSujets().get("fr")) {
                 if(!firstRound) s.append(" || ");
                 s.append(map.getKeyword().replace("\"", "").replace("||", " "));
                 firstRound = false;
@@ -181,7 +181,7 @@ public class ResponseTheseCSVDto {
             firstRound = true;
             s.append("\"");
             if(t.getMapSujets().containsKey("en")){
-                for(SujetsToMap map : t.getMapSujets().get("en")) {
+                for(SujetsToMapDto map : t.getMapSujets().get("en")) {
                     if(!firstRound) s.append(" || ");
                     s.append(map.getKeyword().replace("\"", "").replace("||", " "));
                     firstRound = false;

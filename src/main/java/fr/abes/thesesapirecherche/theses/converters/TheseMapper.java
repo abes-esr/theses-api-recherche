@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import fr.abes.thesesapirecherche.theses.service.DateFormats;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,10 @@ import org.springframework.stereotype.Component;
 public class TheseMapper {
     ThesePersonneMapper personneMapper = new ThesePersonneMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
+    SujetsToMapMapper sujetsToMapMapper = new SujetsToMapMapper();
 
     private Map<String, List<SujetsToMap>> formatKeywords(These these) {
-        Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();
+        Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();//fixme y a p-t déjà une fonction qui fait la mêem chose TheseMappingHelper.formatKeywords
         for (Sujet s : these.getSujets()) {
             List<SujetsToMap> l = new ArrayList<>();
             if (mapSujets.get(s.getLangue()) != null) l = mapSujets.get(s.getLangue());
@@ -52,7 +54,13 @@ public class TheseMapper {
                 .codeEtab(these.getCodeEtab())
                 .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(formatKeywords(these))
+                .mapSujets(formatKeywords(these).entrySet().stream()
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> entry.getValue().stream()
+                                        .map(model -> sujetsToMapMapper.sujetsToMapToDto(model))
+                                        .collect(Collectors.toList())
+                        )))
                 .membresJury(personneMapper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
                 .auteurs(personneMapper.personnesToDto(these.getAuteurs()))
