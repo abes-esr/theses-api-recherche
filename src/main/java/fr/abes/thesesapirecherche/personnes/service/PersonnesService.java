@@ -45,17 +45,7 @@ public class PersonnesService {
     public PersonneResponseDto getPersonne(String id) throws Exception{
         // on récupère la personne via ElasticSearch
         SearchResponse<Personne> response = searchPersonneQueryBuilder.getPersonne(id);
-        Personne p = response.hits().hits().get(0).source();
-        
-        return PersonneResponseDto.builder()
-        .id(response.hits().hits().get(0).id())
-        .nom(p.getNom())
-        .prenom(p.getPrenom())
-        .hasIdref(p.getHasIdref())
-        .roles(PersonneComputedFields.calculerStatistiquesRoles(p.getRoles()))
-        .motsCles(PersonneComputedFields.calculerMotsCles(p.getTheses()))
-        .build();
-
+        return personneMapper.personneToDto(response.hits().hits().get(0));
     }
 
 
