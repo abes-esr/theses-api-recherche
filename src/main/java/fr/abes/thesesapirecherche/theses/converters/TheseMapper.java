@@ -15,29 +15,13 @@ import java.util.stream.Collectors;
 import fr.abes.thesesapirecherche.theses.service.DateFormats;
 import org.springframework.stereotype.Component;
 
+import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.formatKeywords;
+
 @Component("TheseTheseMapper")
 public class TheseMapper {
     ThesePersonneMapper personneMapper = new ThesePersonneMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
     SujetsToMapMapper sujetsToMapMapper = new SujetsToMapMapper();
-
-    private Map<String, List<SujetsToMap>> formatKeywords(These these) {
-        Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();//fixme y a p-t déjà une fonction qui fait la mêem chose TheseMappingHelper.formatKeywords
-        for (Sujet s : these.getSujets()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get(s.getLangue()) != null) l = mapSujets.get(s.getLangue());
-            l.add(new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujet, s.getLibelle()));
-            mapSujets.put(s.getLangue(), l);
-        }
-        for (SujetsRameau s : these.getSujetsRameau()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get("fr") != null) l = mapSujets.get("fr");
-            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, "\"" + s.getLibelle() + "\" ET " + s.getPpn()));
-            mapSujets.put("fr", l);
-        }
-
-        return mapSujets;
-    }
 
     public TheseResponseDto theseToDto(These these) {
         return TheseResponseDto.builder()
