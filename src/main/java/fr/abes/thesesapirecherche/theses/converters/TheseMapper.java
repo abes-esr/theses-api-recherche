@@ -3,21 +3,22 @@ package fr.abes.thesesapirecherche.theses.converters;
 import fr.abes.thesesapirecherche.theses.dto.TheseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import fr.abes.thesesapirecherche.theses.service.DateFormats;
+import fr.abes.thesesapirecherche.theses.service.DateFormatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.formatKeywords;
 
 @Component("TheseTheseMapper")
+@RequiredArgsConstructor
 public class TheseMapper {
     PersonneRefMapper personneMapper = new PersonneRefMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
     SujetsToMapMapper sujetsToMapMapper = new SujetsToMapMapper();
+    private final DateFormatService dateFormatService;
 
     public TheseDto theseToDto(These these) {
         return TheseDto.builder()
@@ -25,8 +26,8 @@ public class TheseMapper {
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
-                .dateSoutenance(DateFormats.formatDate(these::getDateSoutenance))
-                .datePremiereInscriptionDoctorat(DateFormats.formatDate(these::getDatePremiereInscriptionDoctorat))
+                .dateSoutenance(dateFormatService.formatDate(these::getDateSoutenance))
+                .datePremiereInscriptionDoctorat(dateFormatService.formatDate(these::getDatePremiereInscriptionDoctorat))
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())

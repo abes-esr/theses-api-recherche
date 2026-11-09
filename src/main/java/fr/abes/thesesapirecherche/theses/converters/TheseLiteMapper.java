@@ -1,6 +1,7 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
-import fr.abes.thesesapirecherche.theses.service.DateFormats;
+import fr.abes.thesesapirecherche.theses.service.DateFormatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -9,11 +10,12 @@ import fr.abes.thesesapirecherche.theses.model.These;
 
 import java.util.Objects;
 
-@Component 
+@Component
+@RequiredArgsConstructor
 public class TheseLiteMapper {
-
-    OrganismeMapper organismeMapper = new OrganismeMapper();
-    PersonneRefMapper personneRefMapper = new PersonneRefMapper();
+    private final OrganismeMapper organismeMapper;
+    private final PersonneRefMapper personneRefMapper;
+    private final DateFormatService dateFormatService;
 
     public TheseLiteDto theseLiteToDto(Hit<These> theseHit) {
         return TheseLiteDto.builder()
@@ -22,8 +24,8 @@ public class TheseLiteMapper {
                 .titreEN(theseHit.source().getTitres().get("en") != null ? theseHit.source().getTitres().get("en") : "")
                 .etabSoutenanceN(theseHit.source().getEtabSoutenanceN())
                 .etabSoutenancePpn(theseHit.source().getEtabSoutenancePpn())
-                .dateSoutenance(DateFormats.formatDate(() -> theseHit.source().getDateSoutenance()))
-                .datePremiereInscriptionDoctorat(DateFormats.formatDate(() -> theseHit.source().getDatePremiereInscriptionDoctorat()))
+                .dateSoutenance(dateFormatService.formatDate(() -> theseHit.source().getDateSoutenance()))
+                .datePremiereInscriptionDoctorat(dateFormatService.formatDate(() -> theseHit.source().getDatePremiereInscriptionDoctorat()))
                 .auteurs(theseHit.source().getAuteurs() != null ? theseHit.source().getAuteurs().stream().map(personneRefMapper::personneToDto).toList() : null)
                 .directeurs(theseHit.source().getDirecteurs() != null ? theseHit.source().getDirecteurs().stream().map(personneRefMapper::personneToDto).toList() : null)
                 .rapporteurs(theseHit.source().getRapporteurs() != null ? theseHit.source().getRapporteurs().stream().map(personneRefMapper::personneToDto).toList() : null)

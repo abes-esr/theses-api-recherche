@@ -10,14 +10,17 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@SpringBootTest
 public class TheseLiteMapperTest {
-
-    TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
+    @Autowired
+    TheseLiteMapper theseLiteMapper;
     These these1 = new These();
     These these2 = new These();
     PersonneRef pers1 = new PersonneRef();

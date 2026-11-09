@@ -1,8 +1,5 @@
 package fr.abes.thesesapirecherche.personnes.converters;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.abes.thesesapirecherche.theses.service.DateFormats;
+import fr.abes.thesesapirecherche.theses.service.DateFormatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,16 +18,15 @@ import fr.abes.thesesapirecherche.theses.model.These;
 
 
 @Component("PersonnesClientTheseMapper")
+@RequiredArgsConstructor
 public class ClientTheseMapper {
+    private final EtablissementMapper etablissementMapper;
 
-    @Autowired 
-    EtablissementMapper etablissementMapper;
-    
-    @Autowired 
-    ThesePersonneLiteMapper personneMapper;
-    
-    @Autowired 
-    SujetRameauMapper sujetRameauMapper;
+    private final ThesePersonneLiteMapper personneMapper;
+
+    private final SujetRameauMapper sujetRameauMapper;
+
+    private final DateFormatService dateFormatService;
 
     /**
      * Transforme une thèse en web dto
@@ -105,7 +102,7 @@ public class ClientTheseMapper {
         theseDto.setLangues(these.getLangues());
         theseDto.setAccessible(these.getAccessible());
         theseDto.setCodeEtab(these.getCodeEtab());
-        theseDto.setDateCines(DateFormats.formatDate(these::getDateCines));
+        theseDto.setDateCines(dateFormatService.formatDate(these::getDateCines));
         theseDto.setNumSujetSansS(these.getNumSujetSansS());
         theseDto.setOaiSetNames(these.getOaiSetNames());
         theseDto.setDoi(these.getDoi());
