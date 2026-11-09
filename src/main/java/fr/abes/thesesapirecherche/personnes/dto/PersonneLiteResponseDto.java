@@ -16,36 +16,13 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PersonneLiteResponseDto {
-
-
-    @JsonProperty("id")
     String id;
-
-
-    @JsonProperty("nom")
     String nom;
-
-
-    @JsonProperty("prenom")
     String prenom;
-
-
     @JsonProperty("has_idref")
     Boolean hasIdref;
-
-
-    @JsonProperty("roles")
     Map<String, Integer> roles;
-
-
-    @JsonProperty("theses")
     List<String> theses;
-
-
-    @JsonProperty("disciplines")
     List<String> disciplines;
-
-
-    @JsonProperty("etablissements")
     List<String> etablissements;
 }

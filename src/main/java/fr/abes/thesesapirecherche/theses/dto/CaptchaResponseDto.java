@@ -20,22 +20,12 @@ import java.util.Map;
 @Getter
 @Setter
 public class CaptchaResponseDto {
-
-    @JsonProperty("success")
     private boolean success;
-
-    @JsonProperty("score")
     private float score;
-
-    @JsonProperty("action")
     private String action;
-
     @JsonProperty("challenge_ts")
     private String challengeTs;
-
-    @JsonProperty("hostname")
     private String hostname;
-
     @JsonProperty("error-codes")
     private ErrorCode[] errorCodes;
 
@@ -55,6 +45,7 @@ public class CaptchaResponseDto {
         return false;
     }
 
+    // TODO refactor ça en quelque chose de plus fiable
     static enum ErrorCode {
         MissingSecret, InvalidSecret,
         MissingResponse, InvalidResponse;

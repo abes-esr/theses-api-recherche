@@ -6,6 +6,7 @@ import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
+import fr.abes.thesesapirecherche.personnes.service.PersonnesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -32,6 +33,9 @@ import java.util.Optional;
 @RequestMapping("/api/v1/tests/personnes/")
 @Deprecated
 public class PersonneTestController {
+
+    @Autowired
+    PersonnesService personnesService;
 
     @Autowired
     SearchPersonneQueryBuilder searchQueryBuilder;
@@ -113,11 +117,10 @@ public class PersonneTestController {
         return searchQueryBuilder.facets(q, index, filtres.orElse(""));
     }
 
-    /**
+  /**
      * Recherche une personne à partir de son identifiant
      *
-     * @param id    Identifiant de la personne
-     * @param index Nom de l'index ES à requêter
+     * @param id Identifiant de la personne
      * @return Retourne la personne
      * @throws ApiException si la personne n'est pas trouvée
      */
@@ -128,16 +131,15 @@ public class PersonneTestController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id,
-                                                        @RequestParam @Parameter(name = "index", description = "nom de l'index à réquêter", example = "personnes") final String index) throws ApiException {
+
+    public PersonneResponseDto rechercherParIdentifiant(@PathVariable final String id) throws ApiException {
         log.debug("Rechercher une personne par son identifiant...");
         try {
-            return searchQueryBuilder.rechercherParIdentifiant(id, index);
+            return personnesService.getPersonne(id);
 
         } catch (Exception e) {
             log.error(e.toString());
             throw new ApiException(e.getLocalizedMessage());
         }
     }
-
 }

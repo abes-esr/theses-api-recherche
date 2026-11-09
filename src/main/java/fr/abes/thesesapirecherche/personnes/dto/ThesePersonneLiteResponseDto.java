@@ -13,20 +13,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ThesePersonneLiteResponseDto {
-
-
-    @JsonProperty("id")
     String id;
-
-
-    @JsonProperty("nom")
     String nom;
-
-
-    @JsonProperty("prenom")
     String prenom;
-
-
     @JsonProperty("has_idref")
     Boolean hasIdref;
 }

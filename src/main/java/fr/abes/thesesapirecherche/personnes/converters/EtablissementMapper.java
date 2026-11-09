@@ -6,16 +6,19 @@ import fr.abes.thesesapirecherche.personnes.model.Etablissement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 /**
  * Convertisseur de format pour les objets Etablissement
  */
+@Component
 public class EtablissementMapper {
 
     /**
      * Transforme un établissement en web dto
      *
-     * @param item Etablissement à convertir
-     * @return
+     * @param item Établissement à convertir
+     * @return le DTO correspondant à l'établissement, ou {@code null} si {@code item} est {@code null}
      */
     public EtablissementResponseDto etablissementToDto(Etablissement item) {
 

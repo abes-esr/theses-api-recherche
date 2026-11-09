@@ -10,6 +10,7 @@ import fr.abes.thesesapirecherche.personnes.service.PersonnesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,14 +23,11 @@ import java.util.Optional;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/personnes/")
 public class PersonneController {
-
-    @Autowired
-    SearchPersonneQueryBuilder searchQueryBuilder;
-
-    @Autowired
-    PersonnesService personnesService;
+    private final SearchPersonneQueryBuilder searchQueryBuilder;
+    private final PersonnesService personnesService;
 
 
     //TODO: voir pourquoi on met ces valeurs ici et pas dans le searchQueryBuilder ?

@@ -12,15 +12,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SuggestionPersonneResponseDto {
-
-
+    /**
+     * Une suggestion
+     */
     @JsonProperty("suggestion")
     String text;
 
-    /*
-    Identifiant du document Elastic Search
+    /**
+     * Identifiant du document
      */
-
     @JsonProperty("id")
     String id;
 

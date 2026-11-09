@@ -31,10 +31,6 @@ public class PersonnesService {
     private SearchPersonneQueryBuilder searchPersonneQueryBuilder;
 
     @Autowired
-    @Qualifier("PersonnesTheseMapper")
-    private TheseMapper theseMapper;
-
-    @Autowired
     @Qualifier("PersonnesClientTheseMapper")
     private ClientTheseMapper clientTheseMapper;
 
@@ -47,28 +43,9 @@ public class PersonnesService {
 
     // récupère une personne d'après son id
     public PersonneResponseDto getPersonne(String id) throws Exception{
-        PersonneResponseDto res = PersonneResponseDto.builder().build();
-
-
         // on récupère la personne via ElasticSearch
         SearchResponse<Personne> response = searchPersonneQueryBuilder.getPersonne(id);
-
-        // on fait le mapping ici TODO : refactorer propre en utilisant le mapper personne
-        Personne p = response.hits().hits().get(0).source();
-        
-        res.setId(response.hits().hits().get(0).id());
-        res.setNom(p.getNom());
-        res.setPrenom(p.getPrenom());
-        res.setHasIdref(p.getHasIdref());
-
-        res.setRoles(PersonneComputedFields.calculerStatistiquesRoles(p.getRoles()));
-        res.setMotsCles(PersonneComputedFields.calculerMotsCles(p.getTheses()));
-
-
-        //mapping de ThesePersonne (model) vers TheseDto
-        res.setTheses(theseMapper.thesesToDto(p.getTheses()));
-
-        return res;
+        return personneMapper.personneToDto(response.hits().hits().get(0));
     }
 
 
@@ -104,10 +81,6 @@ public class PersonnesService {
                     hit -> hit.source()
                 ));
 
-                thesesById.forEach((idT, these) -> {
-                    System.out.println("clé = " + idT);
-                    System.out.println("valeur = " + these);
-                });
                     
         // on enrichit les ThesesPersonne déjà récupérées lors de la 1ere requête ES
         for (List<ClientTheseResponseDto> thesesPersonneDto : personneDto.getTheses().values()) {

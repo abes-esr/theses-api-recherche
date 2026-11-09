@@ -14,13 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 public class SuggestionResponseDto {
-
-
-    @JsonProperty("personnes")
     List<SuggestionPersonneResponseDto> personnes;
-
-
-    @JsonProperty("thematiques")
     List<SuggestionPersonneResponseDto> thematiques;
 
 
