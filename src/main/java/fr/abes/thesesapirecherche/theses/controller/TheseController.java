@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import fr.abes.thesesapirecherche.theses.service.CaptchaService;
+import fr.abes.thesesapirecherche.theses.service.MoviesService;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -37,32 +41,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/theses")
+@RequiredArgsConstructor
 public class TheseController {
-    final SearchQueryBuilder searchQueryBuilder;
-    @Value("${google.recaptcha.key.site}")
-    private String recaptchaSite;
-    @Value("${google.recaptcha.key.secret}")
-    private String recaptchaSecret;
-    @Value("${google.recaptcha.key.threshold}")
-    private float threshold;
 
     @Value("${theses.mail}")
     private String mailTheses;
     @Value("${mail.ws}")
     private String wsMailURL;
 
-    @Autowired
     private DbRequests dbRequests;
-
-    @Autowired
-    private Environment env;
-
-    @Autowired 
     private ThesesService thesesService;
-
-    public TheseController(SearchQueryBuilder searchQueryBuilder) {
-        this.searchQueryBuilder = searchQueryBuilder;
-    }
+    private MoviesService moviesService;
 
     // endpoint pour le front
     @GetMapping(value = "/these/{id}")
@@ -106,65 +95,9 @@ public class TheseController {
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public String signalerErreur(@RequestBody SignalerErreurDto json) throws RecaptchaInvalidException, IOException {
-        /**
-         * GESTION DU CAPTCHA GOOGLE
-         */
-        //requête à l'API google
-        URI verifyUri = URI.create(String.format(
-                "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s",
-                recaptchaSecret, json.getToken()));
-
-        //appel http via post
-        RestTemplate restTemplate = new RestTemplate();
-        CaptchaResponseDto captchaResponseDto = restTemplate.getForObject(verifyUri, CaptchaResponseDto.class);
-
-        if (!captchaResponseDto.isSuccess() || captchaResponseDto.getScore() < threshold) {
-            throw new RecaptchaInvalidException("reCaptcha non valide");
-        }
-
-        /**
-         * SI CAPTCHA OK, ON PASSE A LA SUITE
-         * ENVOI DU MAIL A LA VRAIE ADRESSE EN PROD ET TEST
-         */
-
-        List<String> to = getMailAdressesFromMovies(json, restTemplate);
+        List<String> to = moviesService.getMailAdressesFromMovies(json);
 
         log.info("Destinataires : " + to);
         return Mail.sendMail(wsMailURL, to, mailTheses, json.getDomaine(), json.getUrl(), json.getNom(), json.getPrenom(), json.getMail(), json.getObjet(), json.getQuestion(), json.getAppSource());
-    }
-
-    // TODO extraire ça dans un service ??? ça n'a pas sa place dans la couche controller
-    private List<String> getMailAdressesFromMovies(SignalerErreurDto json, RestTemplate restTemplate) {
-        if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
-
-            URI uri = URI.create(env.getProperty("movies.assistance_deportee.url") + json.getEtabPpn());
-            Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
-            if (response == null) {
-                log.error("Movies a mal répondu ! ");
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Une erreur interne est survenue");
-            }
-
-            List<Map<String, Map<String, String>>> bindings = (List<Map<String, Map<String, String>>>) ((Map<String, Object>) response.get("results")).get("bindings");
-
-            // Extraction du tableau de "ppnEtabCible"
-            try {
-            return bindings.stream()
-                    .flatMap(binding -> {
-                        if (binding.get("ppnEtabCible") != null) {
-                            return dbRequests.getMailAddress(binding.get("ppnEtabCible").get("value"), json.getAppSource()).stream();
-                        } else {
-                            return dbRequests.getMailAddress(json.getEtabPpn(), json.getAppSource()).stream();
-                        }
-                    })
-                    .collect(Collectors.toList());
-            } catch (Exception e) {
-                log.error(e.toString());
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Une erreur interne est survenue");
-            }
-        } else {
-            return new ArrayList<>() {{
-                add(mailTheses);
-            }};
-        }
     }
 }

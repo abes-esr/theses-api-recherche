@@ -2,6 +2,7 @@ package fr.abes.thesesapirecherche.theses.controller;
 
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,20 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/batch/theses")
+@RequiredArgsConstructor
 public class BatchTheseController {
-
-
-    final SearchQueryBuilder searchQueryBuilder;
-    
-
-    @Autowired 
-    private ThesesService thesesService;
-
-    public BatchTheseController(SearchQueryBuilder searchQueryBuilder) {
-        this.searchQueryBuilder = searchQueryBuilder;
-    }
-
-    
+    private final ThesesService thesesService;
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)
     @GetMapping(value = "/recherche/")

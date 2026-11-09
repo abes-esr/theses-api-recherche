@@ -2,6 +2,7 @@ package fr.abes.thesesapirecherche.theses.controller;
 
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,20 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/client/theses")
+@RequiredArgsConstructor
 public class ClientTheseController {
-
-
-    final SearchQueryBuilder searchQueryBuilder;
-    
-
-    @Autowired 
-    private ThesesService thesesService;
-
-    public ClientTheseController(SearchQueryBuilder searchQueryBuilder) {
-        this.searchQueryBuilder = searchQueryBuilder;
-    }
-
-    
+    private final ThesesService thesesService;
 
     // endpoint pour les clients (ceux qui utilisent l'API directement)
     @GetMapping(value = "/these/{id}")

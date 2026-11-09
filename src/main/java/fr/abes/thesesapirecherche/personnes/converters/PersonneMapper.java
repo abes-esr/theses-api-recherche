@@ -37,35 +37,21 @@ public class PersonneMapper {
      * @param personne Hit<Personne>
      * @return
      */
-    public PersonneLiteResponseDto personnesToDto(Hit<RecherchePersonne> personne) {
+    public PersonneLiteResponseDto personnesToDto(RecherchePersonne personne) {
         PersonneLiteResponseDto item = PersonneLiteResponseDto.builder()
-                .id(personne.id())
-                .nom(personne.source().getNom())
-                .prenom(personne.source().getPrenom())
-                .hasIdref(personne.source().getHasIdref())
-                .theses(personne.source().getTheses_id())
+                .id(personne.getPpn())
+                .nom(personne.getNom())
+                .prenom(personne.getPrenom())
+                .hasIdref(personne.getHasIdref())
+                .theses(personne.getTheses_id())
                 .build();
 
         // On remplit les champs calculés
-        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getRoles()));
-        item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.source().getDisciplines()));
-        item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.source().getEtablissements()));
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.getRoles()));
+        item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.getDisciplines()));
+        item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.getEtablissements()));
 
         return item;
-    }
-
-    /**
-     * Conversion d'une liste de personne du format ES au format DTO.
-     *
-     * @param personnes
-     * @return
-     */
-    public List<PersonneLiteResponseDto> personnesListToDto(List<Hit<RecherchePersonne>> personnes) {
-        List<PersonneLiteResponseDto> results = new ArrayList<>();
-        for (Hit<RecherchePersonne> item : personnes) {
-            results.add(personnesToDto(item));
-        }
-        return results;
     }
 
     /**

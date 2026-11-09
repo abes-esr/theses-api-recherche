@@ -37,9 +37,6 @@ public class PersonneTestController {
     @Autowired
     PersonnesService personnesService;
 
-    @Autowired
-    SearchPersonneQueryBuilder searchQueryBuilder;
-
     /**
      * Rechercher une personne avec un mot en choissant l'index ES à requêter
      *
@@ -69,7 +66,7 @@ public class PersonneTestController {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, index, decodedFilters, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
+        return personnesService.rechercherPersonne(decodedQuery, decodedFilters, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
     }
 
     /**
@@ -93,7 +90,7 @@ public class PersonneTestController {
     ) throws Exception {
         String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(decodedQuery, index);
+        return personnesService.completion(decodedQuery);
     }
 
     /**
@@ -114,7 +111,7 @@ public class PersonneTestController {
     public List<Facet> facets(@RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "rousseau") final String q,
                               @RequestParam @Parameter(name = "index", description = "nom de l'index à réquêter", example = "personnes") final String index,
                               @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres) throws Exception {
-        return searchQueryBuilder.facets(q, index, filtres.orElse(""));
+        return personnesService.facets(q, filtres.orElse(""));
     }
 
   /**

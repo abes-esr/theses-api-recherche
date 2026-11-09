@@ -3,8 +3,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import fr.abes.thesesapirecherche.dto.Facet;
+import fr.abes.thesesapirecherche.theses.dto.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -14,10 +15,6 @@ import fr.abes.thesesapirecherche.theses.converters.BatchTheseMapper;
 import fr.abes.thesesapirecherche.theses.converters.ClientTheseMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchResponseTheseDto;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientResponseTheseLiteDto;
@@ -27,23 +24,19 @@ import fr.abes.thesesapirecherche.theses.dto.client.ClientThesesByOrganismeRespo
 import fr.abes.thesesapirecherche.theses.model.These;
 
 @Service
+@RequiredArgsConstructor
 public class ThesesService {
-    @Autowired
-    private SearchQueryBuilder searchThesesQuery;
+    private final SearchQueryBuilder searchThesesQuery;
 
-    @Autowired
-    @Qualifier("TheseTheseMapper")
-    private TheseMapper theseMapper;
+    private final  TheseMapper theseMapper;
 
-    @Autowired
-    private TheseLiteMapper theseLiteMapper;
+    private final  TheseLiteMapper theseLiteMapper;
 
-    @Autowired
-    @Qualifier("TheseClientTheseMapper")
-    private ClientTheseMapper clientTheseMapper;
+    private final  ClientTheseMapper clientTheseMapper;
 
-    @Autowired
-    private BatchTheseMapper batchTheseMapper;
+    private final  BatchTheseMapper batchTheseMapper;
+
+    private final CsvWriter CsvService;
 
     
     /**
@@ -296,5 +289,27 @@ public class ThesesService {
 
 
         return thesesByOrganismeResponse;
+    }
+
+    public long getStatsTheses(String status) throws Exception {
+        return searchThesesQuery.getStatsTheses(status);
+    }
+
+    public List<Facet> facets(String query, String filtres) throws Exception {
+        return searchThesesQuery.facets(query, filtres);
+    }
+
+    public List<String> completion(String q) throws Exception {
+        return searchThesesQuery.completion(q);
+    }
+
+    public String getOrganismeName(String ppn) throws Exception {
+        return searchThesesQuery.getOrganismeName(ppn);
+    }
+
+    public String getSimpleToFullTheseCsvStringFormat(String query, int debut, int nombre, String tri, String filtres) throws Exception {
+        ResponseTheseCSVDto res = searchThesesQuery.simpleToFullThese(query, debut, nombre, tri, filtres);
+
+        return this.CsvService.toCSV(res.getTheses());
     }
 }

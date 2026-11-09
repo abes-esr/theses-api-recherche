@@ -143,7 +143,6 @@ public class SearchPersonneQueryBuilder {
      * Rechercher dans ElasticSearch une personne avec son nom et prénom.
      *
      * @param chaine  Chaîne de caractère à rechercher
-     * @param index   Nom de l'index ES à requêter
      * @param filtres Filtres à appliquer à la requête ES
      * @param debut   Numéro de la page courante
      * @param nombre  Nombre de résultats à retourner
@@ -151,10 +150,9 @@ public class SearchPersonneQueryBuilder {
      * @return Un objet réponse de la recherche au format Dto web
      * @throws Exception si une erreur est survenue
      */
-    public RechercheResponseDto rechercher(String chaine, String index, String filtres, Integer debut, Integer nombre, String tri) throws Exception {
-
+    public SearchResponse<RecherchePersonne> rechercher(String chaine, String filtres, Integer debut, Integer nombre, String tri) throws Exception {
         SearchRequest searchRequest = new SearchRequest.Builder()
-                .index(index)
+                .index(esRechercheIndexName)
                 .source(SourceConfig.of(s -> s.filter(f -> f.includes(List.of("ppn", "nom", "prenom", "has_idref", "theses_id", "roles", "etablissements", "disciplines")))))
                 .query(q -> q
                         .bool(t -> t
@@ -167,13 +165,11 @@ public class SearchPersonneQueryBuilder {
                 .trackTotalHits(t -> t.enabled(Boolean.TRUE))
                 .build();
 
-        SearchResponse<RecherchePersonne> response = ElasticClient.getElasticsearchClient().search(searchRequest, RecherchePersonne.class);
-
-        return RechercheResponseDto.builder().personnes(personneMapper.personnesListToDto(response.hits().hits())).totalHits(response.hits().total().value()).took(response.took()).build();
+        return ElasticClient.getElasticsearchClient().search(searchRequest, RecherchePersonne.class);
     }
 
-    public SuggestionResponseDto completion(String q, String index) throws Exception {
-        return SuggestionResponseDto.builder().personnes(completionPersonne(q, index)).thematiques(completionThematique(q, index)).build();
+    public SuggestionResponseDto completion(String q) throws Exception {
+        return SuggestionResponseDto.builder().personnes(completionPersonne(q, esRechercheIndexName)).thematiques(completionThematique(q, esRechercheIndexName)).build();
     }
 
     /**
@@ -259,20 +255,19 @@ public class SearchPersonneQueryBuilder {
      * Retourne une liste de facettes en fonction du critère de recherche
      *
      * @param chaine  Chaîne de caractère à rechercher
-     * @param index   Nom de l'index ES à requêter
      * @param filtres Filtres à appliquer
      * @return Retourne la liste des facettes au format Dto
      * @throws Exception
      */
-    public List<Facet> facets(String chaine, String index, String filtres) throws Exception {
-        return FacetQueryBuilder.facets(ElasticClient.getElasticsearchClient(), buildQuery(chaine), index, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, filtres);
+    public List<Facet> facets(String chaine, String filtres) throws Exception {
+        return FacetQueryBuilder.facets(ElasticClient.getElasticsearchClient(), buildQuery(chaine), esRechercheIndexName, facetProps.getMainPersonnes(), facetProps.getSubsPersonnes(), maxFacetsValues, filtres);
     }
 
 
 
     //Retourne le nb total de personnes dans l'index
-    public long getStatsPersonnes(String index) throws Exception {
-        CountResponse countResponse = ElasticClient.getElasticsearchClient().count(s -> s.index(index));
+    public long getStatsPersonnes() throws Exception {
+        CountResponse countResponse = ElasticClient.getElasticsearchClient().count(s -> s.index(esRechercheIndexName));
         return countResponse.count();
     }
 

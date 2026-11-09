@@ -3,10 +3,16 @@ package fr.abes.thesesapirecherche.personnes.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
+import fr.abes.thesesapirecherche.dto.Facet;
+import fr.abes.thesesapirecherche.personnes.dto.*;
+import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -15,9 +21,6 @@ import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
 import fr.abes.thesesapirecherche.personnes.converters.ClientTheseMapper;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
 import fr.abes.thesesapirecherche.personnes.converters.TheseMapper;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneComputedFields;
-import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
-import fr.abes.thesesapirecherche.personnes.dto.TheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.client.ClientPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
@@ -25,19 +28,32 @@ import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 import fr.abes.thesesapirecherche.theses.model.These;
 
 @Service
+@RequiredArgsConstructor
 public class PersonnesService {
-    
-    @Autowired
+
+    @Value("${es.personnes.recherche.indexname}")
+    private String esRechercheIndexName;
+
     private SearchPersonneQueryBuilder searchPersonneQueryBuilder;
 
-    @Autowired
-    @Qualifier("PersonnesClientTheseMapper")
     private ClientTheseMapper clientTheseMapper;
 
-    @Autowired 
     private PersonneMapper personneMapper;
 
-    
+    public RechercheResponseDto rechercherPersonne(String query, String filtres, int debut, int nombre, String tri) throws Exception {
+        SearchResponse<RecherchePersonne> res = searchPersonneQueryBuilder.rechercher(query, filtres, debut, nombre, tri);
+
+        assert res.hits().total() != null;
+        RechercheResponseDto.builder()
+                .personnes(res.hits().hits().stream()
+                        .map(Hit::source).filter(Objects::nonNull)
+                        .map(personneMapper::personnesToDto)
+                        .collect(Collectors.toList()))
+                .totalHits(res.hits().total().value())
+                .took(res.took()).build();
+
+        return null;
+    }
     
 
 
@@ -73,7 +89,7 @@ public class PersonnesService {
 
 
         // on récupère d'abord les ids des thèses (pour plus tard aller requêter sur l'index theses)
-        List<String> theseIds = p.getTheses()
+        List<String> theseIds = Objects.requireNonNull(p).getTheses()
                                  .stream()
                                  .map(ThesePersonne::getId)
                                  .toList();
@@ -103,6 +119,19 @@ public class PersonnesService {
         }
 
         return personneDto;
+    }
+
+    public long getStatsPersonnes() throws Exception {
+        return searchPersonneQueryBuilder.getStatsPersonnes();
+    }
+
+    public SuggestionResponseDto completion(String q) throws Exception {
+        return searchPersonneQueryBuilder.completion(q);
+    }
+
+    public List<Facet> facets(String query, String filtres) throws Exception {
+
+        return searchPersonneQueryBuilder.facets(query, filtres);
     }
 
 }

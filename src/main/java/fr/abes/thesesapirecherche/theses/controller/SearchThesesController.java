@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -30,16 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/theses/")
+@RequiredArgsConstructor
 public class SearchThesesController {
 
-    @Autowired
-    SearchQueryBuilder searchQueryBuilder;
-
-    @Autowired
-    private RssFeedView view;
-
-    @Autowired 
-    private ThesesService thesesService;
+    private final RssFeedView view;
+    private final ThesesService thesesService;
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour le front)
     @GetMapping(value = "/recherche/")
@@ -80,7 +76,7 @@ public class SearchThesesController {
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
-            String csvContent = "\uFEFF" + searchQueryBuilder.simpleToFullThese(q, 0, 10000, tri.orElse(""), filtres.orElse("")).toCSV();
+            String csvContent = "\uFEFF" + thesesService.getSimpleToFullTheseCsvStringFormat(q, 0, 10000, tri.orElse(""), filtres.orElse(""));
 
             byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
             ByteArrayResource resource = new ByteArrayResource(csvBytes);
@@ -111,7 +107,7 @@ public class SearchThesesController {
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {
-            return searchQueryBuilder.getOrganismeName(ppn);
+            return thesesService.getOrganismeName(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
@@ -149,7 +145,7 @@ public class SearchThesesController {
     public List<String> completion(
             @RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(q);
+        return thesesService.completion(q);
     }
 
     @GetMapping(value = "/facets/")
@@ -161,7 +157,7 @@ public class SearchThesesController {
     public List<Facet> facets(@RequestParam final String q,
                               @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
-        return searchQueryBuilder.facets(q, filtres.orElse(""));
+        return thesesService.facets(q, filtres.orElse(""));
     }
 
     @GetMapping(value = "/statsTheses")
@@ -171,7 +167,7 @@ public class SearchThesesController {
     @Operation(
             summary = "Retourne le nombre de theses soutenues")
     public long statsTheses() throws Exception {
-        return searchQueryBuilder.getStatsTheses("soutenue");
+        return thesesService.getStatsTheses("soutenue");
     }
 
     @GetMapping(value = "/statsSujets")
@@ -181,7 +177,7 @@ public class SearchThesesController {
     @Operation(
             summary = "Retourne le nombre de theses en préparation")
     public long statsSujets() throws Exception {
-        return searchQueryBuilder.getStatsTheses("enCours");
+        return thesesService.getStatsTheses("enCours");
     }
 
     @GetMapping(value = "/rss")

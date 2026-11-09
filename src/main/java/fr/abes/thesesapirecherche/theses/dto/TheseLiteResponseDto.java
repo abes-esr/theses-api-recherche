@@ -2,7 +2,6 @@ package fr.abes.thesesapirecherche.theses.dto;
 
 import java.util.List;
 
-import fr.abes.thesesapirecherche.theses.model.PersonneThese;
 import fr.abes.thesesapirecherche.theses.model.Sujet;
 import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
 import lombok.Builder;
@@ -20,11 +19,11 @@ public class TheseLiteResponseDto {
     String etabSoutenancePpn;
     String dateSoutenance;
     String datePremiereInscriptionDoctorat;
-    List<PersonneThese> auteurs;
-    List<PersonneThese> directeurs;
-    List<PersonneThese> rapporteurs;
-    List<PersonneThese> examinateurs;
-    PersonneThese president;
+    List<PersonneRefDto> auteurs;
+    List<PersonneRefDto> directeurs;
+    List<PersonneRefDto> rapporteurs;
+    List<PersonneRefDto> examinateurs;
+    PersonneRefDto president;
     String nnt;
     String doi;
     String discipline;
