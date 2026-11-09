@@ -9,7 +9,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PersonneThese {
+public class PersonneRef {
     private String ppn;
     private String nom;
     private String prenom;

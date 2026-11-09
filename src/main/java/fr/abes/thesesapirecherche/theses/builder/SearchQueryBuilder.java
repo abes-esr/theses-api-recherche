@@ -4,10 +4,8 @@ import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFi
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.buildFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -33,10 +31,9 @@ import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.theses.converters.ClientTheseMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseLiteMapper;
 import fr.abes.thesesapirecherche.theses.converters.TheseMapper;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseCSVDto;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.SearchResponseTheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.These;
@@ -206,7 +203,7 @@ public class SearchQueryBuilder {
         return result.toString();
     }
 
-    public ResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+    public SearchResponseTheseLiteDto simple(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(
                 s -> s
                         .index(esIndexName)
@@ -222,8 +219,8 @@ public class SearchQueryBuilder {
                 These.class
         );
 
-        ResponseTheseLiteDto res = new ResponseTheseLiteDto();
-        List<TheseLiteResponseDto> liste = new ArrayList<>();
+        SearchResponseTheseLiteDto res = new SearchResponseTheseLiteDto();
+        List<TheseLiteDto> liste = new ArrayList<>();
         Iterator<Hit<These>> iterator = response.hits().hits().iterator();
         while (iterator.hasNext()) {
             Hit<These> theseHit = iterator.next();
@@ -235,7 +232,7 @@ public class SearchQueryBuilder {
         return res;
     }
 
-    public ResponseTheseCSVDto simpleToFullThese(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+    public List<ClientTheseResponseDto> simpleToFullThese(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(
                 s -> s
                         .index(esIndexName)
@@ -251,15 +248,11 @@ public class SearchQueryBuilder {
                 These.class
         );
 
-        ResponseTheseCSVDto res = new ResponseTheseCSVDto();
-        List<ClientTheseResponseDto> liste = new ArrayList<>();
-
-        for (Hit<These> theseHit : response.hits().hits()) {
-            liste.add(clientTheseMapper.theseToClientDto(theseHit.source()));
-        }
-
-        res.setTheses(liste);
-        return res;
+        return response.hits().hits().stream()
+                .map(Hit::source)
+                .filter(Objects::nonNull)
+                .map(clientTheseMapper::theseToClientDto)
+                .toList();
     }
 
     public String getOrganismeName(String ppn) throws Exception {
@@ -395,7 +388,7 @@ public class SearchQueryBuilder {
         );
 
         List<These> res = new ArrayList<>();
-        List<TheseResponseDto> liste = new ArrayList<>();
+        List<TheseDto> liste = new ArrayList<>();
 
         for (Hit<These> theseHit : response.hits().hits()) {
             liste.add(theseMapper.theseToDto(theseHit.source()));

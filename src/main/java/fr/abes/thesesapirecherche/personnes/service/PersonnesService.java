@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.personnes.dto.*;
 import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,11 +29,8 @@ import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 import fr.abes.thesesapirecherche.theses.model.These;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class PersonnesService {
-
-    @Value("${es.personnes.recherche.indexname}")
-    private String esRechercheIndexName;
 
     private SearchPersonneQueryBuilder searchPersonneQueryBuilder;
 
@@ -44,15 +42,13 @@ public class PersonnesService {
         SearchResponse<RecherchePersonne> res = searchPersonneQueryBuilder.rechercher(query, filtres, debut, nombre, tri);
 
         assert res.hits().total() != null;
-        RechercheResponseDto.builder()
+        return RechercheResponseDto.builder()
                 .personnes(res.hits().hits().stream()
                         .map(Hit::source).filter(Objects::nonNull)
                         .map(personneMapper::personnesToDto)
                         .collect(Collectors.toList()))
                 .totalHits(res.hits().total().value())
                 .took(res.took()).build();
-
-        return null;
     }
     
 
@@ -61,17 +57,9 @@ public class PersonnesService {
     public PersonneResponseDto getPersonne(String id) throws Exception{
         // on récupère la personne via ElasticSearch
         SearchResponse<Personne> response = searchPersonneQueryBuilder.getPersonne(id);
-        Personne p = response.hits().hits().get(0).source();
-        
-        return PersonneResponseDto.builder()
-        .id(response.hits().hits().get(0).id())
-        .nom(p.getNom())
-        .prenom(p.getPrenom())
-        .hasIdref(p.getHasIdref())
-        .roles(PersonneComputedFields.calculerStatistiquesRoles(p.getRoles()))
-        .motsCles(PersonneComputedFields.calculerMotsCles(p.getTheses()))
-        .build();
+        Hit<Personne> p = response.hits().hits().get(0);
 
+        return personneMapper.personneToDto(p);
     }
 
 

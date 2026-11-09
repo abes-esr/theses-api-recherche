@@ -23,6 +23,8 @@ import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+import static fr.abes.thesesapirecherche.theses.service.CsvWriter.ClientTheseResponseDtoCsvWriter;
+
 @Service
 @RequiredArgsConstructor
 public class ThesesService {
@@ -36,9 +38,6 @@ public class ThesesService {
 
     private final  BatchTheseMapper batchTheseMapper;
 
-    private final CsvWriter CsvService;
-
-    
     /**
      * Retourne un ensemble de thèses selon les paramètres de la requête
      * 
@@ -47,21 +46,22 @@ public class ThesesService {
      * @param nombre nombre de résultats à retourner
      * @param tri tri à appliquer sur la recherche ES
      * @param filtres filtres à appliquer à la requête ES
-     * @return un objet réponse de la recerche au format DTO
+     * @return un objet réponse de la recherche au format {@link SearchResponseTheseLiteDto} (retourne plus d'informations que la méthode {@link getThesesClient})
      * @throws Exception si une erreur est survenue
      */
-    public ResponseTheseLiteDto getTheses(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+    public SearchResponseTheseLiteDto getTheses(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
         SearchResponse<These> response = searchThesesQuery.getThesesSearchResponse(chaine, debut, nombre, tri, filtres);
         
-        List<TheseLiteResponseDto> liste = response.hits().hits()
+        List<TheseLiteDto> liste = response.hits().hits()
                                                     .stream()
-                                                    .map(t-> theseLiteMapper.theseLiteToDto(t))
+                                                    .map(theseLiteMapper::theseLiteToDto)
                                                     .toList();
 
-        ResponseTheseLiteDto res = new ResponseTheseLiteDto();
+        SearchResponseTheseLiteDto res = new SearchResponseTheseLiteDto();
 
         res.setTheses(liste);
         res.setTook(response.took());
+        assert response.hits().total() != null;
         res.setTotalHits(response.hits().total().value());
 
         return res;
@@ -76,7 +76,7 @@ public class ThesesService {
      * @param nombre nombre de résultats à retourner
      * @param tri tri à appliquer sur la recherche ES
      * @param filtres filtres à appliquer à la requête ES
-     * @return un objet réponse de la recerche au format DTO (retourne plus d'informations que la méthode getTheses)
+     * @return un objet réponse de la recherche au format {@link ClientResponseTheseLiteDto} (retourne plus d'informations que la méthode {@link getTheses})
      * @throws Exception si une erreur est survenue
      */
     public ClientResponseTheseLiteDto getThesesClient(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
@@ -91,6 +91,7 @@ public class ThesesService {
 
         res.setTheses(liste);
         res.setTook(response.took());
+        assert response.hits().total() != null;
         res.setTotalHits(response.hits().total().value());
         return res;
     }
@@ -119,6 +120,7 @@ public class ThesesService {
 
         res.setTheses(liste);
         res.setTook(response.took());
+        assert response.hits().total() != null;
         res.setTotalHits(response.hits().total().value());
         return res;
     }
@@ -133,7 +135,7 @@ public class ThesesService {
      * @return une thèse au format DTO web
      * @throws Exception
      */
-    public TheseResponseDto getThese(String id) throws Exception{
+    public TheseDto getThese(String id) throws Exception{
         return theseMapper.theseToDto(searchThesesQuery.getTheseById(id));
     }
 
@@ -166,8 +168,8 @@ public class ThesesService {
      * @return les listes de thèses soutenues et en cours
      * @throws IOException
      */
-    public ThesesByOrganismeResponseDto getThesesByOrganisme(String ppn) throws IOException{
-        ThesesByOrganismeResponseDto thesesByOrganismeResponse = new ThesesByOrganismeResponseDto();
+    public ThesesByOrganismeDto getThesesByOrganisme(String ppn) throws IOException{
+        ThesesByOrganismeDto thesesByOrganismeResponse = new ThesesByOrganismeDto();
 
         // on interroge ES sur tous les index
         SearchResponse<These> responseEtabSoutenanceEnCours = searchThesesQuery.searchByPpn("etabSoutenancePpn", ppn, "enCours");
@@ -180,14 +182,14 @@ public class ThesesService {
         SearchResponse<These> responseEcoleSoutenue = searchThesesQuery.searchByPpn("ecolesDoctoralesPpn", ppn, "soutenue");
         
 
-        List<TheseLiteResponseDto> listeEtabSoutenance = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEtabSoutenanceEnCours = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEtabCotutelle = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEtabCotutelleEnCours = new ArrayList<>();
-        List<TheseLiteResponseDto> listePartenaire = new ArrayList<>();
-        List<TheseLiteResponseDto> listePartenaireEnCours = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEcoleDoctorale = new ArrayList<>();
-        List<TheseLiteResponseDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
+        List<TheseLiteDto> listeEtabSoutenance = new ArrayList<>();
+        List<TheseLiteDto> listeEtabSoutenanceEnCours = new ArrayList<>();
+        List<TheseLiteDto> listeEtabCotutelle = new ArrayList<>();
+        List<TheseLiteDto> listeEtabCotutelleEnCours = new ArrayList<>();
+        List<TheseLiteDto> listePartenaire = new ArrayList<>();
+        List<TheseLiteDto> listePartenaireEnCours = new ArrayList<>();
+        List<TheseLiteDto> listeEcoleDoctorale = new ArrayList<>();
+        List<TheseLiteDto> listeEcoleDoctoraleEnCours = new ArrayList<>();
 
 
         for(Hit<These> theseHit : responseEtabSoutenanceSoutenue.hits().hits()) listeEtabSoutenance.add(theseLiteMapper.theseLiteToDto(theseHit));
@@ -308,8 +310,8 @@ public class ThesesService {
     }
 
     public String getSimpleToFullTheseCsvStringFormat(String query, int debut, int nombre, String tri, String filtres) throws Exception {
-        ResponseTheseCSVDto res = searchThesesQuery.simpleToFullThese(query, debut, nombre, tri, filtres);
+        List<ClientTheseResponseDto> res = searchThesesQuery.simpleToFullThese(query, debut, nombre, tri, filtres);
 
-        return this.CsvService.toCSV(res.getTheses());
+        return ClientTheseResponseDtoCsvWriter.writeToCsvFrom(res);
     }
 }

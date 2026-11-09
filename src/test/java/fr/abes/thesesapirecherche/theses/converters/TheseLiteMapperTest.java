@@ -3,8 +3,8 @@ package fr.abes.thesesapirecherche.theses.converters;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.TotalHitsRelation;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
-import fr.abes.thesesapirecherche.theses.model.PersonneThese;
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteDto;
+import fr.abes.thesesapirecherche.theses.model.PersonneRef;
 import fr.abes.thesesapirecherche.theses.model.These;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,9 +20,9 @@ public class TheseLiteMapperTest {
     TheseLiteMapper theseLiteMapper = new TheseLiteMapper();
     These these1 = new These();
     These these2 = new These();
-    PersonneThese pers1 = new PersonneThese();
-    PersonneThese pers2 = new PersonneThese();
-    PersonneThese pers3 = new PersonneThese();
+    PersonneRef pers1 = new PersonneRef();
+    PersonneRef pers2 = new PersonneRef();
+    PersonneRef pers3 = new PersonneRef();
     SearchResponse<These> searchResponse;
 
     @BeforeEach
@@ -42,8 +42,8 @@ public class TheseLiteMapperTest {
         pers3.setPpn("07227817X");
         pers3.setNom("Chauvin");
         pers3.setPrenom("Rémi");
-        List<PersonneThese> auteurs = new ArrayList<>();
-        List<PersonneThese> directeurs = new ArrayList<>();
+        List<PersonneRef> auteurs = new ArrayList<>();
+        List<PersonneRef> directeurs = new ArrayList<>();
         auteurs.add(pers1);
         directeurs.add(pers2);
         directeurs.add(pers3);
@@ -85,7 +85,7 @@ public class TheseLiteMapperTest {
     @DisplayName("Conversion d'une thèse lite du format ES vers DTO")
     void testConversionTheseLiteESversDto() {
 
-        TheseLiteResponseDto thesesLite = theseLiteMapper.theseLiteToDto(searchResponse.hits().hits().get(0));
+        TheseLiteDto thesesLite = theseLiteMapper.theseLiteToDto(searchResponse.hits().hits().get(0));
 
         Assertions.assertEquals("127566635", thesesLite.getId());
         Assertions.assertEquals("Zhu",

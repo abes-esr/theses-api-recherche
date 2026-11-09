@@ -1,38 +1,24 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import fr.abes.thesesapirecherche.theses.service.CaptchaService;
 import fr.abes.thesesapirecherche.theses.service.MoviesService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.server.ResponseStatusException;
 
 import fr.abes.thesesapirecherche.commons.services.Mail;
 import fr.abes.thesesapirecherche.exception.RecaptchaInvalidException;
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.data.DbRequests;
-import fr.abes.thesesapirecherche.theses.dto.CaptchaResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.SignalerErreurDto;
-import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseDto;
 import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -49,9 +35,9 @@ public class TheseController {
     @Value("${mail.ws}")
     private String wsMailURL;
 
-    private DbRequests dbRequests;
-    private ThesesService thesesService;
-    private MoviesService moviesService;
+    private final DbRequests dbRequests;
+    private final ThesesService thesesService;
+    private final MoviesService moviesService;
 
     // endpoint pour le front
     @GetMapping(value = "/these/{id}")
@@ -61,7 +47,7 @@ public class TheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public TheseResponseDto getThese(@PathVariable final String id) throws Exception {
+    public TheseDto getThese(@PathVariable final String id) throws Exception {
         log.info("debut de getThese...");
         try {
             return thesesService.getThese(id);

@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.dto;
 
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,8 +8,10 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class ThesePersonneResponseDto {
+public class OrganismeRefDto {
     private String ppn;
+
     private String nom;
-    private String prenom;
+
+    private String type;
 }

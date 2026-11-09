@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * Tests du convertisseur de format pour les personnes
  */
 @ExtendWith(SpringExtension.class)
-public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
+public class PersonneRefMapperTest extends ThesesApiRechercheApplicationTests {
 
     @Autowired
     PersonneMapper personneMapper;

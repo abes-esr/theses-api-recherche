@@ -7,10 +7,10 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.OrganismeRefDto;
+import fr.abes.thesesapirecherche.theses.dto.PersonneRefDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
-import fr.abes.thesesapirecherche.theses.model.PersonneThese;
+import fr.abes.thesesapirecherche.theses.model.PersonneRef;
 import fr.abes.thesesapirecherche.theses.model.Sujet;
 import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
@@ -44,19 +44,19 @@ public class TheseMappingHelper {
 
 
     //mapping organisme
-    public static OrganismeResponseDto organismeToDto(Organisme organisme) {
+    public static OrganismeRefDto organismeToDto(Organisme organisme) {
         if(organisme == null){
             return null;
         }
-        return OrganismeResponseDto.builder()
+        return OrganismeRefDto.builder()
                 .ppn(organisme.getPpn())
                 .nom(organisme.getNom())
                 .type(organisme.getType())
                 .build();
     }
 
-    public static List<OrganismeResponseDto> organismesToDto(List<Organisme> organismes) {
-        List<OrganismeResponseDto> results = new ArrayList<>();
+    public static List<OrganismeRefDto> organismesToDto(List<Organisme> organismes) {
+        List<OrganismeRefDto> results = new ArrayList<>();
         if (organismes != null) {
             for (Organisme item : organismes) {
                 results.add(organismeToDto(item));
@@ -70,22 +70,22 @@ public class TheseMappingHelper {
 
 
     //mapping personnes
-    public static ThesePersonneResponseDto personneToDto(PersonneThese personne) {
+    public static PersonneRefDto personneToDto(PersonneRef personne) {
         if(personne == null){
             return null;
         }
 
-        return ThesePersonneResponseDto.builder()
+        return PersonneRefDto.builder()
                 .ppn(personne.getPpn())
                 .prenom(personne.getPrenom())
                 .nom(personne.getNom())
                 .build();
     }
 
-    public static List<ThesePersonneResponseDto> personnesToDto(List<PersonneThese> personnes) {
-        List<ThesePersonneResponseDto> results = new ArrayList<>();
+    public static List<PersonneRefDto> personnesToDto(List<PersonneRef> personnes) {
+        List<PersonneRefDto> results = new ArrayList<>();
         if (personnes != null) {
-            for (PersonneThese item : personnes) {
+            for (PersonneRef item : personnes) {
                 results.add(personneToDto(item));
             }
         }

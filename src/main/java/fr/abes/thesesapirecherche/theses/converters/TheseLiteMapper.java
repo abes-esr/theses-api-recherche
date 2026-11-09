@@ -4,28 +4,31 @@ import fr.abes.thesesapirecherche.theses.service.DateFormats;
 import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteDto;
 import fr.abes.thesesapirecherche.theses.model.These;
+
+import java.util.Objects;
 
 @Component 
 public class TheseLiteMapper {
 
     OrganismeMapper organismeMapper = new OrganismeMapper();
+    PersonneRefMapper personneRefMapper = new PersonneRefMapper();
 
-    public TheseLiteResponseDto theseLiteToDto(Hit<These> theseHit) {
-        return TheseLiteResponseDto.builder()
+    public TheseLiteDto theseLiteToDto(Hit<These> theseHit) {
+        return TheseLiteDto.builder()
                 .id(theseHit.id())
-                .titrePrincipal(theseHit.source().getTitrePrincipal())
+                .titrePrincipal(Objects.requireNonNull(theseHit.source()).getTitrePrincipal())
                 .titreEN(theseHit.source().getTitres().get("en") != null ? theseHit.source().getTitres().get("en") : "")
                 .etabSoutenanceN(theseHit.source().getEtabSoutenanceN())
                 .etabSoutenancePpn(theseHit.source().getEtabSoutenancePpn())
                 .dateSoutenance(DateFormats.formatDate(() -> theseHit.source().getDateSoutenance()))
                 .datePremiereInscriptionDoctorat(DateFormats.formatDate(() -> theseHit.source().getDatePremiereInscriptionDoctorat()))
-                .auteurs(theseHit.source().getAuteurs())
-                .directeurs(theseHit.source().getDirecteurs())
-                .rapporteurs(theseHit.source().getRapporteurs())
-                .examinateurs(theseHit.source().getMembresJury())
-                .president(theseHit.source().getPresidentJury())
+                .auteurs(theseHit.source().getAuteurs().stream().map(personneRefMapper::personneToDto).toList())
+                .directeurs(theseHit.source().getDirecteurs().stream().map(personneRefMapper::personneToDto).toList())
+                .rapporteurs(theseHit.source().getRapporteurs().stream().map(personneRefMapper::personneToDto).toList())
+                .examinateurs(theseHit.source().getMembresJury().stream().map(personneRefMapper::personneToDto).toList())
+                .president(personneRefMapper.personneToDto(theseHit.source().getPresidentJury()))
                 .nnt(theseHit.source().getNnt())
                 .doi(theseHit.source().getDoi())
                 .discipline(theseHit.source().getDiscipline())

@@ -7,22 +7,22 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ThesesByOrganismeResponseDto {
+public class ThesesByOrganismeDto {
     // TODO : breaking change, mettre le e de établissement en majuscule
     private long totalHitsetabSoutenance;
-    private List<TheseLiteResponseDto> etabSoutenance;
+    private List<TheseLiteDto> etabSoutenance;
     private long totalHitsetabSoutenanceEnCours;
-    private List<TheseLiteResponseDto> etabSoutenanceEnCours;
+    private List<TheseLiteDto> etabSoutenanceEnCours;
     private long totalHitspartenaireRecherche;
-    private List<TheseLiteResponseDto> partenaireRecherche;
+    private List<TheseLiteDto> partenaireRecherche;
     private long totalHitspartenaireRechercheEnCours;
-    private List<TheseLiteResponseDto> partenaireRechercheEnCours;
+    private List<TheseLiteDto> partenaireRechercheEnCours;
     private long totalHitsetabCotutelle;
-    private List<TheseLiteResponseDto> etabCotutelle;
+    private List<TheseLiteDto> etabCotutelle;
     private long totalHitsetabCotutelleEnCours;
-    private List<TheseLiteResponseDto> etabCotutelleEnCours;
+    private List<TheseLiteDto> etabCotutelleEnCours;
     private long totalHitsecoleDoctorale;
-    private List<TheseLiteResponseDto> ecoleDoctorale;
+    private List<TheseLiteDto> ecoleDoctorale;
     private long totalHitsecoleDoctoraleEnCours;
-    private List<TheseLiteResponseDto> ecoleDoctoraleEnCours;
+    private List<TheseLiteDto> ecoleDoctoraleEnCours;
 }

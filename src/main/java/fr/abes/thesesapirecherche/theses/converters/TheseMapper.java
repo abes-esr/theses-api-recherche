@@ -1,6 +1,6 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
-import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
 import java.util.ArrayList;
@@ -15,12 +15,12 @@ import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.fo
 
 @Component("TheseTheseMapper")
 public class TheseMapper {
-    ThesePersonneMapper personneMapper = new ThesePersonneMapper();
+    PersonneRefMapper personneMapper = new PersonneRefMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
     SujetsToMapMapper sujetsToMapMapper = new SujetsToMapMapper();
 
-    public TheseResponseDto theseToDto(These these) {
-        return TheseResponseDto.builder()
+    public TheseDto theseToDto(These these) {
+        return TheseDto.builder()
                 .titrePrincipal(these.getTitrePrincipal())
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
@@ -54,13 +54,5 @@ public class TheseMapper {
                 .status(these.getStatus())
                 .isSoutenue(these.getIsSoutenue())
                 .build();
-    }
-
-    public List<TheseResponseDto> thesesToDto(List<These> personnes) {
-        List<TheseResponseDto> results = new ArrayList<>();
-        for (These item : personnes) {
-            results.add(theseToDto(item));
-        }
-        return results;
     }
 }

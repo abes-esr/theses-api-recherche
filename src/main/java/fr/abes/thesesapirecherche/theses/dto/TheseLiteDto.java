@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class TheseLiteResponseDto {
+public class TheseLiteDto {
     String id;
     String titrePrincipal;
     String titreEN;
@@ -28,8 +28,8 @@ public class TheseLiteResponseDto {
     String doi;
     String discipline;
     String status;
-    List<OrganismeResponseDto> ecolesDoctorale;
-    List<OrganismeResponseDto> partenairesDeRecherche;
+    List<OrganismeRefDto> ecolesDoctorale;
+    List<OrganismeRefDto> partenairesDeRecherche;
     List<Sujet> sujets;
     List<SujetsRameau> sujetsRameau;
 }

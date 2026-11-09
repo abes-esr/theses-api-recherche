@@ -3,9 +3,9 @@ package fr.abes.thesesapirecherche.theses.dto.client;
 import java.util.List;
 import java.util.Map;
 
-import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.OrganismeRefDto;
 import fr.abes.thesesapirecherche.theses.dto.SujetsToMapDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.PersonneRefDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,21 +29,21 @@ public class ClientTheseLiteResponseDto {
     // pas fournit car considéré comme trop coûteux
     // Map<String, String> resumes;
     
-    OrganismeResponseDto etabSoutenance;
+    OrganismeRefDto etabSoutenance;
     String codeEtab;
-    List<OrganismeResponseDto> etabCotutelle;
-    List<OrganismeResponseDto> partenairesRecherche;
+    List<OrganismeRefDto> etabCotutelle;
+    List<OrganismeRefDto> partenairesRecherche;
     Map<String, List<SujetsToMapDto>> mapSujets;
-    List<ThesePersonneResponseDto> membresJury;
-    List<ThesePersonneResponseDto> rapporteurs;
-    List<ThesePersonneResponseDto> auteurs;
-    List<ThesePersonneResponseDto> directeurs;
+    List<PersonneRefDto> membresJury;
+    List<PersonneRefDto> rapporteurs;
+    List<PersonneRefDto> auteurs;
+    List<PersonneRefDto> directeurs;
     List<String> langues;
     List<String> oaiSetNames;
     String cas;
     String accessible;
-    List<OrganismeResponseDto> ecolesDoctorales;
-    ThesePersonneResponseDto presidentJury;
+    List<OrganismeRefDto> ecolesDoctorales;
+    PersonneRefDto presidentJury;
     String source;
     String status;
     Boolean isSoutenue;

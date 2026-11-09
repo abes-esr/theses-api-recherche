@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,9 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 
 import fr.abes.thesesapirecherche.dto.Facet;
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.SearchResponseTheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeDto;
 import fr.abes.thesesapirecherche.theses.rss.RssFeedView;
 import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,7 +43,7 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ResponseTheseLiteDto simple(
+    public SearchResponseTheseLiteDto simple(
             @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
             @RequestParam @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
@@ -122,7 +120,7 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ThesesByOrganismeResponseDto rechercheParOrganisme(
+    public ThesesByOrganismeDto rechercheParOrganisme(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {

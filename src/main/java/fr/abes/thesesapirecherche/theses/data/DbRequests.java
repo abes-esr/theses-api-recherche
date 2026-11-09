@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-/*
-TODO: extraire ça dans un service
- */
 @Component
 public class DbRequests {
     @Autowired
