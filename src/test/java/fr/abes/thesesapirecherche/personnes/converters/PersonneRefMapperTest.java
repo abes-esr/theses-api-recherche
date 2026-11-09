@@ -100,7 +100,6 @@ public class PersonneRefMapperTest extends ThesesApiRechercheApplicationTests {
     void testConversionESversDto() {
 
         List<PersonneLiteResponseDto> results = searchPersonnesResponse.hits().hits().stream()
-                .map(Hit::source).filter(Objects::nonNull)
                 .map(personneMapper::personnesToDto).toList();
 
         Assertions.assertEquals(2, results.size());

@@ -14,6 +14,7 @@ import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,19 +38,19 @@ public class PersonneMapper {
      * @param personne Hit<Personne>
      * @return
      */
-    public PersonneLiteResponseDto personnesToDto(RecherchePersonne personne) {
+    public PersonneLiteResponseDto personnesToDto(Hit<RecherchePersonne> personne) {
         PersonneLiteResponseDto item = PersonneLiteResponseDto.builder()
-                .id(personne.getPpn())
-                .nom(personne.getNom())
-                .prenom(personne.getPrenom())
-                .hasIdref(personne.getHasIdref())
-                .theses(personne.getTheses_id())
+                .id(personne.id())
+                .nom(Objects.requireNonNull(personne.source()).getNom())
+                .prenom(personne.source().getPrenom())
+                .hasIdref(personne.source().getHasIdref())
+                .theses(personne.source().getTheses_id())
                 .build();
 
         // On remplit les champs calculés
-        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.getRoles()));
-        item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.getDisciplines()));
-        item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.getEtablissements()));
+        item.setRoles(PersonneComputedFields.calculerStatistiquesRoles(personne.source().getRoles()));
+        item.setDisciplines(PersonneComputedFields.calculerDisciplines(personne.source().getDisciplines()));
+        item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.source().getEtablissements()));
 
         return item;
     }

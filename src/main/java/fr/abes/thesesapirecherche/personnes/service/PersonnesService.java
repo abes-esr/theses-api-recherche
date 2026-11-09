@@ -44,7 +44,6 @@ public class PersonnesService {
         assert res.hits().total() != null;
         return RechercheResponseDto.builder()
                 .personnes(res.hits().hits().stream()
-                        .map(Hit::source).filter(Objects::nonNull)
                         .map(personneMapper::personnesToDto)
                         .collect(Collectors.toList()))
                 .totalHits(res.hits().total().value())
