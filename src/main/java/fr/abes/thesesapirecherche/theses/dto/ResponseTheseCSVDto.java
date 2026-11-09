@@ -14,6 +14,7 @@ public class ResponseTheseCSVDto {
 
     List<ClientTheseResponseDto> theses = new ArrayList<>();
 
+    // TODO extraire dans un service
     public String toCSV() {
         StringBuilder s = new StringBuilder();
         //en tête
@@ -21,7 +22,7 @@ public class ResponseTheseCSVDto {
         s.append("\n");
 
         //permet de déterminer quand on est dans le 1er tour de boucle (pour ajouter les sépérateurs ;)
-        Boolean firstRound = true;
+        boolean firstRound;
 
         //contenu
         for(ClientTheseResponseDto t : theses) {
@@ -46,7 +47,7 @@ public class ResponseTheseCSVDto {
             // Auteurs
             firstRound = true;
             s.append("\"");
-            for(ThesePersoneResponseDto auteur : t.getAuteurs()) {
+            for(ThesePersonneResponseDto auteur : t.getAuteurs()) {
                 if(!firstRound) s.append(" || ");
                 s.append(auteur.getNom() != null ? auteur.getNom().replace("\"", "") : "").append(", ").append(auteur.getPrenom() != null ? auteur.getPrenom().replace("\"", "") : "");
                 if(auteur.getPpn() != null) {
@@ -67,7 +68,7 @@ public class ResponseTheseCSVDto {
             //Directeurs
             firstRound = true;
             s.append("\"");
-            for(ThesePersoneResponseDto directeur : t.getDirecteurs()) {
+            for(ThesePersonneResponseDto directeur : t.getDirecteurs()) {
                 if(!firstRound) s.append(" || ");
                 s.append(directeur.getNom() != null ? directeur.getNom().replace("\"", "") : "").append(", ").append(directeur.getPrenom() != null ? directeur.getPrenom().replace("\"", "") : "");
                 if(directeur.getPpn() != null) {
@@ -142,7 +143,7 @@ public class ResponseTheseCSVDto {
             //Rapporteurs
             firstRound = true;
             s.append("\"");
-            for(ThesePersoneResponseDto rapp : t.getRapporteurs()) {
+            for(ThesePersonneResponseDto rapp : t.getRapporteurs()) {
                 if(!firstRound) s.append(" || ");
                 s.append(rapp.getNom() != null ? rapp.getNom().replace("\"", "") : "").append(", ").append(rapp.getPrenom() != null ? rapp.getPrenom().replace("\"", "") : "");
                 if(rapp.getPpn() != null) {
@@ -155,7 +156,7 @@ public class ResponseTheseCSVDto {
             //Membres du jury
             firstRound = true;
             s.append("\"");
-            for(ThesePersoneResponseDto membre : t.getMembresJury()) {
+            for(ThesePersonneResponseDto membre : t.getMembresJury()) {
                 if(!firstRound) s.append(" || ");
                 s.append(membre.getNom() != null ? membre.getNom().replace("\"", "") : "").append(", ").append(membre.getPrenom() != null ? membre.getPrenom().replace("\"", "") : "");
                 if(membre.getPpn() != null) {

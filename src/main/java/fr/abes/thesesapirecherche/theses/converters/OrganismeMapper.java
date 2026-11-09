@@ -6,6 +6,9 @@ import fr.abes.thesesapirecherche.theses.model.Organisme;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
+@Component 
 public class OrganismeMapper {
     public OrganismeResponseDto organismeToDto(Organisme these) {
         return OrganismeResponseDto.builder()

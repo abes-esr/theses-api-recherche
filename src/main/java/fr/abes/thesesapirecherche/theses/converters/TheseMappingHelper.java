@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesePersoneResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.PersonneThese;
 import fr.abes.thesesapirecherche.theses.model.Sujet;
@@ -14,6 +16,7 @@ import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
 import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+@Component 
 public class TheseMappingHelper {
 
     //mapping mots clés
@@ -67,20 +70,20 @@ public class TheseMappingHelper {
 
 
     //mapping personnes
-    public static ThesePersoneResponseDto personneToDto(PersonneThese personne) {
+    public static ThesePersonneResponseDto personneToDto(PersonneThese personne) {
         if(personne == null){
             return null;
         }
 
-        return ThesePersoneResponseDto.builder()
+        return ThesePersonneResponseDto.builder()
                 .ppn(personne.getPpn())
                 .prenom(personne.getPrenom())
                 .nom(personne.getNom())
                 .build();
     }
 
-    public static List<ThesePersoneResponseDto> personnesToDto(List<PersonneThese> personnes) {
-        List<ThesePersoneResponseDto> results = new ArrayList<>();
+    public static List<ThesePersonneResponseDto> personnesToDto(List<PersonneThese> personnes) {
+        List<ThesePersonneResponseDto> results = new ArrayList<>();
         if (personnes != null) {
             for (PersonneThese item : personnes) {
                 results.add(personneToDto(item));

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class ThesePersoneResponseDto {
+public class ThesePersonneResponseDto {
     private String ppn;
     private String nom;
     private String prenom;

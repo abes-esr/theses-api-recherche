@@ -13,17 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EtablissementResponseDto {
-
-
-    @JsonProperty("ppn")
     String ppn;
-
-
-    @JsonProperty("nom")
     String nom;
-
-
-    @JsonProperty("type")
     String type;
 
 }

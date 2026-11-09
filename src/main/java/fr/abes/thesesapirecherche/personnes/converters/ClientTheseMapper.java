@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fr.abes.thesesapirecherche.personnes.dto.client.ClientTheseResponseDto;
@@ -17,10 +18,14 @@ import fr.abes.thesesapirecherche.theses.model.These;
 @Component("PersonnesClientTheseMapper")
 public class ClientTheseMapper {
 
-    EtablissementMapper etablissementMapper = new EtablissementMapper();
-    ThesePersonneLiteMapper personneMapper = new ThesePersonneLiteMapper();
-
-    SujetRameauMapper sujetRameauMapper = new SujetRameauMapper();
+    @Autowired 
+    EtablissementMapper etablissementMapper;
+    
+    @Autowired 
+    ThesePersonneLiteMapper personneMapper;
+    
+    @Autowired 
+    SujetRameauMapper sujetRameauMapper;
 
     /**
      * Transforme une thèse en web dto
@@ -37,13 +42,13 @@ public class ClientTheseMapper {
                 .discipline(these.getDiscipline())
                 .status(these.getStatus())
                 .source(these.getSource())
-                .etablissement_soutenance(etablissementMapper.etablissementToDto(these.getEtablissement_soutenance()))
-                .etablissements_cotutelle(etablissementMapper.etablissementsToDto(these.getEtablissements_cotutelle()))
-                .date_soutenance(these.getDate_soutenance())
-                .date_inscription(these.getDate_inscription())
+                .etablissementSoutenance(etablissementMapper.etablissementToDto(these.getEtablissementSoutenance()))
+                .etablissementsCotutelle(etablissementMapper.etablissementsToDto(these.getEtablissementsCotutelle()))
+                .dateSoutenance(these.getDateSoutenance())
+                .dateInscription(these.getDateInscription())
                 .auteurs(personneMapper.personnesLiteToDto(these.getAuteurs()))
                 .directeurs(personneMapper.personnesLiteToDto(these.getDirecteurs()))
-                .sujets_rameau(sujetRameauMapper.sujetsRameauToDto(these.getSujets_rameau()))
+                .sujetsRameau(sujetRameauMapper.sujetsRameauToDto(these.getSujetsRameau()))
                 .sujets(these.getSujets())
                 .build();
     }
@@ -55,18 +60,25 @@ public class ClientTheseMapper {
      * @return
      */
     public Map<String, List<ClientTheseResponseDto>> thesesToClientDto(List<ThesePersonne> theses) {
+        
         Map<String, List<ClientTheseResponseDto>> results = new HashMap<>();
-        if (theses != null) {
-            for (ThesePersonne item : theses) {
-                if (results.containsKey(item.getRole())) {
-                    results.get(item.getRole()).add(theseToClientDto(item));
-                } else {
-                    List<ClientTheseResponseDto> list = new ArrayList<>();
-                    list.add(theseToClientDto(item));
-                    results.put(item.getRole(), list);
-                }
+
+        if (theses == null){
+            return results;
+        }
+
+
+        
+        for (ThesePersonne item : theses) {
+            if (results.containsKey(item.getRole())) {
+                results.get(item.getRole()).add(theseToClientDto(item));
+            } else {
+                List<ClientTheseResponseDto> list = new ArrayList<>();
+                list.add(theseToClientDto(item));
+                results.put(item.getRole(), list);
             }
         }
+        
 
         //On tri les thèses par date
         for (String role : results.keySet()) {

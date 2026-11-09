@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
@@ -27,7 +29,8 @@ import java.util.List;
 @ExtendWith(SpringExtension.class)
 public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
 
-    PersonneMapper personneMapper = new PersonneMapper();
+    @Autowired
+    PersonneMapper personneMapper;
 
     /**
      * Génération d'un retour de recherche ElasticSearch contenant 2 personnes
@@ -127,9 +130,9 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
         Assertions.assertEquals("127566635", results.getId());
         Assertions.assertEquals("Rousseau", results.getNom());
         Assertions.assertEquals("Erwann", results.getPrenom());
-        Assertions.assertEquals(true, results.getHasIdref());
+        Assertions.assertTrue(results.getHasIdref());
         Assertions.assertEquals(1, results.getTheses().size());
-        Assertions.assertEquals(true, results.getTheses().containsKey("auteur"));
+        Assertions.assertTrue(results.getTheses().containsKey("auteur"));
         Assertions.assertEquals("2007PA066375", results.getTheses().get("auteur").get(0).getId());
 
     }

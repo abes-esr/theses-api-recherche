@@ -10,12 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+/*
+TODO: extraire ça dans un service
+ */
 @Component
 public class DbRequests {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List getMailAddress(String ppnEtab, String source) {
+    public List<String> getMailAddress(String ppnEtab, String source) {
         TimeZone timeZone = TimeZone.getTimeZone("Europe/Paris");
         TimeZone.setDefault(timeZone);
 

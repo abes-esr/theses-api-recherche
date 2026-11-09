@@ -16,16 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RechercheResponseDto {
-
-
-    @JsonProperty("totalHits")
     long totalHits;
-
-
-    @JsonProperty("took")
     long took;
-
-
-    @JsonProperty("personnes")
     List<PersonneLiteResponseDto> personnes = new ArrayList<>();
 }
