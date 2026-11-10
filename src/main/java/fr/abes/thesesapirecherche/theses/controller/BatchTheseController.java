@@ -50,7 +50,7 @@ public class BatchTheseController {
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
-            if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
+            if(nombre.orElse(10) > 5_000) nombre = Optional.of(5_000);
             return thesesService.getThesesBatch(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
