@@ -74,6 +74,24 @@ public final class CsvWriter<T> {
         return value.replace("\"", "");
     }
 
+    private static String formatPersonne(PersonneRefDto personne) {
+        String name = joinNonEmpty(", ", personne.getNom(), personne.getPrenom());
+        String ppn = Objects.toString(personne.getPpn(), "");
+        return ppn.isEmpty() ? name : joinNonEmpty(" ", name, "(" + ppn + ")");
+    }
+
+    private static String formatOrganisme(OrganismeRefDto organismeRefDto) {
+        String name = organismeRefDto.getNom();
+        String ppn = Objects.toString(organismeRefDto.getPpn(), "");
+        return ppn.isEmpty() ? name : joinNonEmpty(" ", name, "(" + ppn + ")");
+    }
+
+    private static String joinNonEmpty(String separator, String... parts) {
+        return Arrays.stream(parts)
+                .filter(part -> part != null && !part.isEmpty())
+                .collect(Collectors.joining(separator));
+    }
+
     /**
      * Décrit comment transformer chaque attribut d'un objet ClientTheseResponseDto en une String.
      * Cette String sera inséré dans un fichier .csv<br>
@@ -90,72 +108,29 @@ public final class CsvWriter<T> {
             .setUpColumnExtraction("DOI",    ClientTheseResponseDto::getDoi)
             .setUpColumnExtraction("NumSujet",   ClientTheseResponseDto::getNumSujet)
             .setUpColumnExtraction("NumSujetSansS", ClientTheseResponseDto::getNumSujetSansS)
-            .setUpColumnExtraction("Auteurs", theses -> {
-                List<String> acc = new ArrayList<>();
-                for (PersonneRefDto auteurDto: theses.getAuteurs()) {
-                    if (auteurDto.getPpn() == null)
-                        acc.add(String.format("%s, %s", auteurDto.getNom(), auteurDto.getPrenom()));
-                    else
-                        acc.add(String.format("%s, %s (%s)", auteurDto.getNom(), auteurDto.getPrenom(), auteurDto.getPpn()));
-                }
-                return String.join(" || ", acc);
-            })
+            .setUpColumnExtraction("Auteurs", theses -> theses.getAuteurs().stream()
+                    .map(CsvWriter::formatPersonne)
+                    .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Titre FR", ClientTheseResponseDto::getTitrePrincipal)
             .setUpColumnExtraction("Titre EN", uneThese -> uneThese.getTitres().get("en"))
-            .setUpColumnExtraction("Directeurs", uneThese -> {
-                List<String> acc = new ArrayList<>();
-                for (PersonneRefDto auteurDto: uneThese.getDirecteurs()) {
-                    if (auteurDto.getPpn() == null)
-                        acc.add(String.format("%s, %s", auteurDto.getNom(), auteurDto.getPrenom()));
-                    else
-                        acc.add(String.format("%s, %s (%s)", auteurDto.getNom(), auteurDto.getPrenom(), auteurDto.getPpn()));
-                }
-                return String.join(" || ", acc);
-            })
+            .setUpColumnExtraction("Directeurs", uneThese -> uneThese.getDirecteurs().stream()
+                    .map(CsvWriter::formatPersonne)
+                    .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Discipline", ClientTheseResponseDto::getDiscipline)
             .setUpColumnExtraction("Date de soutenance", ClientTheseResponseDto::getDateSoutenance)
             .setUpColumnExtraction("Date de première inscription", ClientTheseResponseDto::getDatePremiereInscriptionDoctorat)
             .setUpColumnExtraction("Date d'archivage CINES", ClientTheseResponseDto::getDateCines)
-            .setUpColumnExtraction("Etablissement de soutenance", uneThese -> {
-                List<String> acc = new ArrayList<>();
-                OrganismeRefDto uneOrg = uneThese.getEtabSoutenance();
-                if (uneOrg.getPpn() == null)
-                    acc.add(String.format("%s", uneOrg.getNom()));
-                else
-                    acc.add(String.format("%s (%s)", uneOrg.getNom(), uneOrg.getPpn()));
-
-                return String.join(" || ", acc);
-            })
+            .setUpColumnExtraction("Etablissement de soutenance", uneThese -> CsvWriter.formatOrganisme(uneThese.getEtabSoutenance()))
             .setUpColumnExtraction("Code etablissement", ClientTheseResponseDto::getCodeEtab)
-            .setUpColumnExtraction("Etablissement de cotutelle", uneThese -> {
-                List<String> acc = new ArrayList<>();
-                for (OrganismeRefDto org: uneThese.getEtabCotutelle()) {
-                    if (org.getPpn() == null)
-                        acc.add(String.format("%s", org.getNom()));
-                    else
-                        acc.add(String.format("%s (%s)", org.getNom(), org.getPpn()));
-                }
-                return String.join(" || ", acc);
-            })
-            .setUpColumnExtraction("Ecoles doctorales", uneThese -> {
-                List<String> acc = new ArrayList<>();
-                for (OrganismeRefDto org: uneThese.getEcolesDoctorales()) {
-                    if (org.getPpn() == null)
-                        acc.add(String.format("%s", org.getNom()));
-                    else
-                        acc.add(String.format("%s (%s)", org.getNom(), org.getPpn()));
-                }
-                return String.join(" || ", acc);
-            })
-            .setUpColumnExtraction("Partenaires de recherche", uneThese -> {
-                List<String> acc = new ArrayList<>();
-                for (OrganismeRefDto org: uneThese.getPartenairesRecherche()) {
-                    if (org.getPpn() == null)
-                        acc.add(String.format("%s", org.getNom()));
-                    else
-                        acc.add(String.format("%s (%s)", org.getNom(), org.getPpn()));
-                }
-                return String.join(", ", acc);
+            .setUpColumnExtraction("Etablissement de cotutelle", uneThese -> uneThese.getEtabCotutelle().stream()
+                    .map(CsvWriter::formatOrganisme)
+                    .collect(Collectors.joining(" || ")))
+            .setUpColumnExtraction("Ecoles doctorales", uneThese -> uneThese.getEcolesDoctorales().stream()
+                    .map(CsvWriter::formatOrganisme)
+                    .collect(Collectors.joining(" || ")))
+            .setUpColumnExtraction("Partenaires de recherche", uneThese -> uneThese.getPartenairesRecherche().stream()
+                            .map(CsvWriter::formatOrganisme)
+                            .collect(Collectors.joining(", "))
                 /*
                 !!!
                 Attention, pour préserver le comportement déjà présent, le délimiteur entre plusieurs
@@ -163,35 +138,14 @@ public final class CsvWriter<T> {
                 les autres champs utilisent || pour séparer les multiples éléments.
                 !!!
                  */
-            })
-            .setUpColumnExtraction("Président du jury", uneThese -> {
-                PersonneRefDto prez = uneThese.getPresidentJury();
-                if (prez.getNom() == null) return "";
-                else if (prez.getPpn() == null)
-                    return (String.format("%s, %s", prez.getNom(), prez.getPrenom()));
-                else
-                    return String.format("%s, %s (%s)", prez.getNom(), prez.getPrenom(), prez.getPpn());
-            })
-            .setUpColumnExtraction("Rapporteurs", uneThese -> {
-                List<String> acc = new ArrayList<>();
-                for(PersonneRefDto unRapporteur : uneThese.getRapporteurs()) {
-                    if (unRapporteur.getPpn() == null)
-                        acc.add(String.format("%s, %s", unRapporteur.getNom(), unRapporteur.getPrenom()));
-                    else
-                        acc.add(String.format("%s, %s (%s)", unRapporteur.getNom(), unRapporteur.getPrenom(), unRapporteur.getPpn()));
-                }
-                return String.join(" || ", acc);
-            })
-            .setUpColumnExtraction("Examinateurs", uneThese -> {
-                List<String> acc = new ArrayList<>();
-                for(PersonneRefDto unMembreJury : uneThese.getMembresJury()) {
-                    if (unMembreJury.getPpn() == null)
-                        acc.add(String.format("%s, %s", unMembreJury.getNom(), unMembreJury.getPrenom()));
-                    else
-                        acc.add(String.format("%s, %s (%s)", unMembreJury.getNom(), unMembreJury.getPrenom(), unMembreJury.getPpn()));
-                }
-                return String.join(" || ", acc);
-            })
+            )
+            .setUpColumnExtraction("Président du jury", uneThese -> CsvWriter.formatPersonne(uneThese.getPresidentJury()))
+            .setUpColumnExtraction("Rapporteurs", uneThese -> uneThese.getRapporteurs().stream()
+                    .map(CsvWriter::formatPersonne)
+                    .collect(Collectors.joining(" || ")))
+            .setUpColumnExtraction("Examinateurs", uneThese -> uneThese.getMembresJury().stream()
+                    .map(CsvWriter::formatPersonne)
+                    .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Mots clés FR", uneThese -> {
                 List<String> acc = new ArrayList<>();
                 if (!uneThese.getMapSujets().containsKey("fr")) return "";
