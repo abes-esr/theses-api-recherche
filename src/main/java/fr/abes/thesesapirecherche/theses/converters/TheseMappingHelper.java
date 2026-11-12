@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import fr.abes.thesesapirecherche.theses.dto.OrganismeRefDto;
@@ -13,35 +14,27 @@ import fr.abes.thesesapirecherche.theses.model.Organisme;
 import fr.abes.thesesapirecherche.theses.model.PersonneRef;
 import fr.abes.thesesapirecherche.theses.model.Sujet;
 import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
-import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
+import fr.abes.thesesapirecherche.theses.dto.SujetDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
-@Component 
+@Component
 public class TheseMappingHelper {
+    private static final SujetMapper sujetMapper = new SujetMapper();
 
     //mapping mots clés
-    public static Map<String, List<SujetsToMap>> formatKeywords(These these) {
-        Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();
+    public static Map<String, List<SujetDto>> formatKeywords(These these) {
+        Map<String, List<SujetDto>> mapSujets = new HashMap<>();
         for (Sujet s : these.getSujets()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get(s.getLangue()) != null) l = mapSujets.get(s.getLangue());
-            l.add(new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujet, s.getLibelle()));
-            mapSujets.put(s.getLangue(), l);
+            mapSujets.computeIfAbsent(s.getLangue(), langue -> new ArrayList<>())
+                    .add(sujetMapper.toDto(s));
         }
         for (SujetsRameau s : these.getSujetsRameau()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get("fr") != null) l = mapSujets.get("fr");
-            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, "\"" + s.getLibelle() + "\" ET " + s.getPpn()));
-            mapSujets.put("fr", l);
+            mapSujets.computeIfAbsent("fr", key -> new ArrayList<>())
+                    .add(sujetMapper.toDto(s));
         }
 
         return mapSujets;
     }
-
-
-
-
-
 
     //mapping organisme
     public static OrganismeRefDto organismeToDto(Organisme organisme) {

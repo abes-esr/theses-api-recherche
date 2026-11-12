@@ -1,7 +1,7 @@
 package fr.abes.thesesapirecherche.theses.dto.batch;
 
 import fr.abes.thesesapirecherche.theses.dto.OrganismeRefDto;
-import fr.abes.thesesapirecherche.theses.dto.SujetsToMapDto;
+import fr.abes.thesesapirecherche.theses.dto.SujetDto;
 import fr.abes.thesesapirecherche.theses.dto.PersonneRefDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,7 +30,7 @@ public class BatchTheseResponseDto {
     String codeEtab;
     List<OrganismeRefDto> etabCotutelle;
     List<OrganismeRefDto> partenairesRecherche;
-    Map<String, List<SujetsToMapDto>> mapSujets;
+    Map<String, List<SujetDto>> mapSujets;
     List<PersonneRefDto> membresJury;
     List<PersonneRefDto> rapporteurs;
     List<PersonneRefDto> auteurs;

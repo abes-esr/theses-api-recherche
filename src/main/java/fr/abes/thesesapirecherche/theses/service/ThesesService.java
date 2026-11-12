@@ -61,7 +61,6 @@ public class ThesesService {
 
         res.setTheses(liste);
         res.setTook(response.took());
-        assert response.hits().total() != null;
         res.setTotalHits(response.hits().total().value());
 
         return res;
@@ -91,7 +90,6 @@ public class ThesesService {
 
         res.setTheses(liste);
         res.setTook(response.took());
-        assert response.hits().total() != null;
         res.setTotalHits(response.hits().total().value());
         return res;
     }
@@ -120,7 +118,6 @@ public class ThesesService {
 
         res.setTheses(liste);
         res.setTook(response.took());
-        assert response.hits().total() != null;
         res.setTotalHits(response.hits().total().value());
         return res;
     }

@@ -195,16 +195,16 @@ public final class CsvWriter<T> {
             .setUpColumnExtraction("Mots clés FR", uneThese -> {
                 List<String> acc = new ArrayList<>();
                 if (!uneThese.getMapSujets().containsKey("fr")) return "";
-                for(SujetsToMapDto map : uneThese.getMapSujets().get("fr")) {
-                    acc.add(map.getKeyword());
+                for(SujetDto sujetDto : uneThese.getMapSujets().get("fr")) {
+                    acc.add(sujetDto.getKeyword());
                 }
                 return String.join(" || ", acc);
             })
             .setUpColumnExtraction("Mots clés EN", uneThese -> {
                 List<String> acc = new ArrayList<>();
                 if (!uneThese.getMapSujets().containsKey("en")) return "";
-                for(SujetsToMapDto map : uneThese.getMapSujets().get("en")) {
-                    acc.add(map.getKeyword());
+                for(SujetDto sujetDto : uneThese.getMapSujets().get("en")) {
+                    acc.add(sujetDto.getKeyword());
                 }
                 return String.join(" || ", acc);
             })

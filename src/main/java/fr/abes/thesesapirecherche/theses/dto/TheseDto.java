@@ -25,7 +25,7 @@ public class TheseDto {
     String codeEtab;
     List<OrganismeRefDto> etabCotutelle;
     List<OrganismeRefDto> partenairesRecherche;
-    Map<String, List<SujetsToMapDto>> mapSujets;
+    Map<String, List<SujetDto>> mapSujets;
     List<PersonneRefDto> membresJury;
     List<PersonneRefDto> rapporteurs;
     List<PersonneRefDto> auteurs;

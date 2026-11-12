@@ -17,7 +17,6 @@ import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.fo
 public class TheseMapper {
     PersonneRefMapper personneMapper = new PersonneRefMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
-    SujetsToMapMapper sujetsToMapMapper = new SujetsToMapMapper();
     private final DateFormatService dateFormatService;
 
     public TheseDto theseToDto(These these) {
@@ -35,13 +34,7 @@ public class TheseMapper {
                 .codeEtab(these.getCodeEtab())
                 .etabCotutelle(organismeMapper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(formatKeywords(these).entrySet().stream()
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                entry -> entry.getValue().stream()
-                                        .map(model -> sujetsToMapMapper.sujetsToMapToDto(model))
-                                        .collect(Collectors.toList())
-                        )))
+                .mapSujets(formatKeywords(these))
                 .membresJury(personneMapper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(personneMapper.personnesToDto(these.getRapporteurs()))
                 .auteurs(personneMapper.personnesToDto(these.getAuteurs()))

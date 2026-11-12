@@ -41,7 +41,7 @@ public class PersonneMapper {
     public PersonneLiteResponseDto personnesToDto(Hit<RecherchePersonne> personne) {
         PersonneLiteResponseDto item = PersonneLiteResponseDto.builder()
                 .id(personne.id())
-                .nom(Objects.requireNonNull(personne.source()).getNom())
+                .nom(personne.source().getNom())
                 .prenom(personne.source().getPrenom())
                 .hasIdref(personne.source().getHasIdref())
                 .theses(personne.source().getTheses_id())

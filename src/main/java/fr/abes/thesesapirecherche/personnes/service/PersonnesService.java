@@ -41,7 +41,6 @@ public class PersonnesService {
     public RechercheResponseDto rechercherPersonne(String query, String filtres, int debut, int nombre, String tri) throws Exception {
         SearchResponse<RecherchePersonne> res = searchPersonneQueryBuilder.rechercher(query, filtres, debut, nombre, tri);
 
-        assert res.hits().total() != null;
         return RechercheResponseDto.builder()
                 .personnes(res.hits().hits().stream()
                         .map(personneMapper::personnesToDto)
@@ -76,7 +75,7 @@ public class PersonnesService {
 
 
         // on récupère d'abord les ids des thèses (pour plus tard aller requêter sur l'index theses)
-        List<String> theseIds = Objects.requireNonNull(p).getTheses()
+        List<String> theseIds = p.getTheses()
                                  .stream()
                                  .map(ThesePersonne::getId)
                                  .toList();

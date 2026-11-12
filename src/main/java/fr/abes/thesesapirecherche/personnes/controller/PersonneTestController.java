@@ -31,6 +31,7 @@ import java.util.Optional;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/tests/personnes/")
+//TODO : Supprimer cette classe
 @Deprecated
 public class PersonneTestController {
 

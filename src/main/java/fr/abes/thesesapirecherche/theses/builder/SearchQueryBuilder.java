@@ -4,8 +4,11 @@ import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.addFi
 import static fr.abes.thesesapirecherche.commons.builder.FacetQueryBuilder.buildFilter;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
