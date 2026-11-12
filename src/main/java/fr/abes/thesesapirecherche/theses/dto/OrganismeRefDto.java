@@ -10,8 +10,6 @@ import lombok.Setter;
 @Setter
 public class OrganismeRefDto {
     private String ppn;
-
     private String nom;
-
     private String type;
 }

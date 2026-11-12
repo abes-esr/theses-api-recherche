@@ -2,6 +2,8 @@ package fr.abes.thesesapirecherche.theses.service;
 
 import fr.abes.thesesapirecherche.theses.dto.*;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -20,7 +22,7 @@ public final class CsvWriter<T> {
      * @param customFormatter une fonction qui extrait un champ de {@link T} vers un String
      * @param <T> le type que l'on veut décrire sous format .csv
      */
-    private record ColumnRecord<T>(String header, Function<T, String> customFormatter) {}
+    private record ColumnRecord<T>(@NonNull String header, Function<T, String> customFormatter) {}
 
     private final List<ColumnRecord<T>> columnList = new ArrayList<>();
 
@@ -49,29 +51,18 @@ public final class CsvWriter<T> {
         StringBuilder sb = new StringBuilder();
 
         sb.append(this.columnList.stream()
-                        .map(c -> format("\"%s\"", escape(c.header())))
+                        .map(c -> String.format("\"%s\"", c.header()))
                         .collect(Collectors.joining(DELIMITEUR)))
                 .append("\n");
 
         // rows
         for (T row : rows) {
             sb.append(this.columnList.stream()
-                            .map(c -> format("\"%s\"", escape(c.customFormatter().apply(row))))
+                            .map(c -> format("\"%s\"", Objects.toString(c.customFormatter().apply(row), "")))
                             .collect(Collectors.joining(DELIMITEUR)))
                     .append(format("%s\n", DELIMITEUR));
         }
         return sb.toString();
-    }
-
-    /**
-     * Supprime les doubles guillemets français dans value
-     *
-     * @param value un String que l'on veut échapper
-     * @return un String ou null si value est null
-     */
-    private static String escape(String value) {// fixme huge doubt
-        if (value == null) return "";
-        return value.replace("\"", "");
     }
 
     private static String formatPersonne(PersonneRefDto personne) {
@@ -88,13 +79,14 @@ public final class CsvWriter<T> {
 
     private static String joinNonEmpty(String separator, String... parts) {
         return Arrays.stream(parts)
-                .filter(part -> part != null && !part.isEmpty())
+                .filter(StringUtils::isNotBlank)
+                .map(s -> s.replace("\"", ""))
                 .collect(Collectors.joining(separator));
     }
 
     /**
-     * Décrit comment transformer chaque attribut d'un objet ClientTheseResponseDto en une String.
-     * Cette String sera inséré dans un fichier .csv<br>
+     * Décrit comment transformer chaque attribut d'un objet ClientTheseResponseDto en un String.
+     * Ce String sera inséré dans un fichier .csv<br>
      *
      * Les champs à valeurs multiples sont séparés par ||, SAUF le champ des partenaires de recherches
      * où les valeurs sont séparés par une virgule. Je ne sais pas pourquoi. Je conserve simplement le
@@ -104,32 +96,40 @@ public final class CsvWriter<T> {
      * Example: Nom, Prénom (ppn)
      */
     public static final CsvWriter<ClientTheseResponseDto> ClientTheseResponseDtoCsvWriter = new CsvWriter<ClientTheseResponseDto>()
-            .setUpColumnExtraction("NNT",      ClientTheseResponseDto::getNnt)
-            .setUpColumnExtraction("DOI",    ClientTheseResponseDto::getDoi)
-            .setUpColumnExtraction("NumSujet",   ClientTheseResponseDto::getNumSujet)
+            .setUpColumnExtraction("NNT", ClientTheseResponseDto::getNnt)
+            .setUpColumnExtraction("DOI", ClientTheseResponseDto::getDoi)
+            .setUpColumnExtraction("NumSujet", ClientTheseResponseDto::getNumSujet)
             .setUpColumnExtraction("NumSujetSansS", ClientTheseResponseDto::getNumSujetSansS)
             .setUpColumnExtraction("Auteurs", theses -> theses.getAuteurs().stream()
                     .map(CsvWriter::formatPersonne)
+                    .map(formattedName -> formattedName.replace("\"", ""))
                     .collect(Collectors.joining(" || ")))
-            .setUpColumnExtraction("Titre FR", ClientTheseResponseDto::getTitrePrincipal)
-            .setUpColumnExtraction("Titre EN", uneThese -> uneThese.getTitres().get("en"))
+            .setUpColumnExtraction("Titre FR", these -> Objects.toString(these.getTitrePrincipal(), "").replace("\"", ""))
+            .setUpColumnExtraction("Titre EN", uneThese -> Objects.toString(uneThese.getTitres().get("en"), "").replace("\"", ""))
             .setUpColumnExtraction("Directeurs", uneThese -> uneThese.getDirecteurs().stream()
                     .map(CsvWriter::formatPersonne)
+                    .map(formattedName -> formattedName.replace("\"", ""))
                     .collect(Collectors.joining(" || ")))
-            .setUpColumnExtraction("Discipline", ClientTheseResponseDto::getDiscipline)
+            .setUpColumnExtraction("Discipline", these -> Objects.toString(these.getDiscipline(), "")
+                    .replace("\"", ""))
             .setUpColumnExtraction("Date de soutenance", ClientTheseResponseDto::getDateSoutenance)
             .setUpColumnExtraction("Date de première inscription", ClientTheseResponseDto::getDatePremiereInscriptionDoctorat)
             .setUpColumnExtraction("Date d'archivage CINES", ClientTheseResponseDto::getDateCines)
-            .setUpColumnExtraction("Etablissement de soutenance", uneThese -> CsvWriter.formatOrganisme(uneThese.getEtabSoutenance()))
-            .setUpColumnExtraction("Code etablissement", ClientTheseResponseDto::getCodeEtab)
+            .setUpColumnExtraction("Etablissement de soutenance", uneThese -> Objects.toString(CsvWriter.formatOrganisme(uneThese.getEtabSoutenance()), "")
+                    .replace("\"", ""))
+            .setUpColumnExtraction("Code etablissement", these -> Objects.toString(these.getCodeEtab(), "")
+                    .replace("\"", ""))
             .setUpColumnExtraction("Etablissement de cotutelle", uneThese -> uneThese.getEtabCotutelle().stream()
                     .map(CsvWriter::formatOrganisme)
+                    .map(s -> s.replace("\"", ""))
                     .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Ecoles doctorales", uneThese -> uneThese.getEcolesDoctorales().stream()
                     .map(CsvWriter::formatOrganisme)
+                    .map(s -> s.replace("\"", "").replace("||", ""))
                     .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Partenaires de recherche", uneThese -> uneThese.getPartenairesRecherche().stream()
                             .map(CsvWriter::formatOrganisme)
+                            .map(s -> s.replace("\"", ""))
                             .collect(Collectors.joining(", "))
                 /*
                 !!!
@@ -139,18 +139,21 @@ public final class CsvWriter<T> {
                 !!!
                  */
             )
-            .setUpColumnExtraction("Président du jury", uneThese -> CsvWriter.formatPersonne(uneThese.getPresidentJury()))
+            .setUpColumnExtraction("Président du jury", uneThese -> CsvWriter.formatPersonne(uneThese.getPresidentJury())
+                    .replace("\"", ""))
             .setUpColumnExtraction("Rapporteurs", uneThese -> uneThese.getRapporteurs().stream()
                     .map(CsvWriter::formatPersonne)
+                    .map(s -> s.replace("\"", ""))
                     .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Examinateurs", uneThese -> uneThese.getMembresJury().stream()
                     .map(CsvWriter::formatPersonne)
+                    .map(s -> s.replace("\"", ""))
                     .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Mots clés FR", uneThese -> {
                 List<String> acc = new ArrayList<>();
                 if (!uneThese.getMapSujets().containsKey("fr")) return "";
                 for(SujetDto sujetDto : uneThese.getMapSujets().get("fr")) {
-                    acc.add(sujetDto.getKeyword());
+                    acc.add(sujetDto.getKeyword().replace("\"", "").replace("||", ""));
                 }
                 return String.join(" || ", acc);
             })
@@ -158,7 +161,7 @@ public final class CsvWriter<T> {
                 List<String> acc = new ArrayList<>();
                 if (!uneThese.getMapSujets().containsKey("en")) return "";
                 for(SujetDto sujetDto : uneThese.getMapSujets().get("en")) {
-                    acc.add(sujetDto.getKeyword());
+                    acc.add(sujetDto.getKeyword().replace("\"", ""));
                 }
                 return String.join(" || ", acc);
             })
