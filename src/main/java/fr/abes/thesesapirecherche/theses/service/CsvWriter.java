@@ -121,14 +121,17 @@ public final class CsvWriter<T> {
                     .replace("\"", ""))
             .setUpColumnExtraction("Etablissement de cotutelle", uneThese -> uneThese.getEtabCotutelle().stream()
                     .map(CsvWriter::formatOrganisme)
-                    .map(s -> s.replace("\"", ""))
+                    .filter(Objects::nonNull)
+                    .map(s -> s.replace("\"", "").replace("||", ""))
                     .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Ecoles doctorales", uneThese -> uneThese.getEcolesDoctorales().stream()
                     .map(CsvWriter::formatOrganisme)
-                    .map(s -> s.replace("\"", "").replace("||", ""))
+                    .filter(Objects::nonNull)
+                    .map(s -> s.replace("\"", "").replace("||", " "))
                     .collect(Collectors.joining(" || ")))
             .setUpColumnExtraction("Partenaires de recherche", uneThese -> uneThese.getPartenairesRecherche().stream()
                             .map(CsvWriter::formatOrganisme)
+                            .filter(Objects::nonNull)
                             .map(s -> s.replace("\"", ""))
                             .collect(Collectors.joining(", "))
                 /*
@@ -153,7 +156,7 @@ public final class CsvWriter<T> {
                 List<String> acc = new ArrayList<>();
                 if (!uneThese.getMapSujets().containsKey("fr")) return "";
                 for(SujetDto sujetDto : uneThese.getMapSujets().get("fr")) {
-                    acc.add(sujetDto.getKeyword().replace("\"", "").replace("||", ""));
+                    acc.add(sujetDto.getKeyword().replace("\"", "").replace("||", " "));
                 }
                 return String.join(" || ", acc);
             })
@@ -161,7 +164,7 @@ public final class CsvWriter<T> {
                 List<String> acc = new ArrayList<>();
                 if (!uneThese.getMapSujets().containsKey("en")) return "";
                 for(SujetDto sujetDto : uneThese.getMapSujets().get("en")) {
-                    acc.add(sujetDto.getKeyword().replace("\"", ""));
+                    acc.add(sujetDto.getKeyword().replace("\"", "").replace("||", " "));
                 }
                 return String.join(" || ", acc);
             })
