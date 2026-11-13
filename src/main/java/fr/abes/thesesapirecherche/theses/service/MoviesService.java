@@ -13,12 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 @Slf4j
 @Service
@@ -31,9 +33,16 @@ public class MoviesService {
     @Value("${google.recaptcha.key.threshold}")
     private float threshold;
 
+    // 9 characters: (8 chiffres) et (un x en ignorant la casse ou un chiffre)
+    private static final Pattern VALID_PPN = Pattern.compile("^[0-9]{8}[xX0-9]$");
+
     private CaptchaService captchaService;
 
     public List<String> getMailAdressesFromMovies(SignalerErreurDto json) throws RecaptchaInvalidException {
+        if (!VALID_PPN.matcher(json.getEtabPpn()).matches()) {
+            throw new IllegalArgumentException(String.format("Invalid query value (%s). Must 9 digits long. Last digit can be an X", json.getEtabPpn()));
+        }
+
         /**
          * GESTION DU CAPTCHA GOOGLE
          */
@@ -53,7 +62,13 @@ public class MoviesService {
 
         if (Arrays.asList(env.getActiveProfiles()).contains("prod") || Arrays.asList(env.getActiveProfiles()).contains("test") || Arrays.asList(env.getActiveProfiles()).contains("localhost")) {
 
-            URI uri = URI.create(env.getProperty("movies.assistance_deportee.url") + json.getEtabPpn());
+            URI uri = UriComponentsBuilder.fromUriString(env.getProperty("movies.assistance_deportee.url"))
+                    .replaceQuery(null) // raz des query parameter
+                    .queryParam("ppnEtab", "{preparedValue}")
+                    .encode()
+                    .buildAndExpand(json.getEtabPpn())
+                    .toUri();
+
             Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
             if (response == null) {
                 log.error("Movies a mal répondu ! ");

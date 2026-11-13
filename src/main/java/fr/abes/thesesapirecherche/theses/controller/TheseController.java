@@ -81,6 +81,12 @@ public class TheseController {
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public String signalerErreur(@RequestBody SignalerErreurDto json) throws RecaptchaInvalidException, IOException {
+        if (json.getEtabPpn() == null) {
+            throw new IllegalArgumentException("""
+                    Field "etabPpn" cannot be null
+                    """);
+        }
+
         List<String> to = moviesService.getMailAdressesFromMovies(json);
 
         log.info("Destinataires : " + to);
