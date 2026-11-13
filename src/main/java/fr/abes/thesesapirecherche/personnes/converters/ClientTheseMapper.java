@@ -9,7 +9,6 @@ import java.util.Map;
 
 import fr.abes.thesesapirecherche.theses.service.DateFormatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import fr.abes.thesesapirecherche.personnes.dto.client.ClientTheseResponseDto;

@@ -2,8 +2,6 @@ package fr.abes.thesesapirecherche.theses.converters;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import fr.abes.thesesapirecherche.theses.service.DateFormatService;
 import lombok.RequiredArgsConstructor;

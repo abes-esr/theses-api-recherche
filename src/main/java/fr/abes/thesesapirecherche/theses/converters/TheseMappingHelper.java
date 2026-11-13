@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import fr.abes.thesesapirecherche.theses.dto.OrganismeRefDto;

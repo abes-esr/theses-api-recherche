@@ -1,19 +1,13 @@
 package fr.abes.thesesapirecherche.personnes.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.personnes.dto.*;
 import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import co.elastic.clients.elasticsearch.core.SearchResponse;
@@ -21,7 +15,6 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
 import fr.abes.thesesapirecherche.personnes.converters.ClientTheseMapper;
 import fr.abes.thesesapirecherche.personnes.converters.PersonneMapper;
-import fr.abes.thesesapirecherche.personnes.converters.TheseMapper;
 import fr.abes.thesesapirecherche.personnes.dto.client.ClientPersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.personnes.model.Personne;
@@ -29,14 +22,14 @@ import fr.abes.thesesapirecherche.personnes.model.ThesePersonne;
 import fr.abes.thesesapirecherche.theses.model.These;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PersonnesService {
 
-    private SearchPersonneQueryBuilder searchPersonneQueryBuilder;
+    private final SearchPersonneQueryBuilder searchPersonneQueryBuilder;
 
-    private ClientTheseMapper clientTheseMapper;
+    private final ClientTheseMapper clientTheseMapper;
 
-    private PersonneMapper personneMapper;
+    private final PersonneMapper personneMapper;
 
     public RechercheResponseDto rechercherPersonne(String query, String filtres, int debut, int nombre, String tri) throws Exception {
         SearchResponse<RecherchePersonne> res = searchPersonneQueryBuilder.rechercher(query, filtres, debut, nombre, tri);

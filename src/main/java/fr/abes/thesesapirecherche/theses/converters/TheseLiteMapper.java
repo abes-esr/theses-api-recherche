@@ -8,8 +8,6 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.TheseLiteDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
-import java.util.Objects;
-
 @Component
 @RequiredArgsConstructor
 public class TheseLiteMapper {

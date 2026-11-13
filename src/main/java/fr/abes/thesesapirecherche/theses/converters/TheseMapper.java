@@ -3,9 +3,6 @@ package fr.abes.thesesapirecherche.theses.converters;
 import fr.abes.thesesapirecherche.theses.dto.TheseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import fr.abes.thesesapirecherche.theses.service.DateFormatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
