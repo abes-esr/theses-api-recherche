@@ -26,8 +26,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MoviesService {
-    private Environment env;
-    private DbRequests dbRequests;
+    private final Environment env;
+    private final DbRequests dbRequests;
+    private final CaptchaService captchaService;
     @Value("${theses.mail}")
     private String mailTheses;
     @Value("${google.recaptcha.key.threshold}")
@@ -35,8 +36,6 @@ public class MoviesService {
 
     // 9 characters: (8 chiffres) et (un x en ignorant la casse ou un chiffre)
     private static final Pattern VALID_PPN = Pattern.compile("^[0-9]{8}[xX0-9]$");
-
-    private CaptchaService captchaService;
 
     public List<String> getMailAdressesFromMovies(SignalerErreurDto json) throws RecaptchaInvalidException {
         if (!VALID_PPN.matcher(json.getEtabPpn()).matches()) {
