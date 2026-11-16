@@ -4,25 +4,27 @@ import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
+@Accessors(chain = true)
 @Getter
 @Setter
-public class ThesesByOrganismeDto {
+public class ThesesByOrganismeDto<T> {
     // TODO : breaking change, mettre le e de établissement en majuscule
     private long totalHitsetabSoutenance;
-    private List<TheseLiteDto> etabSoutenance;
+    private List<T> etabSoutenance;
     private long totalHitsetabSoutenanceEnCours;
-    private List<TheseLiteDto> etabSoutenanceEnCours;
+    private List<T> etabSoutenanceEnCours;
     private long totalHitspartenaireRecherche;
-    private List<TheseLiteDto> partenaireRecherche;
+    private List<T> partenaireRecherche;
     private long totalHitspartenaireRechercheEnCours;
-    private List<TheseLiteDto> partenaireRechercheEnCours;
+    private List<T> partenaireRechercheEnCours;
     private long totalHitsetabCotutelle;
-    private List<TheseLiteDto> etabCotutelle;
+    private List<T> etabCotutelle;
     private long totalHitsetabCotutelleEnCours;
-    private List<TheseLiteDto> etabCotutelleEnCours;
+    private List<T> etabCotutelleEnCours;
     private long totalHitsecoleDoctorale;
-    private List<TheseLiteDto> ecoleDoctorale;
+    private List<T> ecoleDoctorale;
     private long totalHitsecoleDoctoraleEnCours;
-    private List<TheseLiteDto> ecoleDoctoraleEnCours;
+    private List<T> ecoleDoctoraleEnCours;
 }

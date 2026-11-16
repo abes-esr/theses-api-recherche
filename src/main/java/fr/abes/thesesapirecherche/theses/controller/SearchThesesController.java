@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -120,11 +121,11 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ThesesByOrganismeDto rechercheParOrganisme(
+    public ThesesByOrganismeDto<TheseLiteDto> rechercheParOrganisme(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) throws Exception {
+    ) {
         try {
-            return thesesService.getThesesByOrganisme(ppn);
+            return thesesService.getThesesSummariesByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;

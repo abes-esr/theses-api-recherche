@@ -58,7 +58,7 @@ public class SearchQueryBuilder {
     @Autowired 
     private TheseLiteMapper theseLiteMapper;
     
-    @Autowired 
+    @Autowired
     @Qualifier("TheseClientTheseMapper")
     private ClientTheseMapper clientTheseMapper;
 
@@ -420,20 +420,51 @@ public class SearchQueryBuilder {
     }
 
     public SearchResponse<These> searchByPpn(String field, String ppn, String status) throws IOException {
+        return ElasticClient.getElasticsearchClient().search(
+                s -> s
+                    .index(esIndexName)
+                    .query(q -> q
+                            .bool(t -> t
+                                    .must(n -> n.match(m -> m.query(ppn).field(field)))
+                                    .filter(f -> f.term(x -> x.field("status").value(status)))
+                            ))
+                    .size(100)
+                    .trackTotalHits(t -> t.enabled(true)),
+            These.class
+        );
+    }
 
-    return ElasticClient.getElasticsearchClient().search(
-            s -> s
-                .index(esIndexName)
-                .query(q -> q
-                        .bool(t -> t
-                                .must(n -> n.match(m -> m.query(ppn).field(field)))
-                                .filter(f -> f.term(x -> x.field("status").value(status)))
-                        ))
-                .size(100)
-                .trackTotalHits(t -> t.enabled(true)),
-        These.class
-    );
-}
+    public SearchResponse<These> searchEtabSoutenanceByPpnAndStatus(String ppn, String status) {
+        try {
+            return searchByPpn("etabSoutenancePpn", ppn, status);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public SearchResponse<These> searchEtabCotutelleByPpnAndStatus(String ppn, String status) {
+        try {
+            return searchByPpn("etabsCotutellePpn", ppn, status);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public SearchResponse<These> searchPartenaireRechercheByPpnAndStatus(String ppn, String status) {
+        try {
+            return searchByPpn("partenairesRecherchePpn", ppn, status);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public SearchResponse<These> searchEcolesDoctoralesByPpnAndStatus(String ppn, String status) {
+        try {
+            return searchByPpn("ecolesDoctoralesPpn", ppn, status);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
     public These getTheseById(String nnt) throws Exception {

@@ -2,6 +2,8 @@ package fr.abes.thesesapirecherche.theses.controller;
 
 import java.util.Optional;
 
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeDto;
+import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseLiteResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.abes.thesesapirecherche.theses.dto.client.ClientResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.client.ClientThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -78,11 +79,11 @@ public class ClientTheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ClientThesesByOrganismeResponseDto rechercheParOrganismeClient(
+    public ThesesByOrganismeDto<ClientTheseLiteResponseDto> rechercheParOrganismeClient(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) throws Exception {
+    ) {
         try {
-            return thesesService.getThesesByOrganismeClient(ppn);
+            return thesesService.getThesesDetailsByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
