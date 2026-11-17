@@ -19,11 +19,11 @@ public class OrganismeMapper {
     }
 
     public List<OrganismeRefDto> organismesToDto(List<Organisme> orgs) {
+        if (orgs == null) return null;
+
         List<OrganismeRefDto> results = new ArrayList<>();
-        if (orgs != null) {
-            for (Organisme item : orgs) {
-                results.add(organismeToDto(item));
-            }
+        for (Organisme item : orgs) {
+            results.add(organismeToDto(item));
         }
         return results;
     }

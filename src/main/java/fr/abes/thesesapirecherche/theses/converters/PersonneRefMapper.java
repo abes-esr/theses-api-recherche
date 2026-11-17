@@ -10,20 +10,20 @@ import org.springframework.stereotype.Component;
 
 @Component 
 public class PersonneRefMapper {
-    public PersonneRefDto personneToDto(PersonneRef these) {
-        return PersonneRefDto.builder()
-                .ppn(these.getPpn())
-                .prenom(these.getPrenom())
-                .nom(these.getNom())
-                .build();
+    public PersonneRefDto personneToDto(PersonneRef personneRef) {
+        return personneRef != null ? PersonneRefDto.builder()
+                .ppn(personneRef.getPpn())
+                .prenom(personneRef.getPrenom())
+                .nom(personneRef.getNom())
+                .build() : null;
     }
 
-    public List<PersonneRefDto> personnesToDto(List<PersonneRef> theses) {
+    public List<PersonneRefDto> personnesToDto(List<PersonneRef> personneRefList) {
+        if (personneRefList == null) return null;
+
         List<PersonneRefDto> results = new ArrayList<>();
-        if (theses != null) {
-            for (PersonneRef item : theses) {
-                results.add(personneToDto(item));
-            }
+        for (PersonneRef item : personneRefList) {
+            results.add(personneToDto(item));
         }
         return results;
     }
