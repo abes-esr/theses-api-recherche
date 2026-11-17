@@ -1,4 +1,20 @@
-<Console name="Console">
-    <PatternLayout
-            pattern="%style{%d{ISO8601}}{white} %highlight{%-5level }[%style{%t}{bright,blue}] trace_id=%X{trace_id} span_id=%X{span_id} %style{%C{1.}}{yellow}: %msg%n%throwable" />
-</Console>
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <!-- Sortie standard (Console / stdout pour Docker et collecte OpenTelemetry) -->
+        <Console name="Console">
+            <PatternLayout
+                    pattern="%style{%d{ISO8601}}{white} %highlight{%-5level }[%style{%t}{bright,blue}] trace_id=%X{trace_id} span_id=%X{span_id} %style{%C{1.}}{yellow}: %msg%n%throwable" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- Configuration des logs métier de l'Abes -->
+        <Logger name="fr.abes" level="info" />
+
+        <!-- Logger racine de l'application -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>
