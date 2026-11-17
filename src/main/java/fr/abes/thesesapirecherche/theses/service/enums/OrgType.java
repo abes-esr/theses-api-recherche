@@ -1,5 +1,14 @@
 package fr.abes.thesesapirecherche.theses.service.enums;
 
 public enum OrgType {
-    ETABLISSEMENT_COTUTELLE, ETABLISSEMENT_SOUTENANCE, ECOLE_DOCTORALE, PARTENAIRE_RECHERCHE
+    ETABLISSEMENT_COTUTELLE("etabsCotutellePpn"),
+    ETABLISSEMENT_SOUTENANCE("etabSoutenancePpn"),
+    ECOLE_DOCTORALE("ecolesDoctoralesPpn"),
+    PARTENAIRE_RECHERCHE("partenairesRecherchePpn");
+
+    public final String fieldName;
+
+    OrgType(String fieldName) {
+        this.fieldName = fieldName;
+    }
 }

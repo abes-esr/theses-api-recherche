@@ -434,38 +434,6 @@ public class SearchQueryBuilder {
         );
     }
 
-    public SearchResponse<These> searchEtabSoutenanceByPpnAndStatus(String ppn, String status) {
-        try {
-            return searchByPpn("etabSoutenancePpn", ppn, status);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public SearchResponse<These> searchEtabCotutelleByPpnAndStatus(String ppn, String status) {
-        try {
-            return searchByPpn("etabsCotutellePpn", ppn, status);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public SearchResponse<These> searchPartenaireRechercheByPpnAndStatus(String ppn, String status) {
-        try {
-            return searchByPpn("partenairesRecherchePpn", ppn, status);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public SearchResponse<These> searchEcolesDoctoralesByPpnAndStatus(String ppn, String status) {
-        try {
-            return searchByPpn("ecolesDoctoralesPpn", ppn, status);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 
     public These getTheseById(String nnt) throws Exception {
         SearchResponse<These> response = ElasticClient.getElasticsearchClient().search(s -> s

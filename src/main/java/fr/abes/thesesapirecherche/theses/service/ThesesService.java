@@ -1,4 +1,5 @@
 package fr.abes.thesesapirecherche.theses.service;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -167,10 +168,9 @@ public class ThesesService {
      * ainsi que la quantité de résultat total trouvé par le moteur de recherche.
      * @param <T> un type quelconque
      */
-    private <T> OrgSearchResult<T> loadThesesFor(String ppn, OrgType orgType, Function<Hit<These>,T> mapper) {
-        BiFunction<String, String, SearchResponse<These>> finder = finderFor(orgType);
-        SearchResponse<These> soutenues = finder.apply(ppn, Status.SOUTENUE.val);
-        SearchResponse<These> enCours   = finder.apply(ppn, Status.EN_COURS.val);
+    private <T> OrgSearchResult<T> loadThesesFor(String ppn, OrgType orgType, Function<Hit<These>,T> mapper) throws IOException {
+        SearchResponse<These> soutenues = searchThesesQuery.searchByPpn(orgType.fieldName, ppn, Status.SOUTENUE.val);
+        SearchResponse<These> enCours   = searchThesesQuery.searchByPpn(orgType.fieldName, ppn, Status.EN_COURS.val);
 
         //noinspection DataFlowIssue
         return new OrgSearchResult<>(
@@ -179,21 +179,6 @@ public class ThesesService {
                 soutenues.hits().total().value(),
                 enCours.hits().total().value()
         );
-    }
-
-    /**
-     * Décide de la fonction adéquate a utilisé pour effectuer une recherche selon le type de l'organisme.
-     *
-     * @param orgType le type de l'organisme
-     * @return la fonction a appelé.
-     */
-    private BiFunction<String, String, SearchResponse<These>> finderFor(OrgType orgType) {
-        return switch (orgType) {
-            case ETABLISSEMENT_SOUTENANCE -> searchThesesQuery::searchEtabSoutenanceByPpnAndStatus;
-            case PARTENAIRE_RECHERCHE     -> searchThesesQuery::searchPartenaireRechercheByPpnAndStatus;
-            case ETABLISSEMENT_COTUTELLE  -> searchThesesQuery::searchEtabCotutelleByPpnAndStatus;
-            case ECOLE_DOCTORALE          -> searchThesesQuery::searchEcolesDoctoralesByPpnAndStatus;
-        };
     }
 
     /**
@@ -207,11 +192,11 @@ public class ThesesService {
      * @param ppn identifiant PPN ou Pica Production Number de l'organisme
      * @return un {@link ThesesByOrganismeDto} contenant les thèses et les totaux groupés par rôle et status
      */
-    public ThesesByOrganismeDto<TheseLiteDto> getThesesSummariesByOrganisme(String ppn) {
+    public ThesesByOrganismeDto<TheseLiteDto> getThesesSummariesByOrganisme(String ppn) throws IOException {
         return getThesesGenericByOrganisme(ppn, theseLiteMapper::theseLiteToDto);
     }
 
-    private <T> ThesesByOrganismeDto<T> getThesesGenericByOrganisme(String ppn, Function<Hit<These>, T> mapper) {
+    private <T> ThesesByOrganismeDto<T> getThesesGenericByOrganisme(String ppn, Function<Hit<These>, T> mapper) throws IOException {
         ThesesByOrganismeDto<T> resDto = new ThesesByOrganismeDto<>();
 
         OrgSearchResult<T> soutenance = loadThesesFor(ppn, OrgType.ETABLISSEMENT_SOUTENANCE, mapper);
@@ -253,7 +238,7 @@ public class ThesesService {
      * @param ppn identifiant PPN de l'organisme
      * @return un {@link ThesesByOrganismeDto} contenant les thèses au format {@link ClientTheseLiteResponseDto} et les totaux groupés par rôle et status (thèses déjà soutenues et thèses en cours)
      */
-    public ThesesByOrganismeDto<ClientTheseLiteResponseDto> getThesesDetailsByOrganisme(String ppn) {
+    public ThesesByOrganismeDto<ClientTheseLiteResponseDto> getThesesDetailsByOrganisme(String ppn) throws IOException {
         return getThesesGenericByOrganisme(ppn, clientTheseMapper::theseToClientLiteDto);
     }
 
