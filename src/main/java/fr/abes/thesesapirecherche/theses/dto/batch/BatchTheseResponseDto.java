@@ -23,6 +23,8 @@ public class BatchTheseResponseDto {
     String dateSoutenance;
     String datePremiereInscriptionDoctorat;
     String dateCines;
+    String dateFinEmbargo;
+    String theseTravaux;
     String discipline;
     Map<String, String> titres;
     Map<String, String> resumes;
