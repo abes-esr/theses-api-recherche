@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URLDecoder;
@@ -24,6 +25,12 @@ import java.util.Optional;
 @RequestMapping("/api/v1/personnes/")
 public class PersonneController {
 
+    @Value("${es.default.nb.results}")
+    private int DEFAULT_NB_RESULTS;
+
+    @Value("${es.max.nb.results}")
+    private int MAX_NB_RESULTS;
+    
     private final PersonnesService personnesService;
 
     /**

@@ -28,10 +28,6 @@ public class BatchTheseController {
     @Value("${es.max.nb.results}")
     private int MAX_NB_RESULTS;
 
-
-    final SearchQueryBuilder searchQueryBuilder;
-    
-
     private final ThesesService thesesService;
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)

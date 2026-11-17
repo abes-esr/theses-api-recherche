@@ -40,7 +40,7 @@ public class BatchTheseMapper {
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
                 .dateCines(dateFormatService.formatDate(these.getDateCines()))
-                .dateCines(these.getDateCines())
+                .dateCines(dateFormatService.formatDate(these.getDateCines()))
                 // Même format jj/mm/aaaa que les autres dates de la réponse
                 .dateFinEmbargo(dateFormatService.formatDate(these.getDateFinEmbargo()))
                 .theseTravaux(these.getTheseTravaux())

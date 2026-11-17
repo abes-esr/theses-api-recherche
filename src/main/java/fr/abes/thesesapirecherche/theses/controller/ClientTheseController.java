@@ -33,9 +33,6 @@ public class ClientTheseController {
     @Value("${es.max.nb.results}")
     private int MAX_NB_RESULTS;
 
-    final SearchQueryBuilder searchQueryBuilder;
-    
-
     private final ThesesService thesesService;
 
     // endpoint pour les clients (ceux qui utilisent l'API directement)
