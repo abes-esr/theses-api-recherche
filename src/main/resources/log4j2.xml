@@ -1,0 +1,4 @@
+<Console name="Console">
+    <PatternLayout
+            pattern="%style{%d{ISO8601}}{white} %highlight{%-5level }[%style{%t}{bright,blue}] trace_id=%X{trace_id} span_id=%X{span_id} %style{%C{1.}}{yellow}: %msg%n%throwable" />
+</Console>
