@@ -421,6 +421,33 @@ public class SearchQueryBuilder {
 
     }
 
+    // Variante pour le batch d'export : toutes les pages d'un export complet doivent arriver dans le même
+    // ordre. Sans "preference", chaque requête peut être servie par une copie différente de l'index
+    // (primaire ou réplica), qui ne classe pas les ex aequo de la même façon : des thèses apparaissent
+    // alors en double ou jamais d'une page à l'autre.
+    // Le tri demandé est complété par idDoc (unique et toujours renseigné) : sans ce départage, deux thèses
+    // ex aequo (même date de soutenance) peuvent aussi s'échanger d'une page à l'autre sur la même copie.
+    public SearchResponse<These> getThesesBatchSearchResponse(String chaine, Integer debut, Integer nombre, String tri, String filtres) throws Exception {
+        List<SortOptions> sorts = addTri(tri);
+        sorts.add(new SortOptions.Builder().field(f -> f.field("idDoc").order(SortOrder.Asc)).build());
+        return ElasticClient.getElasticsearchClient().search(
+            s -> s
+                .index(esIndexName)
+                .query(q -> q
+                    .bool(t -> t
+                        .must(buildQuery(chaine))
+                        .filter(addFilters(filtres, facetProps.getMainTheses(), facetProps.getSubsTheses()))
+                    ))
+                .from(debut)
+                .size(nombre)
+                .sort(sorts)
+                .preference("theses-batch")
+                .trackTotalHits(t -> t.enabled(Boolean.TRUE)),
+        These.class
+        );
+
+    }
+
     public SearchResponse<These> searchByPpn(String field, String ppn, String status) throws IOException {
         return ElasticClient.getElasticsearchClient().search(
                 s -> s

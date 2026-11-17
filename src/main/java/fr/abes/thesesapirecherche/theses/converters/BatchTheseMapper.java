@@ -8,6 +8,9 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+
+import java.text.SimpleDateFormat;
+
 @Component
 @RequiredArgsConstructor
 public class BatchTheseMapper {
@@ -37,6 +40,10 @@ public class BatchTheseMapper {
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
                 .dateCines(dateFormatService.formatDate(these.getDateCines()))
+                .dateCines(these.getDateCines())
+                // Même format jj/mm/aaaa que les autres dates de la réponse
+                .dateFinEmbargo(dateFormatService.formatDate(these.getDateFinEmbargo()))
+                .theseTravaux(these.getTheseTravaux())
                 .langues(these.getLangues())
                 .oaiSetNames(these.getOaiSetNames())
                 .cas(these.getCas())

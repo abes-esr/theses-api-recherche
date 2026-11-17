@@ -3,6 +3,7 @@ package fr.abes.thesesapirecherche.theses.controller;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/batch/theses")
 @RequiredArgsConstructor
 public class BatchTheseController {
+
+    @Value("${es.default.nb.results}")
+    private int DEFAULT_NB_RESULTS;
+
+    @Value("${es.max.nb.results}")
+    private int MAX_NB_RESULTS;
+
+
+    final SearchQueryBuilder searchQueryBuilder;
+    
+
     private final ThesesService thesesService;
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)
@@ -38,8 +50,8 @@ public class BatchTheseController {
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
-            if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
-            return thesesService.getThesesBatch(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+            int nbResultats = Math.min(nombre.orElse(DEFAULT_NB_RESULTS), MAX_NB_RESULTS);
+            return thesesService.getThesesBatch(q, debut.orElse(0), nbResultats, tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;

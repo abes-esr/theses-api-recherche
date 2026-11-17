@@ -32,7 +32,9 @@ public class ClientTheseResponseDto {
     List<SujetRameauResponseDto> sujetsRameau;
     Map<String, List<String>> sujets;
     String discipline;
+    @JsonProperty("date_soutenance")
     String dateSoutenance;
+    @JsonProperty("date_inscription")
     String dateInscription;
     @JsonProperty("etablissement_soutenance")
     EtablissementResponseDto etablissementSoutenance;
@@ -44,8 +46,6 @@ public class ClientTheseResponseDto {
     List<ThesePersonneLiteResponseDto> auteurs;
     List<ThesePersonneLiteResponseDto> directeurs;
 
-    
-    // TODO
     //Les champs suivants ne sont pas indexés et sont récupérés sur l'index theses avec une seconde requête
 
     List<String> langues;

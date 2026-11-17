@@ -43,7 +43,6 @@ public class PersonneController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-
     public RechercheResponseDto recherche(
             @RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "rousseau") final String q,
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres,
@@ -51,9 +50,9 @@ public class PersonneController {
             @RequestParam @Parameter(name = "nombre", description = "nombre de personne dans le lot", example = "10") Optional<Integer> nombre,
             @RequestParam @Parameter(name = "tri", description = "Type de tri", example = "pertinence, PersonneDesc, PersonnesAsc") Optional<String> tri
     ) throws Exception {
-        if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
-        String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8);
-        String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8);
+        int nbResultats = Math.min(nombre.orElse(DEFAULT_NB_RESULTS), MAX_NB_RESULTS);
+        String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
+        String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
         return personnesService.rechercherPersonne(decodedQuery, decodedFilters, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
     }

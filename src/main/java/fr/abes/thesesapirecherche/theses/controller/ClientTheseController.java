@@ -6,6 +6,7 @@ import java.util.Optional;
 import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseLiteResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/v1/client/theses")
 @RequiredArgsConstructor
 public class ClientTheseController {
+
+    @Value("${es.default.nb.results}")
+    private int DEFAULT_NB_RESULTS;
+
+    @Value("${es.max.nb.results}")
+    private int MAX_NB_RESULTS;
+
+    final SearchQueryBuilder searchQueryBuilder;
+    
+
     private final ThesesService thesesService;
 
     // endpoint pour les clients (ceux qui utilisent l'API directement)
@@ -63,8 +74,8 @@ public class ClientTheseController {
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
-            if(nombre.orElse(10) > 100000) nombre = Optional.of(100000);
-            return thesesService.getThesesClient(q, debut.orElse(0), nombre.orElse(10), tri.orElse(""), filtres.orElse(""));
+            int nbResultats = Math.min(nombre.orElse(DEFAULT_NB_RESULTS), MAX_NB_RESULTS);
+            return thesesService.getThesesClient(q, debut.orElse(0), nbResultats, tri.orElse(""), filtres.orElse(""));
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
