@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeDto;
@@ -81,7 +82,7 @@ public class ClientTheseController {
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public ThesesByOrganismeDto<ClientTheseLiteResponseDto> rechercheParOrganismeClient(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) {
+    ) throws IOException {
         try {
             return thesesService.getThesesDetailsByOrganisme(ppn);
         } catch (Exception e) {

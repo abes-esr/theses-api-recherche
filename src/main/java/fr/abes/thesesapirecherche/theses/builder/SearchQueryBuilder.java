@@ -71,6 +71,8 @@ public class SearchQueryBuilder {
     @Autowired
     private FacetProps facetProps;
 
+    private static final int MAX_RESPONSE_LENGTH = 100;
+
     private Query buildQuery(String chaine) {
         chaine = chaine.trim();
         chaine = replaceAndOutsideQuotes(chaine);
@@ -428,7 +430,7 @@ public class SearchQueryBuilder {
                                     .must(n -> n.match(m -> m.query(ppn).field(field)))
                                     .filter(f -> f.term(x -> x.field("status").value(status)))
                             ))
-                    .size(100)
+                    .size(MAX_RESPONSE_LENGTH)
                     .trackTotalHits(t -> t.enabled(true)),
             These.class
         );

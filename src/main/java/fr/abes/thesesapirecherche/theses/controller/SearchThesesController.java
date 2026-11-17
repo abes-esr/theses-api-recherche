@@ -1,5 +1,6 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
@@ -123,7 +124,7 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public ThesesByOrganismeDto<TheseLiteDto> rechercheParOrganisme(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) {
+    ) throws IOException {
         try {
             return thesesService.getThesesSummariesByOrganisme(ppn);
         } catch (Exception e) {
