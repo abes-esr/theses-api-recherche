@@ -28,7 +28,7 @@ public class TheseLiteMapper {
                 .auteurs(personneRefMapper.personnesToDto(these.getAuteurs()))
                 .directeurs(personneRefMapper.personnesToDto(these.getDirecteurs()))
                 .rapporteurs(personneRefMapper.personnesToDto(these.getRapporteurs()))
-                .examinateurs(personneRefMapper.personnesToDto(these.getRapporteurs()))
+                .examinateurs(personneRefMapper.personnesToDto(these.getMembresJury()))
                 .president(personneRefMapper.personneToDto(these.getPresidentJury()))
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
