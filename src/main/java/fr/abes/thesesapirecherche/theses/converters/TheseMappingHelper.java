@@ -29,7 +29,7 @@ public class TheseMappingHelper {
         }
         for (SujetsRameau s : these.getSujetsRameau()) {
             mapSujets.computeIfAbsent("fr", key -> new ArrayList<>())
-                    .add(sujetMapper.toDto(s));
+                    .add(0, sujetMapper.toDto(s));
         }
 
         return mapSujets;

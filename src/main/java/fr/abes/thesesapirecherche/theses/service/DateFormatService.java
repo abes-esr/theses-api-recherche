@@ -2,15 +2,20 @@ package fr.abes.thesesapirecherche.theses.service;
 
 import org.springframework.stereotype.Service;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Service
 public class DateFormatService {
-    public final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");   // immutable & thread-safe
 
-    public String formatDate(Date d) {
-        return d == null ? null : DATE_FORMAT.format(d);
+    private static final ZoneId ZONE = ZoneId.of("Europe/Paris"); // or ZoneOffset.UTC, be explicit
+
+    public String formatDate(Date date) {
+        return date == null
+                ? null
+                : DATE_FORMATTER.format(date.toInstant().atZone(ZONE));
     }
 }

@@ -3,11 +3,7 @@ package fr.abes.thesesapirecherche.theses.service;
 import fr.abes.thesesapirecherche.theses.dto.OrganismeRefDto;
 import fr.abes.thesesapirecherche.theses.dto.PersonneRefDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
-import fr.abes.thesesapirecherche.theses.model.PersonneRef;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,20 +13,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class CsvWriterTest {
 
     private static Stream<Arguments> providePeopleNameVariation() {
         return Stream.of(
-                Arguments.of(null, null, null, "\"\""),
+                Arguments.of(null, null, null, "\", \""),
                 Arguments.of("nono", "toto", "azerty", "\"nono, toto (azerty)\""),
-                Arguments.of("nono", null, "azerty", "\"nono (azerty)\""),
-                Arguments.of(null, "toto", "azerty", "\"toto (azerty)\""),
+                Arguments.of("nono", null, "azerty", "\"nono,  (azerty)\""),
+                Arguments.of(null, "toto", "azerty", "\", toto (azerty)\""),
                 Arguments.of("nono", "toto", null, "\"nono, toto\""),
-                Arguments.of("nono", null, null, "\"nono\""),
-                Arguments.of(null, "toto", null, "\"toto\""),
-                Arguments.of(null, null, "azerty", "\"(azerty)\""),
+                Arguments.of("nono", null, null, "\"nono, \""),
+                Arguments.of(null, "toto", null, "\", toto\""),
+                Arguments.of(null, null, "azerty", "\",  (azerty)\""),
                 Arguments.of("Johansson", "Scarlett \"Jo\"", "azerty", "\"Johansson, Scarlett Jo (azerty)\""),
                 Arguments.of("Johansson \"Jo\"", "Scarlett", "azerty", "\"Johansson Jo, Scarlett (azerty)\"")
         );
@@ -66,7 +60,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";""" + expected +
                 """
-                ;"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";"";"";"";"";"";"";"";"";"";"";"";", ";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
@@ -113,7 +107,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";""" + expected +
                 """
-                ;"";"";"";"";"";"";"";"";"en cours";"";"";
+                ;", ";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
@@ -166,7 +160,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";""" + expected +
                 """
-                ;"";"";"";"";"";"";"";"";"en cours";"";"";
+                ;", ";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
@@ -212,7 +206,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";"";"";"";"";"";"";"";"";"";"";"";""" + expected +
                 """
-                ;"";"";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";", ";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
@@ -254,7 +248,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 """ +
                 expected + """
-                ;"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";", ";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }

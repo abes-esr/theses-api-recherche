@@ -61,7 +61,7 @@ public class PersonneController {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return personnesService.rechercherPersonne(decodedQuery, decodedFilters, debut.orElse(0), nombre.orElse(10), tri.orElse(""));
+        return personnesService.rechercherPersonne(decodedQuery, decodedFilters, debut.orElse(0), nbResultats, tri.orElse(""));
     }
 
     /**

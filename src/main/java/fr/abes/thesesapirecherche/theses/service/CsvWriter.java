@@ -66,9 +66,10 @@ public final class CsvWriter<T> {
     }
 
     private static String formatPersonne(PersonneRefDto personne) {
-        String name = joinNonEmpty(", ", personne.getNom(), personne.getPrenom());
+        String name = Objects.toString(personne.getNom(), "") + ", " + Objects.toString(personne.getPrenom(), "");
         String ppn = Objects.toString(personne.getPpn(), "");
-        return ppn.isEmpty() ? name : joinNonEmpty(" ", name, "(" + ppn + ")");
+        if (personne.getPpn() != null) return name + " (" + ppn + ")";
+        return name;
     }
 
     private static String formatOrganisme(OrganismeRefDto organismeRefDto) {
