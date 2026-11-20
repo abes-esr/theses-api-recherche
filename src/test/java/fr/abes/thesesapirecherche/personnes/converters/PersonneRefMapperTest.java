@@ -22,12 +22,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Tests du convertisseur de format pour les personnes
  */
 @ExtendWith(SpringExtension.class)
-public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
+public class PersonneRefMapperTest extends ThesesApiRechercheApplicationTests {
 
     @Autowired
     PersonneMapper personneMapper;
@@ -97,7 +99,8 @@ public class PersonneMapperTest extends ThesesApiRechercheApplicationTests {
     @DisplayName("Conversion d'une liste de personnes au format ES vers DTO")
     void testConversionESversDto() {
 
-        List<PersonneLiteResponseDto> results = personneMapper.personnesListToDto(searchPersonnesResponse.hits().hits());
+        List<PersonneLiteResponseDto> results = searchPersonnesResponse.hits().hits().stream()
+                .map(personneMapper::personnesToDto).toList();
 
         Assertions.assertEquals(2, results.size());
         // 1ère personne

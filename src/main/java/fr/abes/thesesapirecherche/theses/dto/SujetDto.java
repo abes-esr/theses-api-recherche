@@ -1,4 +1,4 @@
-package fr.abes.thesesapirecherche.theses.model;
+package fr.abes.thesesapirecherche.theses.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class SujetsToMap {
+public class SujetDto {
     String keyword;
     Type type;
     String query;

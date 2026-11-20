@@ -14,10 +14,9 @@ import fr.abes.thesesapirecherche.personnes.model.RecherchePersonne;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -52,20 +51,6 @@ public class PersonneMapper {
         item.setEtablissements(PersonneComputedFields.calculerEtablissements(personne.source().getEtablissements()));
 
         return item;
-    }
-
-    /**
-     * Conversion d'une liste de personne du format ES au format DTO.
-     *
-     * @param personnes
-     * @return
-     */
-    public List<PersonneLiteResponseDto> personnesListToDto(List<Hit<RecherchePersonne>> personnes) {
-        List<PersonneLiteResponseDto> results = new ArrayList<>();
-        for (Hit<RecherchePersonne> item : personnes) {
-            results.add(personnesToDto(item));
-        }
-        return results;
     }
 
     /**
@@ -138,5 +123,4 @@ public class PersonneMapper {
 
         return item;
     }
-
 }

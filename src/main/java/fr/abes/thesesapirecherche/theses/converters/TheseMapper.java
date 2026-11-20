@@ -1,49 +1,29 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
-import fr.abes.thesesapirecherche.theses.dto.TheseResponseDto;
-import fr.abes.thesesapirecherche.theses.model.Sujet;
-import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
-import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
+import fr.abes.thesesapirecherche.theses.dto.TheseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import fr.abes.thesesapirecherche.theses.service.DateFormatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.formatKeywords;
+
 @Component("TheseTheseMapper")
+@RequiredArgsConstructor
 public class TheseMapper {
-    ThesePersonneMapper personneMapper = new ThesePersonneMapper();
+    PersonneRefMapper personneMapper = new PersonneRefMapper();
     OrganismeMapper organismeMapper = new OrganismeMapper();
+    private final DateFormatService dateFormatService;
 
-    private Map<String, List<SujetsToMap>> formatKeywords(These these) {
-        Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();
-        for (Sujet s : these.getSujets()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get(s.getLangue()) != null) l = mapSujets.get(s.getLangue());
-            l.add(new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujet, s.getLibelle()));
-            mapSujets.put(s.getLangue(), l);
-        }
-        for (SujetsRameau s : these.getSujetsRameau()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get("fr") != null) l = mapSujets.get("fr");
-            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, "\"" + s.getLibelle() + "\" ET " + s.getPpn()));
-            mapSujets.put("fr", l);
-        }
-
-        return mapSujets;
-    }
-
-    public TheseResponseDto theseToDto(These these) {
-        return TheseResponseDto.builder()
+    public TheseDto theseToDto(These these) {
+        return TheseDto.builder()
                 .titrePrincipal(these.getTitrePrincipal())
                 .nnt(these.getNnt())
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(dateFormatService.formatDate(these.getDateSoutenance()))
+                .datePremiereInscriptionDoctorat(dateFormatService.formatDate(these.getDatePremiereInscriptionDoctorat()))
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
@@ -65,13 +45,5 @@ public class TheseMapper {
                 .status(these.getStatus())
                 .isSoutenue(these.getIsSoutenue())
                 .build();
-    }
-
-    public List<TheseResponseDto> thesesToDto(List<These> personnes) {
-        List<TheseResponseDto> results = new ArrayList<>();
-        for (These item : personnes) {
-            results.add(theseToDto(item));
-        }
-        return results;
     }
 }

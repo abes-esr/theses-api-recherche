@@ -3,6 +3,8 @@ package fr.abes.thesesapirecherche.theses.converters;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.abes.thesesapirecherche.theses.service.DateFormatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -10,10 +12,13 @@ import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseLiteResponseDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+import static fr.abes.thesesapirecherche.theses.converters.TheseMappingHelper.formatKeywords;
+
 
 @Component("TheseClientTheseMapper")
+@RequiredArgsConstructor
 public class ClientTheseMapper {
-    
+    private final DateFormatService dateFormatService;
 
     public ClientTheseResponseDto theseToClientDto(These these) {
         return ClientTheseResponseDto.builder()
@@ -22,8 +27,8 @@ public class ClientTheseMapper {
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
                 .numSujetSansS(these.getNumSujetSansS())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(dateFormatService.formatDate(these.getDateSoutenance()))
+                .datePremiereInscriptionDoctorat(dateFormatService.formatDate(these.getDatePremiereInscriptionDoctorat()))
                 .discipline(these.getDiscipline())
                 .resumes(these.getResumes())
                 .titres(these.getTitres())
@@ -31,12 +36,12 @@ public class ClientTheseMapper {
                 .codeEtab(these.getCodeEtab())
                 .etabCotutelle(TheseMappingHelper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(TheseMappingHelper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(TheseMappingHelper.formatKeywords(these))
+                .mapSujets(formatKeywords(these))
                 .membresJury(TheseMappingHelper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
-                .dateCines(these.getDateCines())
+                .dateCines(dateFormatService.formatDate(these.getDateCines()))
                 .langues(these.getLangues())
                 .oaiSetNames(these.getOaiSetNames())
                 .cas(these.getCas())
@@ -69,20 +74,20 @@ public class ClientTheseMapper {
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
                 .numSujetSansS(these.getNumSujetSansS())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(dateFormatService.formatDate(these.getDateSoutenance()))
+                .datePremiereInscriptionDoctorat(dateFormatService.formatDate(these.getDatePremiereInscriptionDoctorat()))
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .etabSoutenance(TheseMappingHelper.organismeToDto(these.getEtabSoutenance()))
                 .codeEtab(these.getCodeEtab())
                 .etabCotutelle(TheseMappingHelper.organismesToDto(these.getEtabsCotutelle()))
                 .partenairesRecherche(TheseMappingHelper.organismesToDto(these.getPartenairesRecherche()))
-                .mapSujets(TheseMappingHelper.formatKeywords(these))
+                .mapSujets(formatKeywords(these))
                 .membresJury(TheseMappingHelper.personnesToDto(these.getMembresJury()))
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
-                .dateCines(these.getDateCines())
+                .dateCines(dateFormatService.formatDate(these.getDateCines()))
                 .langues(these.getLangues())
                 .oaiSetNames(these.getOaiSetNames())
                 .cas(these.getCas())

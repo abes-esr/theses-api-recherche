@@ -1,10 +1,12 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -18,9 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.View;
 
 import fr.abes.thesesapirecherche.dto.Facet;
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
-import fr.abes.thesesapirecherche.theses.dto.ResponseTheseLiteDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.SearchResponseTheseLiteDto;
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeDto;
 import fr.abes.thesesapirecherche.theses.rss.RssFeedView;
 import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/theses/")
+@RequiredArgsConstructor
 public class SearchThesesController {
 
     @Value("${es.default.nb.results}")
@@ -39,14 +41,8 @@ public class SearchThesesController {
     @Value("${es.max.nb.results}")
     private int MAX_NB_RESULTS;
 
-    @Autowired
-    SearchQueryBuilder searchQueryBuilder;
-
-    @Autowired
-    private RssFeedView view;
-
-    @Autowired 
-    private ThesesService thesesService;
+    private final RssFeedView view;
+    private final ThesesService thesesService;
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour le front)
     @GetMapping(value = "/recherche/")
@@ -56,7 +52,7 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ResponseTheseLiteDto simple(
+    public SearchResponseTheseLiteDto simple(
             @RequestParam @Parameter(name = "q", description = "chaine à rechercher", example = "technologie") final String q,
             @RequestParam @Parameter(name = "debut", description = "indice de la première thèse du lot", example = "10") Optional<Integer> debut,
             @RequestParam @Parameter(name = "nombre", description = "nombre de thèse du lot", example = "10") Optional<Integer> nombre,
@@ -87,7 +83,7 @@ public class SearchThesesController {
             @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
         try {
-            String csvContent = "\uFEFF" + searchQueryBuilder.simpleToFullThese(q, 0, 10000, tri.orElse(""), filtres.orElse("")).toCSV();
+            String csvContent = "\uFEFF" + thesesService.getSimpleToFullTheseCsvStringFormat(q, 0, 10000, tri.orElse(""), filtres.orElse(""));
 
             byte[] csvBytes = csvContent.getBytes(StandardCharsets.UTF_8);
             ByteArrayResource resource = new ByteArrayResource(csvBytes);
@@ -118,7 +114,7 @@ public class SearchThesesController {
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
     ) throws Exception {
         try {
-            return searchQueryBuilder.getOrganismeName(ppn);
+            return thesesService.getOrganismeName(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
@@ -133,11 +129,11 @@ public class SearchThesesController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ThesesByOrganismeResponseDto rechercheParOrganisme(
+    public ThesesByOrganismeDto<TheseLiteDto> rechercheParOrganisme(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) throws Exception {
+    ) throws IOException {
         try {
-            return thesesService.getThesesByOrganisme(ppn);
+            return thesesService.getThesesSummariesByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;
@@ -156,7 +152,7 @@ public class SearchThesesController {
     public List<String> completion(
             @RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(q);
+        return thesesService.completion(q);
     }
 
     @GetMapping(value = "/facets/")
@@ -168,7 +164,7 @@ public class SearchThesesController {
     public List<Facet> facets(@RequestParam final String q,
                               @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[discipline=\"arts (histoire, theorie, pratique)\"&discipline=\"etudes germaniques\"&discipline=\"architecture\"&langues=\"fr\"]") Optional<String> filtres
     ) throws Exception {
-        return searchQueryBuilder.facets(q, filtres.orElse(""));
+        return thesesService.facets(q, filtres.orElse(""));
     }
 
     @GetMapping(value = "/statsTheses")
@@ -178,7 +174,7 @@ public class SearchThesesController {
     @Operation(
             summary = "Retourne le nombre de theses soutenues")
     public long statsTheses() throws Exception {
-        return searchQueryBuilder.getStatsTheses("soutenue");
+        return thesesService.getStatsTheses("soutenue");
     }
 
     @GetMapping(value = "/statsSujets")
@@ -188,7 +184,7 @@ public class SearchThesesController {
     @Operation(
             summary = "Retourne le nombre de theses en préparation")
     public long statsSujets() throws Exception {
-        return searchQueryBuilder.getStatsTheses("enCours");
+        return thesesService.getStatsTheses("enCours");
     }
 
     @GetMapping(value = "/rss")

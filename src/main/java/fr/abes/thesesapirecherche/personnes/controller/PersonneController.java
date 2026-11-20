@@ -2,7 +2,6 @@ package fr.abes.thesesapirecherche.personnes.controller;
 
 import fr.abes.thesesapirecherche.dto.Facet;
 import fr.abes.thesesapirecherche.exception.ApiException;
-import fr.abes.thesesapirecherche.personnes.builder.SearchPersonneQueryBuilder;
 import fr.abes.thesesapirecherche.personnes.dto.PersonneResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.RechercheResponseDto;
 import fr.abes.thesesapirecherche.personnes.dto.SuggestionResponseDto;
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,30 +24,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/personnes/")
 public class PersonneController {
-    private final SearchPersonneQueryBuilder searchQueryBuilder;
-    private final PersonnesService personnesService;
-
-
-    //TODO: voir pourquoi on met ces valeurs ici et pas dans le searchQueryBuilder ?
-    @Value("${es.personnes.indexname}")
-    private String esIndexName;
-
-    @Value("${es.theses.indexname}")
-    private String esTheseIndexName;
-
-    @Value("${es.personnes.recherche.indexname}")
-    private String esRechercheIndexName;
 
     @Value("${es.default.nb.results}")
     private int DEFAULT_NB_RESULTS;
 
     @Value("${es.max.nb.results}")
     private int MAX_NB_RESULTS;
-
-
-
-
-
+    
+    private final PersonnesService personnesService;
 
     /**
      * Rechercher une personne avec un mot
@@ -79,13 +61,8 @@ public class PersonneController {
         String decodedQuery = URLDecoder.decode(q.replaceAll("\\+", "%2b"), StandardCharsets.UTF_8.toString());
         String decodedFilters = URLDecoder.decode(filtres.orElse(""), StandardCharsets.UTF_8.toString());
         log.debug("Rechercher une personne... : " + decodedQuery);
-        return searchQueryBuilder.rechercher(decodedQuery, esRechercheIndexName, decodedFilters, debut.orElse(0), nbResultats, tri.orElse(""));
+        return personnesService.rechercherPersonne(decodedQuery, decodedFilters, debut.orElse(0), nbResultats, tri.orElse(""));
     }
-
-
-
-
-
 
     /**
      * Proposer l'autocompletion basée sur les noms et prénoms
@@ -103,16 +80,10 @@ public class PersonneController {
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public SuggestionResponseDto completion(
             @RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "indus") final String q) throws Exception {
-        String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8.toString());
+        String decodedQuery = URLDecoder.decode(q, StandardCharsets.UTF_8);
         log.info("debut de completion...");
-        return searchQueryBuilder.completion(decodedQuery, esRechercheIndexName);
+        return personnesService.completion(decodedQuery);
     }
-
-
-
-
-
-
 
     /**
      * Retourne une liste de facettes avec le nombre d'occurence pour chaque facette
@@ -130,15 +101,10 @@ public class PersonneController {
     @ApiResponse(responseCode = "503", description = "Service indisponible")
     public List<Facet> facets(@RequestParam @Parameter(name = "q", description = "début de la chaine à rechercher", example = "rousseau") final String q,
                               @RequestParam @Parameter(name = "filtres", description = "filtres", example = "[role=\"auteurs\"&role=\"rapporteurs\"]") Optional<String> filtres) throws Exception {
-        return searchQueryBuilder.facets(q, esRechercheIndexName, filtres.orElse(""));
+        return personnesService.facets(q, filtres.orElse(""));
     }
 
-
-
-
-
-
- /**
+    /**
      * Recherche une personne à partir de son identifiant
      *
      * @param id Identifiant de la personne
@@ -164,11 +130,6 @@ public class PersonneController {
         }
     }
 
-
-
-
-
-
     /**
      * Retourne le nombre total de personnes
      */
@@ -180,7 +141,7 @@ public class PersonneController {
     @ApiResponse(responseCode = "503", description = "Service indisponible")
 
     public long getStatsPersonnes() throws Exception {
-        return searchQueryBuilder.getStatsPersonnes(esRechercheIndexName);
+        return personnesService.getStatsPersonnes();
     }
 
 }

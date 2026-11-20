@@ -1,6 +1,5 @@
 package fr.abes.thesesapirecherche.theses.dto;
 
-import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +10,7 @@ import java.util.Map;
 @Builder
 @Getter
 @Setter
-public class TheseResponseDto {
+public class TheseDto {
 
     String titrePrincipal;
     String nnt;
@@ -22,20 +21,20 @@ public class TheseResponseDto {
     String discipline;
     Map<String, String> titres;
     Map<String, String> resumes;
-    OrganismeResponseDto etabSoutenance;
+    OrganismeRefDto etabSoutenance;
     String codeEtab;
-    List<OrganismeResponseDto> etabCotutelle;
-    List<OrganismeResponseDto> partenairesRecherche;
-    Map<String, List<SujetsToMap>> mapSujets;
-    List<ThesePersonneResponseDto> membresJury;
-    List<ThesePersonneResponseDto> rapporteurs;
-    List<ThesePersonneResponseDto> auteurs;
-    List<ThesePersonneResponseDto> directeurs;
+    List<OrganismeRefDto> etabCotutelle;
+    List<OrganismeRefDto> partenairesRecherche;
+    Map<String, List<SujetDto>> mapSujets;
+    List<PersonneRefDto> membresJury;
+    List<PersonneRefDto> rapporteurs;
+    List<PersonneRefDto> auteurs;
+    List<PersonneRefDto> directeurs;
     List<String> langues;
     String cas;
     String accessible;
-    List<OrganismeResponseDto> ecolesDoctorales;
-    ThesePersonneResponseDto presidentJury;
+    List<OrganismeRefDto> ecolesDoctorales;
+    PersonneRefDto presidentJury;
     String source;
     String status;
     Boolean isSoutenue;

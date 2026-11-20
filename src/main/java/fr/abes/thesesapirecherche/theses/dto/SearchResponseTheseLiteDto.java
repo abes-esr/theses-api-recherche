@@ -8,10 +8,10 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ResponseTheseLiteDto {
+public class SearchResponseTheseLiteDto {
 
     long totalHits;
 
     long took;
-    List<TheseLiteResponseDto> theses = new ArrayList<>();
+    List<TheseLiteDto> theses = new ArrayList<>();
 }
