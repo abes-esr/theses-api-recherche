@@ -72,6 +72,19 @@ public final class CsvWriter<T> {
         return name;
     }
 
+    private static String formatPresidentJury(PersonneRefDto personne) {
+        String nom = personne.getNom() == null
+                ? ""
+                : (personne.getNom() + ", ").replace("\"", "");
+        String prenom = personne.getPrenom() == null
+                ? ""
+                : personne.getPrenom().replace("\"", "");
+        String ppn = personne.getPpn() == null
+                ? ""
+                : (" (" + personne.getPpn()).replace("\"", "") + ")";
+        return nom + prenom + ppn;
+    }
+
     private static String formatOrganisme(OrganismeRefDto organismeRefDto) {
         String name = organismeRefDto.getNom();
         String ppn = Objects.toString(organismeRefDto.getPpn(), "");
@@ -143,7 +156,7 @@ public final class CsvWriter<T> {
                 !!!
                  */
             )
-            .setUpColumnExtraction("Président du jury", uneThese -> CsvWriter.formatPersonne(uneThese.getPresidentJury())
+            .setUpColumnExtraction("Président du jury", uneThese -> CsvWriter.formatPresidentJury(uneThese.getPresidentJury())
                     .replace("\"", ""))
             .setUpColumnExtraction("Rapporteurs", uneThese -> uneThese.getRapporteurs().stream()
                     .map(CsvWriter::formatPersonne)

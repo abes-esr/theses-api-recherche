@@ -9,9 +9,9 @@ import java.util.Date;
 @Service
 public class DateFormatService {
     private static final DateTimeFormatter DATE_FORMATTER =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy");   // immutable & thread-safe
+            DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private static final ZoneId ZONE = ZoneId.of("Europe/Paris"); // or ZoneOffset.UTC, be explicit
+    private static final ZoneId ZONE = ZoneId.of("Europe/Paris");
 
     public String formatDate(Date date) {
         return date == null

@@ -60,9 +60,78 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";""" + expected +
                 """
-                ;"";"";"";"";"";"";"";"";"";"";"";"";", ";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
+    }
+
+    private static Stream<Arguments> providePresidentNameVariation() {
+        return Stream.of(
+                Arguments.of(null, null, null, "\"\""),
+                Arguments.of("nono", "toto", "azerty", "\"nono, toto (azerty)\""),
+                Arguments.of("nono", null, "azerty", "\"nono,  (azerty)\""),
+                Arguments.of(null, "toto", "azerty", "\"toto (azerty)\""),
+                Arguments.of("nono", "toto", null, "\"nono, toto\""),
+                Arguments.of("nono", null, null, "\"nono, \""),
+                Arguments.of(null, "toto", null, "\"toto\""),
+                Arguments.of(null, null, "azerty", "\" (azerty)\""),
+                Arguments.of("Johansson", "Scarlett \"Jo\"", "azerty", "\"Johansson, Scarlett Jo (azerty)\""),
+                Arguments.of("Johansson \"Jo\"", "Scarlett", "azerty", "\"Johansson Jo, Scarlett (azerty)\"")
+        );
+    }
+    @ParameterizedTest(name = "When nom is {0}, prenom is {1} and ppn is {2} then name field in csv should be {3}")
+    @MethodSource("providePresidentNameVariation")
+    void writeToCsvShouldWriteJuryPresidentNameProperly(String nom, String prenom, String ppn, String expected) {
+        PersonneRefDto president = PersonneRefDto.builder().prenom(prenom).nom(nom).ppn(ppn).build();
+        List<ClientTheseResponseDto> clientTheseResponseDtoList = new ArrayList<>();
+        clientTheseResponseDtoList.add(ClientTheseResponseDto.builder()
+                .auteurs(new ArrayList<>())
+                .titres(new HashMap<>())
+                .directeurs(new ArrayList<>())
+                .etabSoutenance(OrganismeRefDto.builder().build())
+                .etabCotutelle(new ArrayList<>())
+                .ecolesDoctorales(new ArrayList<>())
+                .partenairesRecherche(new ArrayList<>())
+                .presidentJury(president)
+                .rapporteurs(new ArrayList<>())
+                .membresJury(new ArrayList<>())
+                .mapSujets(new HashMap<>())
+                .langues(new ArrayList<>())
+                .oaiSetNames(new ArrayList<>())
+                .source("")
+                .cas("")
+                .accessible("")
+                .build()
+        );
+
+        String resultCSV = CsvWriter.ClientTheseResponseDtoCsvWriter.writeToCsvFrom(clientTheseResponseDtoList);
+        String expectedCSV = """
+                "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
+                "";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"""+ expected + """
+                ;"";"";"";"";"";"";"";"en cours";"";"";
+                """;
+
+        Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
+    }
+    @ParameterizedTest(name = "When president last name is {0} first name is {1} and ppn is {2} then field in csv should be {3}")
+    @MethodSource("providePresidentNameVariation")
+    public void writeToCsvShouldWriteJuryPresidentNameTheSameAsBefore(String nom, String prenom, String ppn, String expectedCSV) {
+        record RecordPersonne(String nom, String prenom, String ppn) {}
+        RecordPersonne unPrez = new RecordPersonne(nom, prenom, ppn);
+
+        StringBuilder s = new StringBuilder();
+        // extrait de l'ancien code, avant refactor
+        // si le nom est null, on ajoute on virgule, sinon on met une chaine vide à la place du nom
+        // si prénom est null, chaine vide
+        // si nom et prénom null, chaine vide
+        // s'il y a un ppn, il a forcément un espace avant
+        s.append("\"")
+                .append(unPrez.nom == null ? "" : (unPrez.nom() + ", ").replace("\"", ""))
+                .append(unPrez.prenom == null ? "" : unPrez.prenom.replace("\"", ""))
+                .append(ppn == null ? "" : (" (" + unPrez.ppn).replace("\"", "") + ")")
+                .append("\"");
+
+        Assertions.assertThat(s.toString()).isEqualTo(expectedCSV);
     }
 
     private static Stream<Arguments> provideOrgIdentityVariation() {
@@ -107,7 +176,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";""" + expected +
                 """
-                ;", ";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
@@ -160,7 +229,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";""" + expected +
                 """
-                ;", ";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
@@ -206,7 +275,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 "";"";"";"";"";"";"";"";"";"";"";"";"";"";"";""" + expected +
                 """
-                ;"";", ";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";"";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
@@ -248,7 +317,7 @@ class CsvWriterTest {
                 "NNT";"DOI";"NumSujet";"NumSujetSansS";"Auteurs";"Titre FR";"Titre EN";"Directeurs";"Discipline";"Date de soutenance";"Date de première inscription";"Date d'archivage CINES";"Etablissement de soutenance";"Code etablissement";"Etablissement de cotutelle";"Ecoles doctorales";"Partenaires de recherche";"Président du jury";"Rapporteurs";"Examinateurs";"Mots clés FR";"Mots clés EN";"Langue";"Noms des sets OAI";"Source";"Statut";"Cas";"Accessible"
                 """ +
                 expected + """
-                ;"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";", ";"";"";"";"";"";"";"";"en cours";"";"";
+                ;"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"";"en cours";"";"";
                 """;
         Assertions.assertThat(resultCSV).isEqualTo(expectedCSV);
     }
