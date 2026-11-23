@@ -1,17 +1,20 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
+import fr.abes.thesesapirecherche.theses.service.DateFormatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchTheseResponseDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
+
 import java.text.SimpleDateFormat;
 
-
-@Component 
+@Component
+@RequiredArgsConstructor
 public class BatchTheseMapper {
-    
+    private final DateFormatService dateFormatService;
 
     public BatchTheseResponseDto theseToBatchDto(Hit<These> theseHit) {
         These these = theseHit.source();
@@ -22,8 +25,8 @@ public class BatchTheseMapper {
                 .doi(these.getDoi())
                 .numSujet(these.getNumSujet())
                 .numSujetSansS(these.getNumSujetSansS())
-                .dateSoutenance(these.getDateSoutenance())
-                .datePremiereInscriptionDoctorat(these.getDatePremiereInscriptionDoctorat())
+                .dateSoutenance(dateFormatService.formatDate(these.getDateSoutenance()))
+                .datePremiereInscriptionDoctorat(dateFormatService.formatDate(these.getDatePremiereInscriptionDoctorat()))
                 .discipline(these.getDiscipline())
                 .titres(these.getTitres())
                 .resumes(these.getResumes())
@@ -36,10 +39,10 @@ public class BatchTheseMapper {
                 .rapporteurs(TheseMappingHelper.personnesToDto(these.getRapporteurs()))
                 .auteurs(TheseMappingHelper.personnesToDto(these.getAuteurs()))
                 .directeurs(TheseMappingHelper.personnesToDto(these.getDirecteurs()))
-                .dateCines(these.getDateCines())
+                .dateCines(dateFormatService.formatDate(these.getDateCines()))
+                .dateCines(dateFormatService.formatDate(these.getDateCines()))
                 // Même format jj/mm/aaaa que les autres dates de la réponse
-                .dateFinEmbargo(these.getDateFinEmbargo() != null
-                        ? new SimpleDateFormat("dd/MM/yyyy").format(these.getDateFinEmbargo()) : null)
+                .dateFinEmbargo(dateFormatService.formatDate(these.getDateFinEmbargo()))
                 .theseTravaux(these.getTheseTravaux())
                 .langues(these.getLangues())
                 .oaiSetNames(these.getOaiSetNames())

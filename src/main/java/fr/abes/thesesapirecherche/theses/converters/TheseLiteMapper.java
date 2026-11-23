@@ -1,38 +1,43 @@
 package fr.abes.thesesapirecherche.theses.converters;
 
+import fr.abes.thesesapirecherche.theses.service.DateFormatService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import fr.abes.thesesapirecherche.theses.dto.TheseLiteResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.TheseLiteDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
-@Component 
+@Component
+@RequiredArgsConstructor
 public class TheseLiteMapper {
+    private final OrganismeMapper organismeMapper;
+    private final PersonneRefMapper personneRefMapper;
+    private final DateFormatService dateFormatService;
 
-    OrganismeMapper organismeMapper = new OrganismeMapper();
-
-    public TheseLiteResponseDto theseLiteToDto(Hit<These> theseHit) {
-        return TheseLiteResponseDto.builder()
+    public TheseLiteDto theseLiteToDto(Hit<These> theseHit) {
+        These these = theseHit.source();
+        return TheseLiteDto.builder()
                 .id(theseHit.id())
-                .titrePrincipal(theseHit.source().getTitrePrincipal())
-                .titreEN(theseHit.source().getTitres().get("en") != null ? theseHit.source().getTitres().get("en") : "")
-                .etabSoutenanceN(theseHit.source().getEtabSoutenanceN())
-                .etabSoutenancePpn(theseHit.source().getEtabSoutenancePpn())
-                .dateSoutenance(theseHit.source().getDateSoutenance())
-                .datePremiereInscriptionDoctorat(theseHit.source().getDatePremiereInscriptionDoctorat())
-                .auteurs(theseHit.source().getAuteurs())
-                .directeurs(theseHit.source().getDirecteurs())
-                .rapporteurs(theseHit.source().getRapporteurs())
-                .examinateurs(theseHit.source().getMembresJury())
-                .president(theseHit.source().getPresidentJury())
-                .nnt(theseHit.source().getNnt())
-                .doi(theseHit.source().getDoi())
-                .discipline(theseHit.source().getDiscipline())
-                .status(theseHit.source().getStatus())
-                .ecolesDoctorale(organismeMapper.organismesToDto(theseHit.source().getEcolesDoctorales()))
-                .partenairesDeRecherche(organismeMapper.organismesToDto(theseHit.source().getPartenairesRecherche()))
-                .sujets(theseHit.source().getSujets())
-                .sujetsRameau(theseHit.source().getSujetsRameau())
+                .titrePrincipal(these.getTitrePrincipal())
+                .titreEN(these.getTitres().get("en") != null ? these.getTitres().get("en") : "")
+                .etabSoutenanceN(these.getEtabSoutenanceN())
+                .etabSoutenancePpn(these.getEtabSoutenancePpn())
+                .dateSoutenance(dateFormatService.formatDate(these.getDateSoutenance()))
+                .datePremiereInscriptionDoctorat(dateFormatService.formatDate(these.getDatePremiereInscriptionDoctorat()))
+                .auteurs(personneRefMapper.personnesToDto(these.getAuteurs()))
+                .directeurs(personneRefMapper.personnesToDto(these.getDirecteurs()))
+                .rapporteurs(personneRefMapper.personnesToDto(these.getRapporteurs()))
+                .examinateurs(personneRefMapper.personnesToDto(these.getMembresJury()))
+                .president(personneRefMapper.personneToDto(these.getPresidentJury()))
+                .nnt(these.getNnt())
+                .doi(these.getDoi())
+                .discipline(these.getDiscipline())
+                .status(these.getStatus())
+                .ecolesDoctorale(organismeMapper.organismesToDto(these.getEcolesDoctorales()))
+                .partenairesDeRecherche(organismeMapper.organismesToDto(these.getPartenairesRecherche()))
+                .sujets(these.getSujets())
+                .sujetsRameau(these.getSujetsRameau())
                 .build();
     }
 }

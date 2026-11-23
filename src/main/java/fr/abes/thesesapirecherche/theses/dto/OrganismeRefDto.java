@@ -8,10 +8,8 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class OrganismeResponseDto {
+public class OrganismeRefDto {
     private String ppn;
-
     private String nom;
-
     private String type;
 }

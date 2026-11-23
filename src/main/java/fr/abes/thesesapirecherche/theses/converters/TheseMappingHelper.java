@@ -7,56 +7,48 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import fr.abes.thesesapirecherche.theses.dto.OrganismeResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.ThesePersonneResponseDto;
+import fr.abes.thesesapirecherche.theses.dto.OrganismeRefDto;
+import fr.abes.thesesapirecherche.theses.dto.PersonneRefDto;
 import fr.abes.thesesapirecherche.theses.model.Organisme;
-import fr.abes.thesesapirecherche.theses.model.PersonneThese;
+import fr.abes.thesesapirecherche.theses.model.PersonneRef;
 import fr.abes.thesesapirecherche.theses.model.Sujet;
 import fr.abes.thesesapirecherche.theses.model.SujetsRameau;
-import fr.abes.thesesapirecherche.theses.model.SujetsToMap;
+import fr.abes.thesesapirecherche.theses.dto.SujetDto;
 import fr.abes.thesesapirecherche.theses.model.These;
 
-@Component 
+@Component
 public class TheseMappingHelper {
+    private static final SujetMapper sujetMapper = new SujetMapper();
 
     //mapping mots clés
-    public static Map<String, List<SujetsToMap>> formatKeywords(These these) {
-        Map<String, List<SujetsToMap>> mapSujets = new HashMap<>();
+    public static Map<String, List<SujetDto>> formatKeywords(These these) {
+        Map<String, List<SujetDto>> mapSujets = new HashMap<>();
         for (Sujet s : these.getSujets()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get(s.getLangue()) != null) l = mapSujets.get(s.getLangue());
-            l.add(new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujet, s.getLibelle()));
-            mapSujets.put(s.getLangue(), l);
+            mapSujets.computeIfAbsent(s.getLangue(), langue -> new ArrayList<>())
+                    .add(sujetMapper.toDto(s));
         }
         for (SujetsRameau s : these.getSujetsRameau()) {
-            List<SujetsToMap> l = new ArrayList<>();
-            if (mapSujets.get("fr") != null) l = mapSujets.get("fr");
-            l.add(0, new SujetsToMap(s.getLibelle(), SujetsToMap.Type.sujetsRameau, "\"" + s.getLibelle() + "\" ET " + s.getPpn()));
-            mapSujets.put("fr", l);
+            mapSujets.computeIfAbsent("fr", key -> new ArrayList<>())
+                    .add(0, sujetMapper.toDto(s));
         }
 
         return mapSujets;
     }
 
-
-
-
-
-
     //mapping organisme
-    public static OrganismeResponseDto organismeToDto(Organisme organisme) {
+    public static OrganismeRefDto organismeToDto(Organisme organisme) {
         if(organisme == null){
             return null;
         }
-        return OrganismeResponseDto.builder()
+        return OrganismeRefDto.builder()
                 .ppn(organisme.getPpn())
                 .nom(organisme.getNom())
                 .type(organisme.getType())
                 .build();
     }
 
-    public static List<OrganismeResponseDto> organismesToDto(List<Organisme> organismes) {
-        List<OrganismeResponseDto> results = new ArrayList<>();
+    public static List<OrganismeRefDto> organismesToDto(List<Organisme> organismes) {
+        List<OrganismeRefDto> results = new ArrayList<>();
         if (organismes != null) {
             for (Organisme item : organismes) {
                 results.add(organismeToDto(item));
@@ -70,22 +62,22 @@ public class TheseMappingHelper {
 
 
     //mapping personnes
-    public static ThesePersonneResponseDto personneToDto(PersonneThese personne) {
+    public static PersonneRefDto personneToDto(PersonneRef personne) {
         if(personne == null){
             return null;
         }
 
-        return ThesePersonneResponseDto.builder()
+        return PersonneRefDto.builder()
                 .ppn(personne.getPpn())
                 .prenom(personne.getPrenom())
                 .nom(personne.getNom())
                 .build();
     }
 
-    public static List<ThesePersonneResponseDto> personnesToDto(List<PersonneThese> personnes) {
-        List<ThesePersonneResponseDto> results = new ArrayList<>();
+    public static List<PersonneRefDto> personnesToDto(List<PersonneRef> personnes) {
+        List<PersonneRefDto> results = new ArrayList<>();
         if (personnes != null) {
-            for (PersonneThese item : personnes) {
+            for (PersonneRef item : personnes) {
                 results.add(personneToDto(item));
             }
         }

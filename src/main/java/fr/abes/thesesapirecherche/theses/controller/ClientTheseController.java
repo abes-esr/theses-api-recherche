@@ -1,8 +1,11 @@
 package fr.abes.thesesapirecherche.theses.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import fr.abes.thesesapirecherche.theses.dto.ThesesByOrganismeDto;
+import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseLiteResponseDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientResponseTheseLiteDto;
 import fr.abes.thesesapirecherche.theses.dto.client.ClientTheseResponseDto;
-import fr.abes.thesesapirecherche.theses.dto.client.ClientThesesByOrganismeResponseDto;
 import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/client/theses")
+@RequiredArgsConstructor
 public class ClientTheseController {
 
     @Value("${es.default.nb.results}")
@@ -31,17 +33,7 @@ public class ClientTheseController {
     @Value("${es.max.nb.results}")
     private int MAX_NB_RESULTS;
 
-    final SearchQueryBuilder searchQueryBuilder;
-    
-
-    @Autowired 
-    private ThesesService thesesService;
-
-    public ClientTheseController(SearchQueryBuilder searchQueryBuilder) {
-        this.searchQueryBuilder = searchQueryBuilder;
-    }
-
-    
+    private final ThesesService thesesService;
 
     // endpoint pour les clients (ceux qui utilisent l'API directement)
     @GetMapping(value = "/these/{id}")
@@ -96,11 +88,11 @@ public class ClientTheseController {
     @ApiResponse(responseCode = "200", description = "Opération terminée avec succès")
     @ApiResponse(responseCode = "400", description = "Mauvaise requête")
     @ApiResponse(responseCode = "503", description = "Service indisponible")
-    public ClientThesesByOrganismeResponseDto rechercheParOrganismeClient(
+    public ThesesByOrganismeDto<ClientTheseLiteResponseDto> rechercheParOrganismeClient(
             @PathVariable @Parameter(name = "ppn", description = "PPN de l'établissement/organisme", example = "241345251") final String ppn
-    ) throws Exception {
+    ) throws IOException {
         try {
-            return thesesService.getThesesByOrganismeClient(ppn);
+            return thesesService.getThesesDetailsByOrganisme(ppn);
         } catch (Exception e) {
             log.error(e.toString());
             throw e;

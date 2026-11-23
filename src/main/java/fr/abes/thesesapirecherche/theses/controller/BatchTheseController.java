@@ -2,14 +2,13 @@ package fr.abes.thesesapirecherche.theses.controller;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import fr.abes.thesesapirecherche.theses.builder.SearchQueryBuilder;
 import fr.abes.thesesapirecherche.theses.dto.batch.BatchResponseTheseDto;
 import fr.abes.thesesapirecherche.theses.service.ThesesService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/batch/theses")
+@RequiredArgsConstructor
 public class BatchTheseController {
 
     @Value("${es.default.nb.results}")
@@ -28,18 +28,7 @@ public class BatchTheseController {
     @Value("${es.max.nb.results}")
     private int MAX_NB_RESULTS;
 
-
-    final SearchQueryBuilder searchQueryBuilder;
-    
-
-    @Autowired 
-    private ThesesService thesesService;
-
-    public BatchTheseController(SearchQueryBuilder searchQueryBuilder) {
-        this.searchQueryBuilder = searchQueryBuilder;
-    }
-
-    
+    private final ThesesService thesesService;
 
     // retourne un ensemble de thèses qui matchent avec les filtres (pour les clients)
     @GetMapping(value = "/recherche/")
